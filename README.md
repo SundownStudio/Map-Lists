@@ -22,10 +22,10 @@ dependencies {
 This project is currently in development so updates will be forthcoming. 
 
 ## Contributions
-Contributions are always welcome, the big jobs left to do are:
-1) setting up CouchBase server and Sync Gateway on a cloud instance to handle multiple users, the sync function should support individual and group channels
-2) graphics art and stylizing for menu items 
-3) saving/deleting existing schemas so basically if a user wants to continue entering items in a list that all share the same schema then the form is pre-generated for them
-4) testing 
+Contributions are always welcome, the big jobs left to do are:  
+1) setting up CouchBase server and Sync Gateway on a cloud instance to handle multiple users, the sync function should support individual and group channels  
+2) graphics art and stylizing for menu items   
+3) saving/deleting existing schemas so basically if a user wants to continue entering items in a list that all share the same schema then the form is pre-generated for them  
+4) testing   
 
 If you're interested in helping out please feel free to open an issue and/or shoot me an email. Thanks!
