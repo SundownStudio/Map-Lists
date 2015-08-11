@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.sundown.maplists.views.PhotoView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:layout_below="@+id/imageTitle"
+        android:id="@+id/imageContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent"
+        android:minHeight="200dp">
+
+        <ImageView
+            android:id="@+id/locationImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/removeFragment" />
+
+
+
+        <ImageButton
+            android:id="@+id/removeFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_clear_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/takePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/removeFragment"
+            android:src="@drawable/ic_camera_alt_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/loadPicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/takePicture"
+            android:src="@drawable/ic_collections_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/rotatePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/loadPicture"
+            android:src="@drawable/ic_rotate_left_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/deletePicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/rotatePicture"
+            android:src="@drawable/ic_delete_black_24dp" />
+
+
+        <TextView
+            android:id="@+id/noImageLoadedText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="20dp"
+            android:text="@string/no_image_loaded" />
+
+        <ProgressBar
+            android:id="@+id/imgProgress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+</com.sundown.maplists.views.PhotoView>

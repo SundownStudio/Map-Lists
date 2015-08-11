@@ -1,0 +1,86 @@
+<resources>
+
+    <!-- look at this link:
+        https://developer.android.com/training/material/theme.html
+        for all the diff variables you can change on toolbar
+
+        Look here:
+        http://www.google.com/design/spec/style/color.html
+        for colors that go together with design guidelines
+        create a colors.xml to use
+        -->
+
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="AppTheme.Base">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/colorHighlight</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
+    <style name="DialogDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/titleColor</item>
+        <item name="android:layout_marginTop">28dp</item>
+        <item name="android:layout_marginBottom">24dp</item>
+    </style>
+
+    <style name="DialogButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textColor">@color/dialogBackground</item>
+        <item name="android:background">@color/titleColor</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+    </style>
+
+    <style name="DialogText" parent="@android:style/TextAppearance">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:typeface">normal</item>
+    </style>
+
+    <style name="DialogText.Center">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+    </style>
+
+    <style name="DialogText.Center.Title" >
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textColor">@color/titleColor</item>
+        <item name="android:background">@color/dialogBackground</item>
+        <item name="android:typeface">serif</item>
+    </style>
+
+    <style name="DialogText.EditAddress" >
+        <item name="android:inputType">textPostalAddress</item>
+    </style>
+
+    <style name="DialogFragmentStyle" parent="@android:style/Theme.Dialog">
+        <item name="android:windowSoftInputMode">stateHidden|adjustResize</item>
+    </style>
+
+    <!-- you can put this in app_bar.xml where it uses theme tag...
+    this is how you do custom themes for specific xmls...
+    <style name="MyCustomToolBarTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">#F00</item>
+        <item name="android:textColorSecondary">#00F</item>
+    </style>
+-->
+
+</resources>

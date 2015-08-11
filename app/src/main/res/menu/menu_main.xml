@@ -1,0 +1,71 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.sundown.maplists.activities.MainActivity">
+
+    <group
+        android:id="@+id/group_map_components"
+        android:visible="false">
+
+        <item
+            android:id="@+id/action_enter_address"
+            android:actionViewClass="android.support.v7.widget.SearchView"
+            android:icon="@drawable/ic_search_black_24dp"
+            android:title="@string/search_location"
+            app:showAsAction="always" />
+
+    </group>
+    <group
+        android:id="@+id/group_marker_navigation"
+        android:visible="false">
+
+        <item
+            android:id="@+id/action_navigate_prior"
+            android:icon="@drawable/ic_navigate_before_black_24dp"
+            android:orderInCategory="200"
+            android:title="@string/navigate_prior"
+            app:showAsAction="always" />
+
+        <item
+            android:id="@+id/action_navigate_next"
+            android:icon="@drawable/ic_navigate_next_black_24dp"
+            android:orderInCategory="200"
+            android:title="@string/navigate_next"
+            app:showAsAction="always" />
+
+
+    </group>
+
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/ic_add_black_24dp"
+        android:orderInCategory="200"
+        android:title="@string/add"
+        app:showAsAction="always" />
+
+    <group
+        android:id="@+id/group_map_zooming"
+        android:visible="false">
+
+        <item
+            android:id="@+id/action_zoom_in"
+            android:icon="@drawable/ic_zoom_in"
+            android:orderInCategory="200"
+            android:title="@string/zoom_in"
+            app:showAsAction="always" />
+
+        <item
+            android:id="@+id/action_zoom_out"
+            android:icon="@drawable/ic_zoom_out"
+            android:orderInCategory="200"
+            android:title="@string/zoom_out"
+            app:showAsAction="always" />
+
+    </group>
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+</menu>

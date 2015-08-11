@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:insetLeft="50dp"
+    android:insetRight="50dp" >
+
+    <!--<shape> not used... delete if not needed
+       <solid android:color="@color/orange" />
+       <corners android:radius="2.0dip" />
+   </shape>-->
+
+   </inset>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:paddingTop="@dimen/app_bar_top_padding"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+    app:theme="@style/AppTheme">
+
+    <!--
+     JavaDoc:
+     http://developer.android.com/reference/android/widget/Toolbar.html
+     -->
+
+    <!--     android:layout_height="?android:attr/actionBarSize"
+    should be this however on 5.0 it is interfering with padding.. cuz we hacked it earlier to do translucent bar
+    we need to look for a new fix for that where we can use our primary/secondary colors.. -->
+
+</android.support.v7.widget.Toolbar>

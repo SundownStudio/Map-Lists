@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sundown.maplists.views.EnterAddressView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+
+    <AutoCompleteTextView
+        android:id="@+id/enter_address_text"
+        style="@style/DialogText.EditAddress"
+        android:hint="@string/address_format"
+        android:layout_alignLeft="@+id/submit_address"
+        android:layout_alignRight="@+id/submit_address"
+        android:layout_height="wrap_content"
+        android:isScrollContainer="true"
+        android:inputType="textMultiLine"/>
+
+
+
+</com.sundown.maplists.views.EnterAddressView>
