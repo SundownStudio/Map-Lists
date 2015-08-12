@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.sundown.maplists.MapLists;
+import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.R;
 import com.sundown.maplists.pojo.NavigationItem;
 
@@ -31,7 +31,7 @@ public class AdapterNavigationDrawer extends RecyclerView.Adapter<AdapterNavigat
 
 
     public AdapterNavigationDrawer(List<NavigationItem> list, NavigationClickListener clickListener){
-        inflator = LayoutInflater.from(MapLists.getContext());
+        inflator = LayoutInflater.from(MapListsApp.getContext());
         this.list = list;
         this.clickListener = clickListener;
     }

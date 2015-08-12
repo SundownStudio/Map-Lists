@@ -9,10 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- this is defined in app_bar.xml -->
+        <!-- this is defined in toolbar_top.xml -->
         <include
-            android:id="@+id/app_bar"
-            layout="@layout/app_bar" />
+            android:id="@+id/toolbar_top"
+            layout="@layout/toolbar_top" />
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_bottom"
@@ -28,7 +28,7 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/app_bar"
+        android:layout_below="@+id/toolbar_top"
         android:layout_above="@+id/toolbar_bottom">
 
 

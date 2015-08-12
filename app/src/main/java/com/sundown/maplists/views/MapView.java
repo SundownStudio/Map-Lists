@@ -21,7 +21,7 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.models.Locations;
-import com.sundown.maplists.models.MapItem;
+import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 
 /**
@@ -173,10 +173,10 @@ public class MapView extends FrameLayout {
             // Getting the position from the marker
             LatLng latLng = marker.getPosition();
 
-            MapItem item = model.getMapItem(latLng);
-            EntryField titleEntry = (EntryField) item.getField(0);
-            EntryField snippetEntry = (EntryField) item.getField(1);
-            PhotoField photoField = (PhotoField) item.getField(2);
+            MapList list = model.getMapList(latLng);
+            EntryField titleEntry = (EntryField) list.getField(0);
+            EntryField snippetEntry = (EntryField) list.getField(1);
+            PhotoField photoField = (PhotoField) list.getField(2);
 
             infoTitle.setText(titleEntry.entry);
             infoSnippet.setText(snippetEntry.entry);
@@ -186,7 +186,7 @@ public class MapView extends FrameLayout {
 
 
             if (photoField.thumbName != null && photoField.thumbName.length() > 0) {
-                thumb = db.loadBitmap(item.documentId, photoField.thumbName);
+                thumb = db.loadBitmap(list.documentId, photoField.thumbName);
             }
 
 

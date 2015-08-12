@@ -21,6 +21,9 @@ public class ToolbarManager {
 
 
     public void drawMenu(MenuOption... options){
+        if (toolbarBottom == null || toolbarTop == null)
+            return;
+
         for (MenuOption option: options){
             switch(option.groupView){
 

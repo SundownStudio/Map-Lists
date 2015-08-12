@@ -12,10 +12,10 @@ import java.util.TreeMap;
  */
 public class Locations {
 
-    private TreeMap<LatLng, MapItem> locations = new TreeMap<LatLng, MapItem>(new LatLngComparator()); //holding all data pertinent to locations
-    public TreeMap<LatLng, MapItem> getLocations(){return locations;}
+    private TreeMap<LatLng, MapList> locations = new TreeMap<LatLng, MapList>(new LatLngComparator()); //holding all data pertinent to locations
+    public TreeMap<LatLng, MapList> getLocations(){return locations;}
     private HashMap<LatLng, Marker> markers = new HashMap<>(); //holding all markers so we can slide skip to next on map - separate from locations cuz those are used elsewhere
-    //todo: see if we can merge these.. right now we use MapItem in editLocation and need to clear the marker so background can recycle.. we dont use it in LocationFragment anymore so it should work..
+    //todo: merge these
 
     private static Locations instance;
     private Locations(){}
@@ -30,7 +30,7 @@ public class Locations {
         markers.clear();
     }
 
-    public MapItem getMapItem(LatLng latLng){
+    public MapList getMapList(LatLng latLng){
         return locations.get(latLng);
     }
 
@@ -60,8 +60,8 @@ public class Locations {
         return markers.get(nextKey);
     }
 
-    public void storeMapItem(LatLng latLng, MapItem item){
-        locations.put(latLng, item);
+    public void storeMapList(LatLng latLng, MapList list){
+        locations.put(latLng, list);
     }
 
     public void storeMarker(LatLng latLng, Marker marker){ //todo: see if we can put this all into the one item..
@@ -70,21 +70,21 @@ public class Locations {
 
     //used for dragging
     public void swap(LatLng oldLatLng, LatLng newLatLng){
-        MapItem item = removeMapItem(oldLatLng);
+        MapList list = removeMapList(oldLatLng);
         Marker marker = removeMarker(oldLatLng);
 
-        item.latLng = newLatLng;
+        list.latLng = newLatLng;
 
-        storeMapItem(newLatLng, item);
+        storeMapList(newLatLng, list);
         storeMarker(newLatLng, marker);
     }
 
-    public MapItem deleteMapItem(LatLng latLng){
+    public MapList deleteMapList(LatLng latLng){
         removeMarker(latLng);
         return locations.remove(latLng);
     }
 
-    private MapItem removeMapItem(LatLng latLng){
+    private MapList removeMapList(LatLng latLng){
         return locations.remove(latLng);
     }
 
@@ -92,7 +92,7 @@ public class Locations {
         return markers.remove(latLng);
     }
 
-    public int numMapItems(){
+    public int numLocations(){
         return locations.size();
     }
 

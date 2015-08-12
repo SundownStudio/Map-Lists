@@ -3,6 +3,8 @@
     <string name="google_maps_key">enter api key here</string>
     <string name="google_places_key">enter api key here</string>
 
+
+
     <string name="app_name">MapLists</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Settings</string>
@@ -45,7 +47,7 @@
     <string name="enter">Enter</string>
     <string name="cancel">Cancel</string>
     <string name="add_field">Add Field</string>
-
+    <string name="add_new_item">Add New Item</string>
     <string name="name">Name</string>
     <string name="snippet">Snippet</string>
     <string name="thumbnail">Thumbnail</string>
@@ -74,5 +76,6 @@
     <string name="invalid_lat_long_used">Invalid Lat/Lon used</string>
     <string name="no_address_found">No Address Found, it may not be there anymore</string>
     <string name="address_found">Address Found</string>
+    <string name="edit">"Edit "</string>
 
 </resources>

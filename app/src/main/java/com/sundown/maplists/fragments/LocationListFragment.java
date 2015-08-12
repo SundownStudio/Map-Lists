@@ -14,29 +14,29 @@ import android.widget.TextView;
 import com.sundown.maplists.R;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.LocationItem;
+import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.extras.ToolbarManager;
-import com.sundown.maplists.views.LocationItemView;
+import com.sundown.maplists.views.LocationListView;
 import com.sundown.maplists.extras.Constants;
 
 /**
  * Created by Sundown on 7/21/2015.
  */
-public class LocationItemFragment extends Fragment {
+public class LocationListFragment extends Fragment {
 
     private ToolbarManager toolbarManager;
     public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
-    private LocationItemView view;
-    public LocationItem model;
+    private LocationListView view;
+    public LocationList model;
     private LinearLayout layout;
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
 
 
-    public static LocationItemFragment newInstance(LocationItem model, ToolbarManager toolbarManager) {
-        LocationItemFragment fragment = new LocationItemFragment();
+    public static LocationListFragment newInstance(LocationList model, ToolbarManager toolbarManager) {
+        LocationListFragment fragment = new LocationListFragment();
         fragment.model = model;
         fragment.toolbarManager = toolbarManager;
         return fragment;
@@ -51,7 +51,7 @@ public class LocationItemFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = (LocationItemView) inflater.inflate(R.layout.location_item_view, container, false);
+        view = (LocationListView) inflater.inflate(R.layout.location_list_view, container, false);
         return view;
     }
 

@@ -9,7 +9,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 
-import com.sundown.maplists.MapLists;
+import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 
@@ -29,7 +29,7 @@ public class PhotoUtils {
     public static final String IMAGE_PREFIX = "IMG_";
 
     private PhotoUtils(){
-        thumbnailDimens =  (int) (MapLists.getContext().getResources().getDimension(R.dimen.thumbnail_image_size) / MapLists.getContext().getResources().getDisplayMetrics().density);
+        thumbnailDimens =  (int) (MapListsApp.getContext().getResources().getDimension(R.dimen.thumbnail_image_size) / MapListsApp.getContext().getResources().getDisplayMetrics().density);
         dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
         storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         options = new BitmapFactory.Options();
@@ -172,7 +172,7 @@ public class PhotoUtils {
         String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
         // Get the cursor
-        Cursor cursor = MapLists.getContext().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+        Cursor cursor = MapListsApp.getContext().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
         // Move to first row
         cursor.moveToFirst();
 

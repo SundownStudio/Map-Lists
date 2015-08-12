@@ -20,13 +20,13 @@ public interface Constants {
 
     class FRAGMENT_TAGS {
         public static final String FRAGMENT_MAP = "MAP";
-        public static final String FRAGMENT_LOCATION_ITEMS = "LOCATION_ITEMS";
+        public static final String FRAGMENT_LOCATION_LISTS = "LOCATION_LISTS";
         public static final String FRAGMENT_DELETE = "DELETE";
         public static final String FRAGMENT_ENTER_ADDRESS= "ENTER_ADDRESS";
         public static final String FRAGMENT_SELECT_FIELD = "SELECT_FIELD";
         public static final String FRAGMENT_EDIT_FIELD_TITLE = "EDIT_TITLE";
-        public static final String FRAGMENT_ADD_ITEM = "ADD_ITEM";
-        public static final String FRAGMENT_LOCATION_ITEM = "LOCATION_ITEM";
+        public static final String FRAGMENT_ADD_LIST = "ADD_LIST";
+        public static final String FRAGMENT_LOCATION_LIST = "LOCATION_LIST";
 
     }
 

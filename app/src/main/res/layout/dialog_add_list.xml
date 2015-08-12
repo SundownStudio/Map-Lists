@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sundown.maplists.views.AddItemView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sundown.maplists.views.AddListView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -59,4 +59,4 @@
     </ScrollView>
 
 
-</com.sundown.maplists.views.AddItemView>
+</com.sundown.maplists.views.AddListView>

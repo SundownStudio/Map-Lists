@@ -18,12 +18,12 @@ import com.couchbase.lite.Revision;
 import com.couchbase.lite.UnsavedRevision;
 import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
-import com.sundown.maplists.MapLists;
+import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.extras.Constants;
 import com.sundown.maplists.extras.Operation;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.models.Item;
+import com.sundown.maplists.models.List;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,11 +38,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.sundown.maplists.storage.JsonConstants.ITEM_ID;
+import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
 import static com.sundown.maplists.storage.JsonConstants.TYPE;
-import static com.sundown.maplists.storage.JsonConstants.TYPE_LOCATION_ITEM;
-import static com.sundown.maplists.storage.JsonConstants.TYPE_MAP_ITEM;
+import static com.sundown.maplists.storage.JsonConstants.TYPE_LOCATION_LIST;
+import static com.sundown.maplists.storage.JsonConstants.TYPE_MAP_LIST;
 
 /**
  * Created by Sundown on 7/14/2015.
@@ -70,18 +70,18 @@ public class DatabaseCommunicator {
     }
 
 
-    public void insert(final Item item, String countId, String idType) {
+    public void insert(final List list, String countId, String idType) {
         try {
-            cbManager.insert(item, countId, idType);
+            cbManager.insert(list, countId, idType);
         } catch (CouchbaseLiteException e) {
             Log.e(e); //TODO: something went wrong dialog
         }
     }
 
 
-    public void update(final Item item) {
+    public void update(final List list) {
         try {
-            cbManager.update(item);
+            cbManager.update(list);
         } catch (CouchbaseLiteException e) {
             Log.e(e); //TODO: something went wrong dialog
         }
@@ -137,7 +137,7 @@ public class DatabaseCommunicator {
         private static final String DATABASE_NAME = "inventory-db";
         private static final String TAG = "inventory";
         private static final String VIEW_BY_MAP_ID = "view-by-map-id";
-        private static final String VIEW_BY_ITEM_ID = "view-by-item-id";
+        private static final String VIEW_BY_LIST_ID = "view-by-list-id";
         private static final String VIEW_VERSION = "1";
         private static final String DOC_COUNTS = "doc-counts";
         private static final String DOC_DEFAULT_SCHEMA = "doc-default-schemas";
@@ -158,7 +158,7 @@ public class DatabaseCommunicator {
             Manager.enableLogging(com.couchbase.lite.util.Log.TAG_DATABASE, com.couchbase.lite.util.Log.VERBOSE);
 
             try {
-                manager = new Manager(new AndroidContext(MapLists.getContext()), Manager.DEFAULT_OPTIONS);
+                manager = new Manager(new AndroidContext(MapListsApp.getContext()), Manager.DEFAULT_OPTIONS);
                 database = manager.getDatabase(DATABASE_NAME);
 
             } catch (IOException e) {
@@ -183,20 +183,20 @@ public class DatabaseCommunicator {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
                     String type = (String) properties.get(TYPE);
-                    if (type.equals(TYPE_MAP_ITEM)) {
+                    if (type.equals(TYPE_MAP_LIST)) {
                         emitter.emit(properties.get(JsonConstants.MAP_ID), null);
                     }
                 }
             }, VIEW_VERSION);     //view last parameter is version, this is retained so if map/reduce updated it will go back
 
 
-            View viewByItemId = database.getView(VIEW_BY_ITEM_ID);
+            View viewByItemId = database.getView(VIEW_BY_LIST_ID);
             viewByItemId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
                     String type = (String) properties.get(JsonConstants.TYPE);
-                    if (type.equals(TYPE_LOCATION_ITEM)) {
-                        int[] arr = new int[]{(Integer) properties.get(MAP_ID), (Integer) properties.get(ITEM_ID)};
+                    if (type.equals(TYPE_LOCATION_LIST)) {
+                        int[] arr = new int[]{(Integer) properties.get(MAP_ID), (Integer) properties.get(LIST_ID)};
                         emitter.emit(arr, null);
                     }
                 }
@@ -207,14 +207,14 @@ public class DatabaseCommunicator {
         public Query getMapQuery(){ return database.getView(VIEW_BY_MAP_ID).createQuery(); }
 
         public Query getLocationQuery(int mapId){
-            Query query =  database.getView(VIEW_BY_ITEM_ID).createQuery();
+            Query query =  database.getView(VIEW_BY_LIST_ID).createQuery();
 
             query.setStartKey(new int[]{mapId, 0});
             query.setEndKey(new int[]{mapId, Constants.LIMITS.MAX_ITEMS_PER_LIST});
             return query;
         }
 
-        public void insert(Item item, String countId, String idType) throws CouchbaseLiteException {
+        public void insert(List list, String countId, String idType) throws CouchbaseLiteException {
             int count = increaseCount(countId);
 
             UUID uuid = UUID.randomUUID();
@@ -225,17 +225,17 @@ public class DatabaseCommunicator {
             String id = currentTime + "-" + uuid.toString();
 
             Document document = database.createDocument();
-            Map<String, Object> properties = item.getProperties();
+            Map<String, Object> properties = list.getProperties();
             properties.put("_id", id);
             properties.put("created_at", currentTimeString);
             properties.put(idType, count);
 
-            saveDocument(document.createRevision(), properties, item.getPhotos());
+            saveDocument(document.createRevision(), properties, list.getPhotos());
         }
 
-        public void update(final Item item) throws CouchbaseLiteException {
-            Document doc = database.getDocument(item.documentId);
-            saveDocument(doc.createRevision(), item.getProperties(), item.getPhotos());
+        public void update(final List list) throws CouchbaseLiteException {
+            Document doc = database.getDocument(list.documentId);
+            saveDocument(doc.createRevision(), list.getProperties(), list.getPhotos());
         }
 
 
@@ -274,7 +274,7 @@ public class DatabaseCommunicator {
 
                 QueryEnumerator result = locationsQuery.run();
 
-                //delete all items at this location
+                //delete all lists at this location
                 for (Iterator<QueryRow> it = result; it.hasNext(); ) {
                     QueryRow row = it.next();
                     deleteDocument(row.getSourceDocumentId());
@@ -286,7 +286,7 @@ public class DatabaseCommunicator {
                     removeCount(String.valueOf(mapId));
                 }
 
-            } else if (operation == Operation.DELETE_LOCATION_ITEM){
+            } else if (operation == Operation.DELETE_LOCATION_LIST){
                 if (deleteDocument(documentId)){
                     decreaseCount(String.valueOf(mapId));
                 }
@@ -369,7 +369,7 @@ public class DatabaseCommunicator {
             //create the counts doc if it doesn't exist yet
             Map<String, Object> properties = new HashMap(3);
             properties.put(TYPE, JsonConstants.COUNTS);
-            properties.put(JsonConstants.COUNT_MAP_ITEMS, 0);
+            properties.put(JsonConstants.COUNT_MAP_LISTS, 0);
             properties.put(JsonConstants.COUNT_SCHEMAS, 0);
             Document document = database.getDocument(DOC_COUNTS); //todo make this global.. see if it works..
             try {

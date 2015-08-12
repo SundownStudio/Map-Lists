@@ -13,44 +13,61 @@ import android.view.MenuItem;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.extras.Operation;
-import com.sundown.maplists.fragments.AddItemDialogFragment;
+import com.sundown.maplists.extras.ToolbarManager;
+import com.sundown.maplists.fragments.AddListDialogFragment;
 import com.sundown.maplists.fragments.DeleteDialogFragment;
 import com.sundown.maplists.fragments.EnterAddressDialogFragment;
-import com.sundown.maplists.fragments.LocationItemFragment;
-import com.sundown.maplists.fragments.LocationItemsFragment;
+import com.sundown.maplists.fragments.LocationListFragment;
+import com.sundown.maplists.fragments.LocationListsFragment;
 import com.sundown.maplists.fragments.MapFragment;
 import com.sundown.maplists.fragments.NavigationDrawerFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.Item;
-import com.sundown.maplists.models.LocationItem;
-import com.sundown.maplists.models.MapItem;
+import com.sundown.maplists.models.List;
+import com.sundown.maplists.models.LocationList;
+import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.pojo.ActivityResult;
-import com.sundown.maplists.extras.ToolbarManager;
 import com.sundown.maplists.storage.DatabaseCommunicator;
-import com.sundown.maplists.views.LocationItemsView;
+import com.sundown.maplists.views.LocationListsView;
 
-import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.FRAGMENT_ADD_ITEM;
-import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.FRAGMENT_DELETE;
-import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.FRAGMENT_ENTER_ADDRESS;
-import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.FRAGMENT_LOCATION_ITEM;
-import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.FRAGMENT_LOCATION_ITEMS;
-import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.FRAGMENT_MAP;
-import static com.sundown.maplists.storage.JsonConstants.ITEM_ID;
+import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.*;
+import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
 public class MainActivity extends ActionBarActivity implements
-        DeleteDialogFragment.ConfirmDeleter, AddItemDialogFragment.AddItemListener, LocationItemsView.LocationItemsListener {
+        DeleteDialogFragment.ConfirmDeleter, AddListDialogFragment.AddListListener, LocationListsView.LocationListsListener {
 
 
+    //NOTE: This app follows a MVC pattern:
+    //The Activity behaves as a parent-controller for its respective Fragments... each Fragment is a controller for its own specific views and models.
+    //The Activity also handles all Toolbar clicks (since those usually result in displaying fragments).
+    //If you add more Activities/Fragments please try to keep this pattern intact
 
     private FragmentManager fm;
     private DatabaseCommunicator db;
     private ToolbarManager toolbarManager;
+
+    //FRAGMENTS
+
+    /**
+     * shows the map and handles map marker operations.
+     * Each map marker has a list of fields associated with it (a MapList), some of these fields will display
+     * on the map when the marker is selected. Each map marker denotes a location which can also
+     * have a list of fields associated with it (LocationList), these however do not display on the map. */
     private MapFragment mapFragment;
-    private LocationItemsFragment locationItemsFragment;
-    private AddItemDialogFragment addItemFragment;
-    private LocationItemFragment locationItemFragment;
+
+    /** shows the list of LocationLists associated with a particular location. */
+    private LocationListsFragment locationListsFragment;
+
+    /** An appendable form for adding fields to both MapLists and LocationLists */
+    private AddListDialogFragment addListFragment;
+
+    /** Displays the contents of a single LocationList */
+    private LocationListFragment locationListFragment;
+
+    /** Delete confirmation */
     private DeleteDialogFragment deleteDialogFragment;
+
+    /** Enter an address to place a map marker */
     private EnterAddressDialogFragment enterAddressDialogFragment;
 
 
@@ -60,142 +77,108 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setUpToolBars();
-
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
-        NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.fragment_navigation_drawer);
-        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbarManager.toolbarTop);
+        setUpToolBars();
 
-        if (savedInstanceState == null){ //activity first created
+        if (savedInstanceState == null){ //activity first created, show map fragment as default..
             mapFragment = MapFragment.newInstance(toolbarManager);
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, mapFragment, FRAGMENT_MAP);
             transaction.commit();
 
-        } else { //activity recreated
+        } else { //activity recreated, grab existing retained fragments and reset their listeners
             mapFragment = (MapFragment) fm.findFragmentByTag(FRAGMENT_MAP);
-            if (mapFragment == null){ //todo why? is this the default view? make sure it goes to this then if nothing else is loaded...
+            if (mapFragment == null){
                 mapFragment = MapFragment.newInstance(toolbarManager);
             } else {
                 mapFragment.setToolbarManager(toolbarManager);
             }
-            locationItemsFragment = (LocationItemsFragment) fm.findFragmentByTag(FRAGMENT_LOCATION_ITEMS);
-            if (locationItemsFragment != null){
-                locationItemsFragment.setToolbarManager(toolbarManager);
-                locationItemsFragment.setListener(this);
+
+            locationListsFragment = (LocationListsFragment) fm.findFragmentByTag(FRAGMENT_LOCATION_LISTS);
+            if (locationListsFragment != null){
+                locationListsFragment.setToolbarManager(toolbarManager);
+                locationListsFragment.setListener(this);
             }
-            addItemFragment = (AddItemDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_ITEM);
-            locationItemFragment = (LocationItemFragment) fm.findFragmentByTag(FRAGMENT_LOCATION_ITEM);
-            if (locationItemFragment != null){
-                locationItemFragment.setToolbarManager(toolbarManager);
+
+            locationListFragment = (LocationListFragment) fm.findFragmentByTag(FRAGMENT_LOCATION_LIST);
+            if (locationListFragment != null){
+                locationListFragment.setToolbarManager(toolbarManager);
             }
-            deleteDialogFragment = (DeleteDialogFragment) fm.findFragmentByTag(FRAGMENT_DELETE);
+
             enterAddressDialogFragment = (EnterAddressDialogFragment) fm.findFragmentByTag(FRAGMENT_ENTER_ADDRESS);
             if (enterAddressDialogFragment != null){
                 enterAddressDialogFragment.setListener(mapFragment);
             }
-            //addItemFragment = (AddItemDialogFragment) fm.getFragment(savedInstanceState, FRAGMENT_ADD_ITEM);
-            //locationItemFragment = (LocationItemFragment) fm.getFragment(savedInstanceState, FRAGMENT_LOCATION_ITEM);
 
+            addListFragment = (AddListDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_LIST);
+            if (addListFragment != null){
+                addListFragment.setListener(this);
+            }
+
+            deleteDialogFragment = (DeleteDialogFragment) fm.findFragmentByTag(FRAGMENT_DELETE);
         }
     }
 
 
+    /**
+     * Grab top and bottom toolbar views and add to toolbarManager
+     * also setup Navigation Drawer (third toolbar)
+     */
+    private void setUpToolBars(){
+        Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
+        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 
-    /*@Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (addItemFragment != null) //todo needed anymore? why? shouldn't be..
-            getSupportFragmentManager().putFragment(outState, FRAGMENT_ADD_ITEM, addItemFragment);
-    } */
-
-
-    public void setUpToolBars(){
-
-        Toolbar toolbarTop = (Toolbar) findViewById(R.id.app_bar);
         toolbarTop.setTitle("");
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayShowHomeEnabled(true); //we want the logo so we can click on it and trigger the navigation drawer
-
-        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
-
-
-        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_location_list: {
-                        MapItem mapItem = mapFragment.getSelectedMapItem();
-                        startLocationItemsFragment(mapItem.mapId);
-                        break;
-                    }
-                    case R.id.action_goto_location: {
-                        mapFragment.gotoLocation();
-                        break;
-                    }
-                    case R.id.action_drag_location: {
-                        mapFragment.dragLocation();
-                        break;
-                    }
-                    case R.id.action_delete: {
-                        String confirmText = getResources().getString(R.string.delete_confirm);
-
-                        if (locationItemFragment != null && locationItemFragment.getUserVisibleHint()) {
-                            deleteDialogFragment = DeleteDialogFragment.newInstance(locationItemFragment.model, confirmText);
-
-                        } else if (mapFragment != null && mapFragment.getUserVisibleHint()) {
-                            mapFragment.gotoLocation();
-                            deleteDialogFragment = DeleteDialogFragment.newInstance(mapFragment.getSelectedMapItem(), confirmText);
-
-                        }
-                        if (deleteDialogFragment != null)
-                            deleteDialogFragment.show(fm, FRAGMENT_DELETE);
-                        break;
-                    }
-                    case R.id.action_edit: {
-                        if (locationItemFragment != null && locationItemFragment.getUserVisibleHint()) {
-                            LocationItem model = locationItemFragment.model;
-                            EntryField entryField = (EntryField) model.getField(0);
-                            startAddItemFragment(model, "Edit " + entryField.entry, Operation.UPDATE, locationItemFragment, FRAGMENT_LOCATION_ITEM);
-
-
-                        } else if (mapFragment != null && mapFragment.getUserVisibleHint()) {
-                            MapItem mapItem = mapFragment.getSelectedMapItem();
-                            EntryField entryField = (EntryField) mapItem.getField(0);
-                            startAddItemFragment(mapItem, "Edit " + entryField.entry, Operation.UPDATE, mapFragment, FRAGMENT_MAP);
-                        }
-                        break;
-                    }
-                }
-                return true;
-            }
-        });
-        // Inflate a menu to be displayed in the toolbar
-        toolbarBottom.inflateMenu(R.menu.menu_bottom);
-
         toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom);
+
+        NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.fragment_navigation_drawer);
+        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbarManager.toolbarTop);
     }
 
-
-
-
-
+    /**
+     * Inflates top/bottom toolbars and set listeners
+     *
+     * Called at different times depending on OS version, usually sometime during onCreate
+     */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+    public boolean onCreateOptionsMenu(Menu topMenu) {
+        Menu bottomMenu = toolbarManager.toolbarBottom.getMenu();
+
+        topMenu.clear();
+        bottomMenu.clear();
+
+        getMenuInflater().inflate(R.menu.menu_top, topMenu);
+        getMenuInflater().inflate(R.menu.menu_bottom, bottomMenu);
+
+
+        toolbarManager.toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return topToolbarPressed(item);
+            }
+        });
+
+        toolbarManager.toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return bottomToolbarPressed(item);
+            }
+        });
 
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        //noinspection SimplifiableIfStatement
+    /**
+     * Handle top toolbar presses, switching fragments as needed.
+     * Note that the intended behavior for each menu button
+     * can depend on what fragment is currently visible
+     *
+     * @param item selected MenuItem
+     */
+    private boolean topToolbarPressed(MenuItem item){
         switch (item.getItemId()){
             case R.id.action_settings:
                 return true;
@@ -207,14 +190,18 @@ public class MainActivity extends ActionBarActivity implements
                 break;
             }
 
-            case R.id.action_add:
-                if (locationItemsFragment != null && locationItemsFragment.getUserVisibleHint()) {
-                    startAddItemFragment(new LocationItem(locationItemsFragment.mapId), "Add New Item", Operation.INSERT, locationItemsFragment, FRAGMENT_LOCATION_ITEMS);
+            case R.id.action_add: {
 
+                //If we are viewing a specific location, add a new list to that location
+                if (locationListsFragment != null && locationListsFragment.getUserVisibleHint()) {
+                    startAddListFragment(new LocationList(locationListsFragment.mapId), getString(R.string.add_new_item), Operation.INSERT, locationListsFragment, FRAGMENT_LOCATION_LISTS);
+
+                    //If we are viewing the map, add a new location
                 } else if (mapFragment != null && mapFragment.getUserVisibleHint()) {
                     mapFragment.createNewLocation(null);
                 }
                 break;
+            }
 
             case R.id.action_navigate_prior:
                 mapFragment.navigateNext(false);
@@ -233,29 +220,96 @@ public class MainActivity extends ActionBarActivity implements
                 break;
 
         }
-        return super.onOptionsItemSelected(item);
+        return true;
+    }
+
+    /**
+     * Handle bottom toolbar presses, switching fragments as needed.
+     * Note that the intended behavior for each menu button
+     * can depend on what fragment is currently visible
+     *
+     * @param item selected MenuItem
+     */
+    private boolean bottomToolbarPressed(MenuItem item){
+        switch (item.getItemId()) {
+            case R.id.action_location_list: {
+                MapList list = mapFragment.getSelectedMapList();
+                startLocationListsFragment(list.mapId);
+                break;
+            }
+            case R.id.action_goto_location: {
+                mapFragment.gotoLocation();
+                break;
+            }
+            case R.id.action_drag_location: {
+                mapFragment.dragLocation();
+                break;
+            }
+            case R.id.action_delete: {
+                String confirmText = getResources().getString(R.string.delete_confirm);
+
+                if (locationListFragment != null && locationListFragment.getUserVisibleHint()) {
+                    deleteDialogFragment = DeleteDialogFragment.newInstance(locationListFragment.model, confirmText);
+
+                } else if (mapFragment != null && mapFragment.getUserVisibleHint()) {
+                    mapFragment.gotoLocation();
+                    deleteDialogFragment = DeleteDialogFragment.newInstance(mapFragment.getSelectedMapList(), confirmText);
+
+                }
+                if (deleteDialogFragment != null)
+                    deleteDialogFragment.show(fm, FRAGMENT_DELETE);
+                break;
+            }
+            case R.id.action_edit: {
+                if (locationListFragment != null && locationListFragment.getUserVisibleHint()) {
+                    LocationList model = locationListFragment.model;
+                    EntryField entryField = (EntryField) model.getField(0);
+                    startAddListFragment(model, getString(R.string.edit) + entryField.entry, Operation.UPDATE, locationListFragment, FRAGMENT_LOCATION_LIST);
+
+
+                } else if (mapFragment != null && mapFragment.getUserVisibleHint()) {
+                    MapList list = mapFragment.getSelectedMapList();
+                    EntryField entryField = (EntryField) list.getField(0);
+                    startAddListFragment(list, getString(R.string.edit) + entryField.entry, Operation.UPDATE, mapFragment, FRAGMENT_MAP);
+                }
+                break;
+            }
+        }
+        return true;
     }
 
 
+    /**
+     * User has confirmed they wish to delete a list, so delete it
+     *
+     * @param list list to be deleted
+     */
     @Override
-    public void confirmDelete (Item item){
-        if (item instanceof MapItem) {
-            db.delete(item.documentId, item.mapId, Operation.DELETE_LOCATION);
+    public void confirmDelete (List list){
+        if (list instanceof MapList) {
+            db.delete(list.documentId, list.mapId, Operation.DELETE_LOCATION);
 
-        } else if (item instanceof LocationItem){
-            db.delete(item.documentId, item.mapId, Operation.DELETE_LOCATION_ITEM);
+        } else if (list instanceof LocationList){
+            db.delete(list.documentId, list.mapId, Operation.DELETE_LOCATION_LIST);
             fm.popBackStack();
         }
-
     }
 
 
+    /**
+     * User has added a list, so display the correct fragment (depending on list type)
+     * and perform the requested Operation
+     *
+     * @param list list to be added
+     * @param operation DB Operation to be performed
+     */
     @Override
-    public void itemAdded(Item item, Operation operation) { //todo: crash if cancel.. item will be null... gotta know where to go back to...
+    public void listAdded(List list, Operation operation) {
 
-        if (item == null) {
+        if (list == null) { //user cancelled, return to previous fragment
             fm.popBackStack();
-        } else if (item instanceof MapItem) {
+
+        } else if (list instanceof MapList) {//user added map list
 
             boolean fragmentPopped = fm.popBackStackImmediate(FRAGMENT_MAP, fm.POP_BACK_STACK_INCLUSIVE);
             mapFragment = (MapFragment) fm.findFragmentByTag(FRAGMENT_MAP);
@@ -266,34 +320,42 @@ public class MainActivity extends ActionBarActivity implements
                 transaction.commit();
             }
 
-            MapItem mapItem = (MapItem) item;
-            mapItem.list = true;
+            MapList mapList = (MapList) list;
+            mapList.multipleListsEnabled = true;
 
-        } else if (item instanceof LocationItem) {
+        } else if (list instanceof LocationList) {//user added location list
 
-            boolean fragmentPopped = fm.popBackStackImmediate(FRAGMENT_LOCATION_ITEMS, fm.POP_BACK_STACK_INCLUSIVE);
-            locationItemsFragment = (LocationItemsFragment) fm.findFragmentByTag(FRAGMENT_LOCATION_ITEMS);
-            if (!fragmentPopped || fm.findFragmentByTag(FRAGMENT_LOCATION_ITEMS) == null) {
-                locationItemsFragment = LocationItemsFragment.newInstance(item.mapId, this, toolbarManager);
+            boolean fragmentPopped = fm.popBackStackImmediate(FRAGMENT_LOCATION_LISTS, fm.POP_BACK_STACK_INCLUSIVE);
+            locationListsFragment = (LocationListsFragment) fm.findFragmentByTag(FRAGMENT_LOCATION_LISTS);
+            if (!fragmentPopped || fm.findFragmentByTag(FRAGMENT_LOCATION_LISTS) == null) {
+                locationListsFragment = LocationListsFragment.newInstance(list.mapId, this, toolbarManager);
                 FragmentTransaction transaction = fm.beginTransaction();
-                transaction.replace(R.id.fragment_container, locationItemsFragment, FRAGMENT_LOCATION_ITEMS);
+                transaction.replace(R.id.fragment_container, locationListsFragment, FRAGMENT_LOCATION_LISTS);
                 transaction.commit();
             }
-
         }
 
         if (operation == Operation.INSERT){
-            db.insert(item, String.valueOf(item.mapId), ITEM_ID);
+            db.insert(list, String.valueOf(list.mapId), LIST_ID);
         } else if (operation == Operation.UPDATE){
-            db.update(item);
+            db.update(list);
         }
 
-        addItemFragment = null;
+        addListFragment = null;
     }
 
 
-    public void startAddItemFragment(Item model, String title, Operation operation, Fragment fragmentToRemove, String currentFragmentTag){
-        addItemFragment = AddItemDialogFragment.newInstance(model, title, operation);
+    /**
+     * User has requested to add a list, show the AddListFragment
+     *
+     * @param model the list to be added to
+     * @param title to use for this dialog
+     * @param operation DB Operation to be performed
+     * @param fragmentToRemove fragment to remove from screen
+     * @param currentFragmentTag current fragments tag to be added to backstack
+     */
+    private void startAddListFragment(List model, String title, Operation operation, Fragment fragmentToRemove, String currentFragmentTag){
+        addListFragment = AddListDialogFragment.newInstance(model, title, operation);
 
         FragmentTransaction transaction = fm.beginTransaction();
         if (fragmentToRemove != null){
@@ -301,23 +363,42 @@ public class MainActivity extends ActionBarActivity implements
         }
         transaction.addToBackStack(currentFragmentTag);
         transaction.commit();
-        addItemFragment.show(fm, FRAGMENT_ADD_ITEM);
+        addListFragment.show(fm, FRAGMENT_ADD_LIST);
 
     }
 
-    public void startLocationItemsFragment(int mapId){
-        locationItemsFragment = LocationItemsFragment.newInstance(mapId, this, toolbarManager);
-        switchFragments(locationItemsFragment, FRAGMENT_LOCATION_ITEMS, FRAGMENT_MAP);
+
+    /**
+     * User has requested to view their location lists so show it
+     *
+     * @param locationId the id for this location
+     */
+    private void startLocationListsFragment(int locationId){
+        locationListsFragment = LocationListsFragment.newInstance(locationId, this, toolbarManager);
+        switchFragments(locationListsFragment, FRAGMENT_LOCATION_LISTS, FRAGMENT_MAP);
     }
 
+    /**
+     * User has selected to view a list at their location
+     *
+     * @param list to be shown
+     */
     @Override
-    public void LocationItemSelected(LocationItem item) {
-        locationItemFragment = LocationItemFragment.newInstance(item, toolbarManager);
-        switchFragments(locationItemFragment, FRAGMENT_LOCATION_ITEM, FRAGMENT_LOCATION_ITEMS);
+    public void LocationListSelected(LocationList list) {
+        locationListFragment = LocationListFragment.newInstance(list, toolbarManager);
+        switchFragments(locationListFragment, FRAGMENT_LOCATION_LIST, FRAGMENT_LOCATION_LISTS);
     }
 
 
-    public void switchFragments(Fragment fragment, String fragmentTag, String backStackTag){
+    /**
+     * Switch from the current fragment to a new fragment and add the old
+     * fragment tag to backstack
+     *
+     * @param fragment to be shown
+     * @param fragmentTag the new fragment's tag
+     * @param backStackTag the current fragment's tag to be added to backstack
+     */
+    private void switchFragments(Fragment fragment, String fragmentTag, String backStackTag){
         FragmentTransaction transaction = fm.beginTransaction();
         transaction.replace(R.id.fragment_container, fragment, fragmentTag);
         if (backStackTag != null)
@@ -332,14 +413,11 @@ public class MainActivity extends ActionBarActivity implements
         super.onActivityResult(requestCode, resultCode, data);
 
         try {
-            if (addItemFragment != null){
-                addItemFragment.handleActivityResults(new ActivityResult(requestCode, resultCode, data));
+            if (addListFragment != null){
+                addListFragment.handleActivityResults(new ActivityResult(requestCode, resultCode, data));
             }
 
         } catch (Exception e){Log.e(e);}
 
     }
-
-
-
 }

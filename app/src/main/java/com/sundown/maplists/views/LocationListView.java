@@ -11,12 +11,12 @@ import com.sundown.maplists.R;
 /**
  * Created by Sundown on 7/21/2015.
  */
-public class LocationItemView extends RelativeLayout {
+public class LocationListView extends RelativeLayout {
 
     private LinearLayout container;
 
 
-    public LocationItemView(Context context, AttributeSet attrs) {
+    public LocationListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

@@ -13,7 +13,7 @@ import com.sundown.maplists.logging.Log;
 /**
  * Created by Sundown on 7/15/2015.
  */
-public class AddItemView extends LinearLayout implements View.OnClickListener {
+public class AddListView extends LinearLayout implements View.OnClickListener {
 
 
     public interface AddItemViewListener{
@@ -30,7 +30,7 @@ public class AddItemView extends LinearLayout implements View.OnClickListener {
 
     private Button cancel, enter, add;
 
-    public AddItemView(Context context, AttributeSet attrs) {
+    public AddListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

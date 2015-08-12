@@ -12,16 +12,15 @@ import android.widget.LinearLayout;
 import com.sundown.maplists.R;
 import com.sundown.maplists.extras.Constants;
 import com.sundown.maplists.extras.Operation;
-import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
-import com.sundown.maplists.models.Item;
+import com.sundown.maplists.models.List;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.views.AddFieldView;
-import com.sundown.maplists.views.AddItemView;
+import com.sundown.maplists.views.AddListView;
 import com.sundown.maplists.views.FieldView;
 
 import java.util.HashMap;
@@ -34,57 +33,84 @@ import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.FRAGMENT_SELEC
 /**
  * Created by Sundown on 7/15/2015.
  */
-public class AddItemDialogFragment extends DialogFragment implements AddItemView.AddItemViewListener,
+public class AddListDialogFragment extends DialogFragment implements AddListView.AddItemViewListener,
         AddFieldView.FieldSelector, FieldView.FieldViewListener, PhotoFragment.PhotoFragmentListener{
 
 
-
-    public interface AddItemListener {
-        void itemAdded(Item item, Operation operation);
+    public interface AddListListener {
+        void listAdded(List list, Operation operation);
     }
 
 
     private FragmentManager fm;
+
+    /** Fragment for select a new field to add onto this list */
     private AddFieldDialogFragment addFieldDialogFragment;
+
+    /** Fragment for editing the title of a current field in this list */
     private EditTitleDialogFragment editTitleDialogFragment;
 
-    private AddItemListener listener;
-    private AddItemView view;
+    /** serves as a container for our photo fragments */
     private HashMap<Integer, PhotoFragment> photoFragments = new HashMap<>();
-    private Item model;
-    private LinearLayout layout;
+
+    /** the listener for this fragment */
+    private AddListListener listener;
+    public void setListener(AddListListener listener){ this.listener = listener;}
+
+    /** the view for this fragment */
+    private AddListView view;
+
+    /** our model, can either be a MapList or a LocationList */
+    private List model;
+
+    /** the form of fields used to populate our view */
+    private LinearLayout form;
     private LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
+    /** the title for this dialog */
     private String title;
+
+    /** the operation to be performed once the user has accepted modifications to this list */
     private Operation operation;
+
+    /** the width/height of this dialog fragment */
     private int width, height;
+
+    /** denotes whether view has been shown yet and thus whether screen-dimensions already defined  */
     private static boolean setupCalled;
 
-
-    public static AddItemDialogFragment newInstance(Item model, String title, Operation operation) {
-        AddItemDialogFragment fragment = new AddItemDialogFragment();
+    /**
+     * Always create a new instance this way, leave the empty public constructor
+     *
+     * @param model the current list be displayed as a form
+     * @param title for this dialog
+     * @param operation to be performed upon the DB after user modifies list
+     * */
+    public static AddListDialogFragment newInstance(List model, String title, Operation operation) {
+        AddListDialogFragment fragment = new AddListDialogFragment();
         fragment.model = model;
         fragment.title = title;
         fragment.operation = operation;
         return fragment;
     }
 
-    public AddItemDialogFragment(){}
+    /** NEVER CALL THIS */
+    public AddListDialogFragment(){}
+
+
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
-
-    @Override //so if user rotates in camera/gallery, upon returning to this app THIS method gets called BEFORE the main activity's onResult... however
-    //if user DOESNT rotate in camera/gallery, then this doesn't get called AT ALL..
     public View onCreateView(final LayoutInflater inflater, final ViewGroup viewGroup, Bundle savedInstanceState) {
-        view = (AddItemView) inflater.inflate(R.layout.dialog_add_item, viewGroup);
-        view.setListener(this);
-        listener = (AddItemListener) getActivity();
+
+        //NOTE: if user rotates in camera/gallery, upon returning to our app THIS method gets called BEFORE the main activity's onResult... however
+        //if user DOESNT rotate in camera/gallery, then this doesn't get called AT ALL..
+
+        setRetainInstance(true);
         fm = getChildFragmentManager();
+        listener = (AddListListener) getActivity();
+
+        view = (AddListView) inflater.inflate(R.layout.dialog_add_list, viewGroup);
+        view.setListener(this);
         setupCalled = false;
 
         getDialog().setTitle(title);
@@ -94,7 +120,7 @@ public class AddItemDialogFragment extends DialogFragment implements AddItemView
                 setup();
             }
         });
-        Log.m("AddItemDialogFragment finished onCreateView");
+
         return view;
     }
 
@@ -140,7 +166,11 @@ public class AddItemDialogFragment extends DialogFragment implements AddItemView
         super.dismiss();
     }
 
-    //called by main activity, hand these results off to each photofragment for potential processing
+    /**
+     * Called by main activity, hand these results off to the relevant photo-fragment
+     *
+     * @param result results either from camera or gallery
+     */
     public void handleActivityResults(ActivityResult result){
         PreferenceManager preferenceManager = PreferenceManager.getInstance();
         int callingId = preferenceManager.getInt(PhotoFragment.FRAGMENT_ID);
@@ -155,28 +185,28 @@ public class AddItemDialogFragment extends DialogFragment implements AddItemView
             if (height == 0) {height = (int) (getDialog().getWindow().getDecorView().getHeight() * Constants.SPECS.PROP_HEIGHT);}
             if (width == 0) {width = (int) (getDialog().getWindow().getDecorView().getWidth() * Constants.SPECS.PROP_WIDTH);}
 
-            initLayout();
+            drawForm();
         }
     }
 
 
-    private void initLayout(){
+    private void drawForm(){
 
-        if (layout != null)
-            layout.removeAllViews();
-        layout = new LinearLayout(getActivity());
-        layout.setLayoutParams(layoutParams);
-        layout.setOrientation(LinearLayout.VERTICAL);
+        if (form != null)
+            form.removeAllViews();
+        form = new LinearLayout(getActivity());
+        form.setLayoutParams(layoutParams);
+        form.setOrientation(LinearLayout.VERTICAL);
 
         Integer[] keys = model.getKeys();
 
         for (Integer k: keys){
-            addToLayout(k, model.getField(k));
+            addToForm(k, model.getField(k));
         }
-        view.updateView(layout);
+        view.updateView(form);
     }
 
-    private void addToLayout(int id, Field field){
+    private void addToForm(int id, Field field){
         field.setId(id);
         field.setObserver(addFieldView(field));
         if (field.type == FIELD_PIC) {
@@ -190,7 +220,7 @@ public class AddItemDialogFragment extends DialogFragment implements AddItemView
         fieldView.init(getActivity(), this, field);
         fieldView.setTag(field.id);
 
-        layout.addView(fieldView);
+        form.addView(fieldView);
         return fieldView;
 
     }
@@ -210,7 +240,7 @@ public class AddItemDialogFragment extends DialogFragment implements AddItemView
 
     @Override
     public void cancelPressed(){
-        listener.itemAdded(null, Operation.NOTHING);
+        listener.listAdded(null, Operation.NOTHING);
         dismiss();
     }
 
@@ -222,15 +252,15 @@ public class AddItemDialogFragment extends DialogFragment implements AddItemView
 
     @Override
     public void enterPressed(){
-        listener.itemAdded(refreshModel(), operation);
+        listener.listAdded(refreshModel(), operation);
         dismiss();
     }
 
     @Override
     public void addNewField(Field field) {
         addFieldDialogFragment.dismiss();
-        int id = model.addField(field); //todo put listener on model to addToLayout whenever new entry is added..
-        addToLayout(id, field);
+        int id = model.addField(field);
+        addToForm(id, field);
     }
 
     @Override
@@ -244,9 +274,9 @@ public class AddItemDialogFragment extends DialogFragment implements AddItemView
     @Override
     public void deleteField(int tag) {
         model.removeField(tag); //remove from model
-        FieldView fieldView = (FieldView) layout.findViewWithTag(tag); //and from view
-        int index = layout.indexOfChild(fieldView);
-        layout.removeViewAt(index);
+        FieldView fieldView = (FieldView) form.findViewWithTag(tag); //and from view
+        int index = form.indexOfChild(fieldView);
+        form.removeViewAt(index);
 
     }
 
@@ -254,17 +284,17 @@ public class AddItemDialogFragment extends DialogFragment implements AddItemView
     public void entryTyped(int tag, String entry) {
         EntryField entryField = (EntryField) model.getField(tag);
         entryField.entry = entry;
-        Log.m("Entry arrived: " + entry);
     }
 
 
-    //why? because TextWatcher is expensive if updating model every time char is typed.. and OnFocusChangeListener may not always trigger if
-    //focus doesnt leave before button pressed
-    private Item refreshModel() {
+    //why refresh all at once upon leaving the fragment? why not update it continually along the way?
+    //because TextWatcher is expensive if updating model every time char is typed.. and OnFocusChangeListener may not always trigger if
+    //focus doesnt leave it before button pressed to leave fragment
+    private List refreshModel() {
 
         Integer[] keys = model.getKeys();
         for (Integer k : keys){
-            FieldView fieldView = (FieldView) layout.findViewWithTag(k);
+            FieldView fieldView = (FieldView) form.findViewWithTag(k);
             if (fieldView.getType() != FIELD_PIC) {
                 EntryField entryField = (EntryField) model.getField(k);
                 entryField.entry = fieldView.getEntry();

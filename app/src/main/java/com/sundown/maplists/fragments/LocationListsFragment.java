@@ -12,12 +12,12 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.LocationItem;
-import com.sundown.maplists.models.LocationItems;
+import com.sundown.maplists.models.LocationList;
+import com.sundown.maplists.models.LocationLists;
 import com.sundown.maplists.extras.ContentLoader;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.extras.ToolbarManager;
-import com.sundown.maplists.views.LocationItemsView;
+import com.sundown.maplists.views.LocationListsView;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -30,20 +30,20 @@ import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_NAVIGATION;
 /**
  * Created by Sundown on 4/30/2015.
  */
-public class LocationItemsFragment extends Fragment {
+public class LocationListsFragment extends Fragment {
 
     public int mapId;
-    private LocationItemsView view;
-    private LocationItems model;
+    private LocationListsView view;
+    private LocationLists model;
     private ContentLoader loader;
-    private LocationItemsView.LocationItemsListener listener;
-    public void setListener(LocationItemsView.LocationItemsListener listener){ this.listener = listener;}
+    private LocationListsView.LocationListsListener listener;
+    public void setListener(LocationListsView.LocationListsListener listener){ this.listener = listener;}
     private ToolbarManager toolbarManager;
     public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
 
 
-    public static LocationItemsFragment newInstance(int mapId, LocationItemsView.LocationItemsListener listener, ToolbarManager toolbarManager){
-        LocationItemsFragment fragment = new LocationItemsFragment();
+    public static LocationListsFragment newInstance(int mapId, LocationListsView.LocationListsListener listener, ToolbarManager toolbarManager){
+        LocationListsFragment fragment = new LocationListsFragment();
         fragment.mapId = mapId;
         fragment.listener = listener;
         fragment.toolbarManager = toolbarManager;
@@ -53,13 +53,13 @@ public class LocationItemsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new LocationItems();
+        model = new LocationLists();
         setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = (LocationItemsView) inflater.inflate(R.layout.fragment_location, container, false);
+        view = (LocationListsView) inflater.inflate(R.layout.fragment_location, container, false);
         return view;
     }
 
@@ -116,7 +116,7 @@ public class LocationItemsFragment extends Fragment {
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
 
-                model.addItem(new LocationItem(mapId).setProperties(properties));
+                model.addItem(new LocationList(mapId).setProperties(properties));
             }
 
             drawModel();

@@ -9,10 +9,10 @@ import com.sundown.maplists.logging.Log;
 /**
  * Created by Sundown on 5/20/2015.
  */
-public class MapLists extends Application {
+public class MapListsApp extends Application {
 
 
-    private static MapLists instance;
+    private static MapListsApp instance;
 
 
     @Override

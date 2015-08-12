@@ -19,7 +19,7 @@
         android:required="true"/>
 
     <application
-        android:name="com.sundown.maplists.MapLists"
+        android:name=".MapListsApp"
         android:allowBackup="true"
         android:theme="@style/AppTheme" >
         <meta-data

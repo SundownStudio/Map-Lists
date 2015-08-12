@@ -3,7 +3,7 @@ package com.sundown.maplists.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.sundown.maplists.MapLists;
+import com.sundown.maplists.MapListsApp;
 
 /**
  * Created by Sundown on 4/7/2015.
@@ -25,7 +25,7 @@ public final class PreferenceManager {
 
     public static synchronized PreferenceManager getInstance() {
         if (instance == null) {
-            instance = new PreferenceManager(MapLists.getContext());
+            instance = new PreferenceManager(MapListsApp.getContext());
         }
         return instance;
     }

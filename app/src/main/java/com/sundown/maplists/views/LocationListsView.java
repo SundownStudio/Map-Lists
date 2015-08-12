@@ -18,7 +18,7 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.models.LocationItem;
+import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 
 import java.util.ArrayList;
@@ -32,19 +32,19 @@ import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_RATING;
 /**
  * Created by Sundown on 5/21/2015.
  */
-public class LocationItemsView extends RelativeLayout {
+public class LocationListsView extends RelativeLayout {
 
-    public interface LocationItemsListener{
-        void LocationItemSelected(LocationItem item);
+    public interface LocationListsListener{
+        void LocationListSelected(LocationList list);
     }
 
     private RecyclerView recyclerView;
     private TextView emptyListText;
     private AdapterLocationItems adapter;
-    private LocationItemsListener listener;
+    private LocationListsListener listener;
 
 
-    public LocationItemsView(Context context, AttributeSet attrs) {
+    public LocationListsView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -60,7 +60,7 @@ public class LocationItemsView extends RelativeLayout {
 
     }
 
-    public void setListAndListener(List<LocationItem> items, LocationItemsListener listener){
+    public void setListAndListener(List<LocationList> items, LocationListsListener listener){
         if (items.size() > 0)
             emptyListText.setVisibility(View.GONE);
         adapter.setList(items);
@@ -79,7 +79,7 @@ public class LocationItemsView extends RelativeLayout {
 
         private LayoutInflater inflater;
         private Context context;
-        private List<LocationItem> locationItems = Collections.emptyList();
+        private List<LocationList> locationItems = Collections.emptyList();
 
         private DatabaseCommunicator db;
 
@@ -93,22 +93,22 @@ public class LocationItemsView extends RelativeLayout {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             switch (viewType){
                 case TYPE_ONE_IMAGE:
-                    return new ViewHolder(inflater.inflate(R.layout.row_item_one_image, parent, false), viewType);
+                    return new ViewHolder(inflater.inflate(R.layout.row_list_one_image, parent, false), viewType);
 
                 case TYPE_TWO_IMAGE:
-                    return new ViewHolder(inflater.inflate(R.layout.row_item_two_image, parent, false), viewType);
+                    return new ViewHolder(inflater.inflate(R.layout.row_list_two_image, parent, false), viewType);
 
                 case TYPE_THREE_IMAGE:
-                    return new ViewHolder(inflater.inflate(R.layout.row_item_three_image, parent, false), viewType);
+                    return new ViewHolder(inflater.inflate(R.layout.row_list_three_image, parent, false), viewType);
 
                 default:
-                    return new ViewHolder(inflater.inflate(R.layout.row_item_no_image, parent, false), viewType);
+                    return new ViewHolder(inflater.inflate(R.layout.row_list_no_image, parent, false), viewType);
             }
 
         }
 
 
-        private void fillTextViews(ViewHolder holder, LocationItem locationItem){
+        private void fillTextViews(ViewHolder holder, LocationList locationItem){
             List<Field> list = new ArrayList<>(locationItem.getValues());
             int counter = 0;
             String title;
@@ -152,7 +152,7 @@ public class LocationItemsView extends RelativeLayout {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            LocationItem locationItem = locationItems.get(position);
+            LocationList locationItem = locationItems.get(position);
 
             fillTextViews(holder, locationItem);
 
@@ -184,7 +184,7 @@ public class LocationItemsView extends RelativeLayout {
 
         @Override
         public int getItemViewType(int position) {
-            LocationItem location = locationItems.get(position);
+            LocationList location = locationItems.get(position);
             ArrayList<PhotoField> photos = location.getPhotos(); //todo this may be slow.. maybe we should keep them in a list so dont need to do this each time..
 
             if (photos != null){
@@ -200,7 +200,7 @@ public class LocationItemsView extends RelativeLayout {
             return TYPE_NO_IMAGE;
         }
 
-        public void setList(List<LocationItem> locationItems) {
+        public void setList(List<LocationList> locationItems) {
             this.locationItems = locationItems;
             notifyItemRangeChanged(0, locationItems.size());
         }
@@ -239,7 +239,7 @@ public class LocationItemsView extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 Log.Toast(context, "getPosition: " + getPosition(), Log.TOAST_SHORT);
-                listener.LocationItemSelected(locationItems.get(getPosition()));
+                listener.LocationListSelected(locationItems.get(getPosition()));
             }
         }
 

@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.Item;
+import com.sundown.maplists.models.List;
 import com.sundown.maplists.views.DeleteView;
 
 /**
@@ -20,22 +20,22 @@ import com.sundown.maplists.views.DeleteView;
 public class DeleteDialogFragment extends DialogFragment {
 
     public interface ConfirmDeleter {
-        void confirmDelete(Item item);
+        void confirmDelete(List list);
     }
 
     private final static String TEXT = "text";
     private ConfirmDeleter confirmDeleter;
-    private Item item;
+    private List list;
 
 
-    public static DeleteDialogFragment newInstance(Item item, String confirmText) {
+    public static DeleteDialogFragment newInstance(List list, String confirmText) {
         DeleteDialogFragment d = new DeleteDialogFragment();
-        EntryField entryField = (EntryField) item.getField(0);
+        EntryField entryField = (EntryField) list.getField(0);
 
         Bundle args = new Bundle();
         args.putString(TEXT, entryField.entry + " " + confirmText);
         d.setArguments(args);
-        d.item = item;
+        d.list = list;
         return d;
     }
 
@@ -66,7 +66,7 @@ public class DeleteDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                confirmDeleter.confirmDelete(item);
+                confirmDeleter.confirmDelete(list);
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

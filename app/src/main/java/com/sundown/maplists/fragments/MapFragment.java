@@ -36,7 +36,7 @@ import com.sundown.maplists.extras.ContentLoader;
 import com.sundown.maplists.extras.ToolbarManager;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Locations;
-import com.sundown.maplists.models.MapItem;
+import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.network.FetchAddressIntentService;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
@@ -54,7 +54,7 @@ import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_ZOOMING;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_COMPONENTS;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_MOVE;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_NAVIGATION;
-    /* NOTE: selectedLatLng & savedLatLng = why not just use one since neither can coexist?
+    /* NOTE: oldLatLng & savedLatLng = why not just use one since neither can coexist?
     Answer: Better readability.. but how much extra space?
     This is empty pointer, is 4 bytes on 32-bit systems or 8 bytes on 64-bit systems. However, you're not consuming any space
     for the class that the reference points to until you actually allocate an instance of that class to point the reference at.
@@ -206,11 +206,11 @@ public class MapFragment extends Fragment implements
         if (latLng == null) latLng = truncateLatLng(view.getCameraPosition());
 
 
-        if (model.getMapItem(latLng) == null){
+        if (model.getMapList(latLng) == null){
             savedLatLng = latLng;
-            MapItem item = new MapItem();
-            item.latLng = latLng;
-            db.insert(item, JsonConstants.COUNT_MAP_ITEMS, JsonConstants.MAP_ID);
+            MapList list = new MapList();
+            list.latLng = latLng;
+            db.insert(list, JsonConstants.COUNT_MAP_LISTS, JsonConstants.MAP_ID);
 
 
 
@@ -258,7 +258,7 @@ public class MapFragment extends Fragment implements
         marker.setDraggable(false);
         LatLng newLatLng = truncateLatLng(marker.getPosition());
 
-        if (model.getMapItem(newLatLng) != null){
+        if (model.getMapList(newLatLng) != null){
             view.animateToLocation(oldLatLng);
             Log.Toast(getActivity(), "You already have a marker at this location", Log.TOAST_LONG);
             marker.setPosition(oldLatLng);
@@ -268,16 +268,16 @@ public class MapFragment extends Fragment implements
             marker.setPosition(newLatLng);
             model.swap(oldLatLng, newLatLng);
             savedLatLng = newLatLng;
-            MapItem item = model.getMapItem(newLatLng);
-            db.update(item);
+            MapList list = model.getMapList(newLatLng);
+            db.update(list);
 
         }
     }
 
 
-    public MapItem getSelectedMapItem(){
+    public MapList getSelectedMapList(){
         if (selectedMarker != null)
-           return model.getMapItem(selectedMarker.getPosition());
+           return model.getMapList(selectedMarker.getPosition());
         return null;
     }
 
@@ -299,12 +299,12 @@ public class MapFragment extends Fragment implements
 
         toolbarManager.drawMenu(new MenuOption(EDIT_DELETE, true),
                 new MenuOption(MARKER_MOVE, true),
-                new MenuOption(MARKER_COMPONENTS, getSelectedMapItem().list));
+                new MenuOption(MARKER_COMPONENTS, getSelectedMapList().multipleListsEnabled));
 
         Log.m("MapFragment marker selected: " + marker.getId());
     }
 
-    private void releaseMarker(){
+    private void releaseMarker() {
         Log.m("MapFragment No marker selected");
         selectedMarker = null;
         toolbarManager.drawMenu(new MenuOption(EDIT_DELETE, false),
@@ -493,24 +493,28 @@ public class MapFragment extends Fragment implements
         @Override
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
-            if (resultCode == Constants.GEOCODE.SUCCESS_RESULT){
-                int operation = Integer.parseInt(resultData.getString(Constants.GEOCODE.GEO_OPERATION));
+            try {
+                if (resultCode == Constants.GEOCODE.SUCCESS_RESULT) {
+                    int operation = Integer.parseInt(resultData.getString(Constants.GEOCODE.GEO_OPERATION));
 
-                if (operation == Constants.GEOCODE.FROM_ADDRESS){
-                    double lat = resultData.getDouble(Constants.GEOCODE.MAP_LATITUDE);
-                    double lon = resultData.getDouble(Constants.GEOCODE.MAP_LONGITUDE);
-                    createNewLocation(new LatLng(lat, lon));
+                    if (operation == Constants.GEOCODE.FROM_ADDRESS) {
+                        double lat = resultData.getDouble(Constants.GEOCODE.MAP_LATITUDE);
+                        double lon = resultData.getDouble(Constants.GEOCODE.MAP_LONGITUDE);
+                        createNewLocation(new LatLng(lat, lon));
 
-                } else if (operation == Constants.GEOCODE.FROM_LATLNG){
-                    String address = resultData.getString(Constants.GEOCODE.RESULT_DATA_KEY);
-                    Log.m("MapFragment", address);
-                    showToast(getActivity().getApplicationContext(), address);
+                    } else if (operation == Constants.GEOCODE.FROM_LATLNG) {
+                        String address = resultData.getString(Constants.GEOCODE.RESULT_DATA_KEY);
+                        Log.m("MapFragment", address);
+                        showToast(getActivity().getApplicationContext(), address);
+                    }
+
+                } else if (resultCode == Constants.GEOCODE.FAILURE_RESULT) {
+                    String errorMessage = resultData.getString(Constants.GEOCODE.MAP_ERROR);
+                    if (errorMessage == null) errorMessage = "Sorry, an unknown error has occurred";
+                    showToast(getActivity().getApplicationContext(), errorMessage);
                 }
-
-            } else if (resultCode == Constants.GEOCODE.FAILURE_RESULT){
-                String errorMessage = resultData.getString(Constants.GEOCODE.MAP_ERROR);
-                if (errorMessage == null) errorMessage = "Sorry, an unknown error has occurred";
-                showToast(getActivity().getApplicationContext(), errorMessage);
+            } catch (Exception e){
+                Log.e(e);
             }
         }
     }
@@ -544,10 +548,9 @@ public class MapFragment extends Fragment implements
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
 
-                MapItem mapItem = new MapItem().setProperties(properties);
-                //if (model.getMapItem(mapItem.latLng) == null) { //todo: make sure we arent inserting dupes into DB..
-                    model.storeMapItem(mapItem.latLng, mapItem);
-                //}
+                MapList mapList = new MapList().setProperties(properties);
+                model.storeMapList(mapList.latLng, mapList);
+
             }
 
             drawModel();
@@ -562,7 +565,7 @@ public class MapFragment extends Fragment implements
                     view.cleanup();
                     releaseMarker();
                     Marker marker;
-                    TreeMap<LatLng, MapItem> locations = model.getLocations();
+                    TreeMap<LatLng, MapList> locations = model.getLocations();
                     Iterator it = locations.entrySet().iterator();
 
                     while (it.hasNext()) {
@@ -580,7 +583,7 @@ public class MapFragment extends Fragment implements
 
                     toolbarManager.drawMenu(new MenuOption(MAP_ZOOMING, true),
                             new MenuOption(MAP_COMPONENTS, true),
-                            new MenuOption(MARKER_NAVIGATION, (model.numMapItems() > 1) ? true : false));
+                            new MenuOption(MARKER_NAVIGATION, (model.numLocations() > 1) ? true : false));
                 }
             });
 

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.sundown.maplists.storage.JsonConstants.DOCUMENT_ID;
@@ -19,13 +18,13 @@ import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
 /**
  * Created by Sundown on 7/14/2015.
  */
-public abstract class Item implements PropertiesHandler {
+public abstract class List implements PropertiesHandler {
 
     public String documentId;
     public int mapId;
     private Map<Integer, Field> fields;
 
-    public Item(int mapId){
+    public List(int mapId){
         this.mapId = mapId;
         fields = new HashMap<>();
     }
@@ -76,7 +75,7 @@ public abstract class Item implements PropertiesHandler {
         Map<String, Object> properties = new HashMap();
         properties.put(MAP_ID, mapId);
 
-        List<Map<String, Object>> list = new ArrayList();
+        java.util.List list = new ArrayList();
         Object[] keys = getKeys();
 
         int num = keys.length;
@@ -89,18 +88,18 @@ public abstract class Item implements PropertiesHandler {
     }
 
     @Override
-    public Item setProperties(Map properties) {
+    public List setProperties(Map properties) {
         fields.clear();
 
         documentId = String.valueOf(properties.get(DOCUMENT_ID));
         mapId = (Integer) properties.get(MAP_ID);
 
-        List<Map<String, Object>> list = (List<Map<String, Object>>) properties.get(FIELD_ENTRIES);
+        java.util.List entries = (java.util.List) properties.get(FIELD_ENTRIES);
 
-        if (list != null) {
-            int size = list.size();
+        if (entries != null) {
+            int size = entries.size();
             for (int i = 0; i < size; ++i) {
-                Map<String, Object> props = list.get(i);
+                Map<String, Object> props = (Map<String, Object>) entries.get(i);
                 int type = (Integer) props.get(FIELD_TYPE);
                 boolean permanent = Boolean.parseBoolean(String.valueOf(properties.get(FIELD_PERMANENT)));
 
