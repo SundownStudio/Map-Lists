@@ -18,7 +18,8 @@ dependencies {
 
 ```
 
-## Notes
+## Notes  
+**8/12:** I've been developing this on my own so comments are kinda sparse, so I will be refactoring/Java-Docing over the next few day(s).  
 This project is currently in development so updates will be forthcoming. 
 
 ## Contributions
