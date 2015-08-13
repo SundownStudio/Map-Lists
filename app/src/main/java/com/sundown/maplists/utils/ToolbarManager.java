@@ -1,4 +1,4 @@
-package com.sundown.maplists.extras;
+package com.sundown.maplists.utils;
 
 import android.support.v7.widget.Toolbar;
 

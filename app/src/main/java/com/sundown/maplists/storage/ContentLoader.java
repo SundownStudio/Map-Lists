@@ -1,8 +1,7 @@
-package com.sundown.maplists.extras;
+package com.sundown.maplists.storage;
 
 import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
-import com.sundown.maplists.storage.DatabaseCommunicator;
 
 /**
  * Created by Sundown on 6/24/2015.
@@ -22,7 +21,7 @@ public abstract class ContentLoader {
     }
 
     public abstract ContentLoader start();
-    public abstract void displayItems(QueryEnumerator result);
+    public abstract void updateModel(QueryEnumerator result);
     public abstract void drawModel();
 
 

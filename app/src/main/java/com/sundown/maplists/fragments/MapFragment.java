@@ -32,8 +32,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.sundown.maplists.R;
 import com.sundown.maplists.extras.Constants;
-import com.sundown.maplists.extras.ContentLoader;
-import com.sundown.maplists.extras.ToolbarManager;
+import com.sundown.maplists.storage.ContentLoader;
+import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.MapList;
@@ -532,7 +532,7 @@ public class MapFragment extends Fragment implements
                     @Override
                     public void changed(LiveQuery.ChangeEvent event) {
                         if (event.getSource().equals(liveQuery)) {
-                            displayItems(event.getRows());
+                            updateModel(event.getRows());
                         }
                     }
                 });
@@ -542,7 +542,7 @@ public class MapFragment extends Fragment implements
         }
 
         @Override
-        public void displayItems(QueryEnumerator result) {
+        public void updateModel(QueryEnumerator result) {
             model.clear();
             for (Iterator<QueryRow> it = result; it.hasNext(); ) {
                 QueryRow row = it.next();

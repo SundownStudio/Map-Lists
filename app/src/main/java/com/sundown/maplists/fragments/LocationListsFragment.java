@@ -14,9 +14,9 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.LocationLists;
-import com.sundown.maplists.extras.ContentLoader;
+import com.sundown.maplists.storage.ContentLoader;
 import com.sundown.maplists.pojo.MenuOption;
-import com.sundown.maplists.extras.ToolbarManager;
+import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.LocationListsView;
 
 import java.util.Iterator;
@@ -99,7 +99,7 @@ public class LocationListsFragment extends Fragment {
                     @Override
                     public void changed(LiveQuery.ChangeEvent event) {
                         if (event.getSource().equals(liveQuery)) {
-                            displayItems(event.getRows());
+                            updateModel(event.getRows());
                         }
                     }
                 });
@@ -109,7 +109,7 @@ public class LocationListsFragment extends Fragment {
         }
 
         @Override
-        public void displayItems(QueryEnumerator result) {
+        public void updateModel(QueryEnumerator result) {
             //todo: ultimately this should store into a model where we keep track of what changes, that way when displaying list we can update the index only..
             model.clear();
             for (Iterator<QueryRow> it = result; it.hasNext(); ) {

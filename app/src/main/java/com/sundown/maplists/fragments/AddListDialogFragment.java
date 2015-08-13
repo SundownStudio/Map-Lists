@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.extras.Constants;
-import com.sundown.maplists.extras.Operation;
+import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.List;

@@ -12,8 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.extras.Operation;
-import com.sundown.maplists.extras.ToolbarManager;
+import com.sundown.maplists.storage.Operation;
+import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.fragments.AddListDialogFragment;
 import com.sundown.maplists.fragments.DeleteDialogFragment;
 import com.sundown.maplists.fragments.EnterAddressDialogFragment;

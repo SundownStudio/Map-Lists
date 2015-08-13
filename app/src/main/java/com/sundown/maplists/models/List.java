@@ -57,9 +57,9 @@ public abstract class List implements PropertiesHandler {
 
     public ArrayList<PhotoField> getPhotos(){
         ArrayList<PhotoField> photoFields = new ArrayList<>();
-        Object[] keys = getKeys();
+        Integer[] keys = getKeys();
 
-        for (Object key: keys){
+        for (Integer key: keys){
             Field field = fields.get(key);
             if (field.type == Constants.FIELDS.FIELD_PIC){
                 photoFields.add((PhotoField) field);

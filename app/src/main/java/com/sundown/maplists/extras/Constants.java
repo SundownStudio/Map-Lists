@@ -7,15 +7,11 @@ public interface Constants {
 
 
 
-
-    class LIMITS {
-        public static final int MAX_ITEMS_PER_LIST = 9999;
-    }
-
     class SPECS {
         public static final double PROP_HEIGHT = .41;
         public static final double PROP_WIDTH = .85;
         public static final float DEFAULT_ZOOM = 2.0f;
+        public static final int MAX_ITEMS_PER_LIST = 9999;
     }
 
     class FRAGMENT_TAGS {

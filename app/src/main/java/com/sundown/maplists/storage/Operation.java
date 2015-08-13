@@ -1,4 +1,4 @@
-package com.sundown.maplists.extras;
+package com.sundown.maplists.storage;
 
 /**
  * Created by Sundown on 7/15/2015.

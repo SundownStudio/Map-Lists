@@ -16,7 +16,7 @@ import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.pojo.MenuOption;
-import com.sundown.maplists.extras.ToolbarManager;
+import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.LocationListView;
 import com.sundown.maplists.extras.Constants;
 
