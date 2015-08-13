@@ -24,7 +24,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -32,17 +31,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.sundown.maplists.R;
 import com.sundown.maplists.extras.Constants;
-import com.sundown.maplists.storage.ContentLoader;
-import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.network.FetchAddressIntentService;
 import com.sundown.maplists.pojo.MenuOption;
+import com.sundown.maplists.storage.ContentLoader;
 import com.sundown.maplists.storage.DatabaseCommunicator;
-import com.sundown.maplists.utils.PreferenceManager;
-import com.sundown.maplists.views.MapView;
 import com.sundown.maplists.storage.JsonConstants;
+import com.sundown.maplists.utils.PreferenceManager;
+import com.sundown.maplists.utils.ToolbarManager;
+import com.sundown.maplists.views.MapView;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -76,11 +75,10 @@ public class MapFragment extends Fragment implements
 
 
 
-
+    /** Constants */
     private static final String LAT ="LAT";
     private static final String LON ="LON";
     private static final String ZOOM_LEVEL = "ZOOM";
-
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     private ToolbarManager toolbarManager;
@@ -97,8 +95,8 @@ public class MapFragment extends Fragment implements
     private static Toast toast = null;
 
 
-    public Marker selectedMarker;
-    public LatLng oldLatLng;
+    public Marker selectedMarker; //the selected marker with infowindow open
+    public LatLng oldLatLng;    //latLng of marker prior to drag
     public LatLng savedLatLng; //latLng of selectedMarker from bundle on rotation so we can reset selectedMarker on redraw
 
     public static MapFragment newInstance(ToolbarManager toolbarManager){
@@ -108,21 +106,17 @@ public class MapFragment extends Fragment implements
 
     }
 
-    ////LIFECYCLE METHODS ////
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.m("MapFragment onCreate");
         model = Locations.getInstance();
         mResultReceiver = new AddressResultReceiver(new Handler());
         db = DatabaseCommunicator.getInstance();
-        //setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.m("MapFragment OnCreateView");
         prefs = PreferenceManager.getInstance();
 
         view = (MapView) inflater.inflate(R.layout.fragment_map, container, false);
@@ -134,9 +128,7 @@ public class MapFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        Log.m("MapFragment OnResume");
         setUserVisibleHint(true);
-        loadData();
         model.clear();
         initMap();
         try {
@@ -151,7 +143,7 @@ public class MapFragment extends Fragment implements
         super.onPause();
         Log.m("MapFragment OnPause");
         setUserVisibleHint(false);
-        saveData();
+        savePrefs();
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
@@ -166,16 +158,18 @@ public class MapFragment extends Fragment implements
 
 
 
-    public void saveData(){
+    public void savePrefs(){
+        LatLng latLng = mapFragment.getMap().getCameraPosition().target;
         if (selectedMarker != null){
-            LatLng latLng = selectedMarker.getPosition();
-            prefs.putDouble(LAT, latLng.latitude);
-            prefs.putDouble(LON, latLng.longitude);
+            latLng = selectedMarker.getPosition();
         }
+        prefs.putDouble(LAT, latLng.latitude);
+        prefs.putDouble(LON, latLng.longitude);
+        prefs.putFloat(ZOOM_LEVEL, view.getZoomLevel());
         prefs.apply();
     }
 
-    public void loadData(){
+    public void loadPrefs(){
         savedLatLng = null;
         if (prefs.containsKey(LAT) && prefs.containsKey(LON)){
             try {
@@ -184,8 +178,9 @@ public class MapFragment extends Fragment implements
             } catch (Exception e){ Log.e(e); }
             prefs.remove(LAT);
             prefs.remove(LON);
+            prefs.apply();
         }
-        prefs.apply();
+        view.setZoomLevel(prefs.getFloat(ZOOM_LEVEL, Constants.SPECS.DEFAULT_ZOOM));
     }
 
     ////TOOLBAR INTERACTION METHODS ////
@@ -232,9 +227,7 @@ public class MapFragment extends Fragment implements
     }
 
     public void zoom(boolean in){
-        float zoomLevel = view.zoom(in);
-        prefs.putFloat(ZOOM_LEVEL, zoomLevel);
-        prefs.apply();
+        view.zoom(in);
     }
 
     ////MAP MANIPULATION METHODS ////
@@ -338,11 +331,8 @@ public class MapFragment extends Fragment implements
     @Override //called when getMapAsync is done (iirc)
     public void onMapReady(GoogleMap googleMap) {
         Log.m("MapFragment map is synced and ready to be used!");
-        float zoom = prefs.getFloat(ZOOM_LEVEL, Constants.SPECS.DEFAULT_ZOOM);
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(zoom));
-
         view.setMap(googleMap);
-
+        loadPrefs();
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -573,12 +563,17 @@ public class MapFragment extends Fragment implements
                         LatLng latLng = (LatLng) pair.getKey();
 
                         marker = addMarker(latLng);
-                        if (savedLatLng != null && savedLatLng.equals(marker.getPosition())) {
-                            view.moveToLocation(latLng);
-                            selectMarker(marker);
-                            savedLatLng = null;
-                            Log.m("Selected Marker Restored from Saved Coords");
+                        if (savedLatLng != null) {
 
+                            if (savedLatLng.equals(marker.getPosition())) {
+                                view.moveToLocation(latLng);
+                                selectMarker(marker);
+                                savedLatLng = null;
+                                Log.m("Selected Marker Restored from Saved Coords");
+
+                            } else {
+                                view.moveToLocation(savedLatLng);
+                            }
                         }
                     }
 

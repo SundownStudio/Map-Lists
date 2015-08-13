@@ -73,6 +73,14 @@ public class MapView extends FrameLayout {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
+    public float getZoomLevel(){
+        return mMap.getCameraPosition().zoom;
+    }
+
+    public void setZoomLevel(float zoom){
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(zoom));
+    }
+
     public float zoom(boolean in){
         if (in){
             mMap.animateCamera(CameraUpdateFactory.zoomTo(mMap.getCameraPosition().zoom + 0.5f));
