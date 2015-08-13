@@ -10,14 +10,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.extras.Constants;
-import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.List;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.storage.DatabaseCommunicator;
+import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.views.AddFieldView;
 import com.sundown.maplists.views.AddListView;
@@ -26,9 +25,7 @@ import com.sundown.maplists.views.FieldView;
 import java.util.HashMap;
 import java.util.Set;
 
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_PIC;
-import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.FRAGMENT_EDIT_FIELD_TITLE;
-import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.FRAGMENT_SELECT_FIELD;
+import static com.sundown.maplists.models.FieldType.FIELD_PIC;
 
 /**
  * Created by Sundown on 7/15/2015.
@@ -41,6 +38,10 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
         void listAdded(List list, Operation operation);
     }
 
+    public static final String FRAGMENT_SELECT_FIELD = "SELECT_FIELD";
+    public static final String FRAGMENT_EDIT_FIELD_TITLE = "EDIT_TITLE";
+    public static final double PROP_HEIGHT = .41;
+    public static final double PROP_WIDTH = .85;
 
     private FragmentManager fm;
 
@@ -182,8 +183,8 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
         if (!setupCalled) {
             setupCalled = true;
 
-            if (height == 0) {height = (int) (getDialog().getWindow().getDecorView().getHeight() * Constants.SPECS.PROP_HEIGHT);}
-            if (width == 0) {width = (int) (getDialog().getWindow().getDecorView().getWidth() * Constants.SPECS.PROP_WIDTH);}
+            if (height == 0) {height = (int) (getDialog().getWindow().getDecorView().getHeight() * PROP_HEIGHT);}
+            if (width == 0) {width = (int) (getDialog().getWindow().getDecorView().getWidth() * PROP_WIDTH);}
 
             drawForm();
         }

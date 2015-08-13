@@ -12,13 +12,13 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.EntryField;
+import com.sundown.maplists.models.Field;
+import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.LocationListView;
-import com.sundown.maplists.extras.Constants;
 
 /**
  * Created by Sundown on 7/21/2015.
@@ -95,7 +95,7 @@ public class LocationListFragment extends Fragment {
 
 
     public void addTitleView(Field field){
-        if (field.type != Constants.FIELDS.FIELD_PIC){
+        if (field.type != FieldType.FIELD_PIC){
             String title = field.title;
             if (title != null && title.length() > 0) {
                 TextView titleView = new TextView(getActivity());
@@ -111,11 +111,11 @@ public class LocationListFragment extends Fragment {
         View view;
 
         switch (field.type) {
-            case Constants.FIELDS.FIELD_PIC:
+            case FIELD_PIC:
                 view = new ImageView(getActivity());
                 break;
 
-            case Constants.FIELDS.FIELD_RATING: {
+            case FIELD_RATING: {
                 EntryField entry = (EntryField) field;
                 RatingBar bar = new RatingBar(getActivity());
                 bar.setNumStars(5);
@@ -129,7 +129,7 @@ public class LocationListFragment extends Fragment {
                 break;
             }
 
-            case Constants.FIELDS.FIELD_CHECKED: {
+            case FIELD_CHECKED: {
                 EntryField entry = (EntryField) field;
                 CheckBox checkBox = new CheckBox(getActivity());
                 checkBox.setEnabled(false);
@@ -153,7 +153,7 @@ public class LocationListFragment extends Fragment {
             }
         }
 
-        if (field.type == Constants.FIELDS.FIELD_RATING){
+        if (field.type == FieldType.FIELD_RATING){
             view.setLayoutParams(layoutWrapWidth);
         } else {
             view.setLayoutParams(layoutFillWidth);

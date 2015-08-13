@@ -17,6 +17,7 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.EntryField;
+import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
@@ -25,9 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_CHECKED;
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_PIC;
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_RATING;
+
 
 /**
  * Created by Sundown on 5/21/2015.
@@ -116,11 +115,11 @@ public class LocationListsView extends RelativeLayout {
             boolean ratingSet = false;
 
             for (Field i: list){
-                int type = i.type;
-                if (type != FIELD_PIC && type != FIELD_CHECKED){
+                FieldType type = i.type;
+                if (type != FieldType.FIELD_PIC && type != FieldType.FIELD_CHECKED){
                     EntryField entryField = (EntryField) i;
 
-                    if (type == FIELD_RATING && !ratingSet){
+                    if (type == FieldType.FIELD_RATING && !ratingSet){
 
                         try {
                             Float f = Float.parseFloat(entryField.entry);

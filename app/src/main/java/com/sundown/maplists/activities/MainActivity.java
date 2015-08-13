@@ -12,8 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.storage.Operation;
-import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.fragments.AddListDialogFragment;
 import com.sundown.maplists.fragments.DeleteDialogFragment;
 import com.sundown.maplists.fragments.EnterAddressDialogFragment;
@@ -28,9 +26,10 @@ import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.storage.DatabaseCommunicator;
+import com.sundown.maplists.storage.Operation;
+import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.LocationListsView;
 
-import static com.sundown.maplists.extras.Constants.FRAGMENT_TAGS.*;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
 public class MainActivity extends ActionBarActivity implements
@@ -41,6 +40,13 @@ public class MainActivity extends ActionBarActivity implements
     //The Activity behaves as a parent-controller for its respective Fragments... each Fragment is a controller for its own specific views and models.
     //The Activity also handles all Toolbar clicks (since those usually result in displaying fragments).
     //If you add more Activities/Fragments please try to keep this pattern intact
+
+    public static final String FRAGMENT_MAP = "MAP";
+    public static final String FRAGMENT_LOCATION_LISTS = "LOCATION_LISTS";
+    public static final String FRAGMENT_DELETE = "DELETE";
+    public static final String FRAGMENT_ENTER_ADDRESS= "ENTER_ADDRESS";
+    public static final String FRAGMENT_ADD_LIST = "ADD_LIST";
+    public static final String FRAGMENT_LOCATION_LIST = "LOCATION_LIST";
 
     private FragmentManager fm;
     private DatabaseCommunicator db;

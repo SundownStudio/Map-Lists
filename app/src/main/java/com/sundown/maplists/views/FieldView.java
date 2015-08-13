@@ -17,17 +17,12 @@ import android.widget.TextView;
 import com.sundown.maplists.R;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.EntryField;
+import com.sundown.maplists.models.FieldType;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_CHECKED;
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_DATE;
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_DECIMAL;
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_NUMBER;
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_PIC;
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_TIME;
-import static com.sundown.maplists.extras.Constants.FIELDS.FIELD_RATING;
+
 
 /**
  * Created by Sundown on 7/6/2015.
@@ -61,8 +56,8 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
     private LinearLayout fieldEntryContainer;
     private ImageButton editFieldTitle, deleteFieldView;
-    private int type;
-    public int getType(){ return type;}
+    private FieldType type;
+    public FieldType getType(){ return type;}
 
 
     public FieldView(Context context, AttributeSet attrs) {
@@ -219,7 +214,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
         }
 
-        if (field.type == FIELD_RATING){
+        if (field.type == FieldType.FIELD_RATING){
             view.setLayoutParams(layoutWrapWidth);
         } else {
             view.setLayoutParams(layoutFillWidth);

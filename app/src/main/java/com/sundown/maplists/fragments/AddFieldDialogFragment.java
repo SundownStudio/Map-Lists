@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import com.sundown.maplists.R;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
+import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.views.AddFieldView;
 
 import java.util.ArrayList;
@@ -83,8 +84,9 @@ public class AddFieldDialogFragment extends DialogFragment {
         list = new ArrayList<>();
         String[] fieldNames = getResources().getStringArray(R.array.add_field_names);
         int len = fieldNames.length;
+        FieldType[] types = FieldType.values();
         for (int i = 0; i < len; ++i){
-            list.add(new EntryField(-1, fieldNames[i], "", i, false));
+            list.add(new EntryField(-1, fieldNames[i], "", types[i], false));
         }
     }
 

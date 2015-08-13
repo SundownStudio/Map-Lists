@@ -15,13 +15,12 @@ import android.view.ViewGroup;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.sundown.maplists.R;
-import com.sundown.maplists.extras.Constants;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.storage.DatabaseCommunicator;
-import com.sundown.maplists.utils.PhotoUtils;
 import com.sundown.maplists.tasks.TaskOptimizeImage;
+import com.sundown.maplists.utils.PhotoUtils;
+import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.views.PhotoView;
 
 import java.io.IOException;
@@ -44,6 +43,8 @@ public class PhotoFragment extends Fragment implements
         void removePhotoFragment(int id);
     }
 
+    public static final int ACTIVITY_CAMERA = 10;
+    public static final int ACTIVITY_GALLERY = 20;
     public static final String FRAGMENT_ID = "FRAGMENT_ID";
     private PreferenceManager preferenceManager;
     private PhotoView view;
@@ -123,7 +124,7 @@ public class PhotoFragment extends Fragment implements
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(model.imageTempFile));
 
                 saveFragmentIdForActivityResult();
-                getActivity().startActivityForResult(intent, Constants.ACTIVITY_CODES.ACTIVITY_CAMERA);
+                getActivity().startActivityForResult(intent, ACTIVITY_CAMERA);
 
             } catch (IOException e) {
                 Log.e(e);
@@ -146,7 +147,7 @@ public class PhotoFragment extends Fragment implements
             model.generateTemporaryFiles();
             saveFragmentIdForActivityResult();
             Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            getActivity().startActivityForResult(galleryIntent, Constants.ACTIVITY_CODES.ACTIVITY_GALLERY);
+            getActivity().startActivityForResult(galleryIntent, ACTIVITY_GALLERY);
         } catch (IOException e) {
             Log.e(e); //todo
         }
@@ -176,11 +177,11 @@ public class PhotoFragment extends Fragment implements
 
             switch(requestCode){
 
-                case Constants.ACTIVITY_CODES.ACTIVITY_CAMERA:
+                case ACTIVITY_CAMERA:
                     taskOptimizeImage.execute();
                     break;
 
-                case Constants.ACTIVITY_CODES.ACTIVITY_GALLERY:
+                case ACTIVITY_GALLERY:
                     Uri uri = data.getData();
                     taskOptimizeImage.execute(PhotoUtils.getInstance().getPathFromGallery(uri));
                     break;

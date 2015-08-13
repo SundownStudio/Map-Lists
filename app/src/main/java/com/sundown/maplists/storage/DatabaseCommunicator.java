@@ -19,10 +19,9 @@ import com.couchbase.lite.UnsavedRevision;
 import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 import com.sundown.maplists.MapListsApp;
-import com.sundown.maplists.extras.Constants;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.models.List;
+import com.sundown.maplists.models.PhotoField;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -50,6 +49,7 @@ public class DatabaseCommunicator {
 
     public static final int QUERY_MAP = 1;
     public static final int QUERY_LOCATION = 2;
+    public static final int MAX_ITEMS_PER_LIST = 9999;
 
     private static CBManager cbManager;
 
@@ -209,7 +209,7 @@ public class DatabaseCommunicator {
             Query query =  database.getView(VIEW_BY_LIST_ID).createQuery();
 
             query.setStartKey(new int[]{mapId, 0});
-            query.setEndKey(new int[]{mapId, Constants.SPECS.MAX_ITEMS_PER_LIST});
+            query.setEndKey(new int[]{mapId, MAX_ITEMS_PER_LIST});
             return query;
         }
 

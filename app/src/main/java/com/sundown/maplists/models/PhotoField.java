@@ -4,11 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
 
-import com.sundown.maplists.extras.Constants;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.utils.PhotoUtils;
+import com.sundown.maplists.utils.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,13 +29,13 @@ public class PhotoField extends Field {
     public Bitmap image, thumb;
 
     public PhotoField(boolean permanent){
-        super(0, "Photo", Constants.FIELDS.FIELD_PIC, permanent);
+        super(0, "Photo", FieldType.FIELD_PIC, permanent);
         init();
     }
 
 
     public PhotoField(int id, boolean permanent){
-        super(id, "Photo", Constants.FIELDS.FIELD_PIC, permanent);
+        super(id, "Photo", FieldType.FIELD_PIC, permanent);
         init();
     }
 

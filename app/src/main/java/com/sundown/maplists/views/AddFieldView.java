@@ -13,12 +13,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.extras.Constants;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.PhotoField;
 
 import java.util.Collections;
 import java.util.List;
+
+import static com.sundown.maplists.models.FieldType.FIELD_PIC;
 
 /**
  * Created by Sundown on 5/20/2015.
@@ -125,7 +126,7 @@ public class AddFieldView extends LinearLayout {
             public void onClick(View v) {
                 if (listener != null){
                     Field field = fields.get(getPosition());
-                    if (field.type == Constants.FIELDS.FIELD_PIC){
+                    if (field.type == FIELD_PIC){
                         field = new PhotoField(false);
                     }
                     listener.addNewField(field);

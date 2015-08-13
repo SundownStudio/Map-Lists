@@ -26,7 +26,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.sundown.maplists.R;
-import com.sundown.maplists.extras.Constants;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.MapList;
@@ -43,6 +42,17 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.sundown.maplists.network.GeocodeConstants.FAILURE_RESULT;
+import static com.sundown.maplists.network.GeocodeConstants.FROM_ADDRESS;
+import static com.sundown.maplists.network.GeocodeConstants.FROM_LATLNG;
+import static com.sundown.maplists.network.GeocodeConstants.GEO_OPERATION;
+import static com.sundown.maplists.network.GeocodeConstants.MAP_ADDRESS;
+import static com.sundown.maplists.network.GeocodeConstants.MAP_ERROR;
+import static com.sundown.maplists.network.GeocodeConstants.MAP_LATITUDE;
+import static com.sundown.maplists.network.GeocodeConstants.MAP_LONGITUDE;
+import static com.sundown.maplists.network.GeocodeConstants.RECEIVER;
+import static com.sundown.maplists.network.GeocodeConstants.RESULT_DATA_KEY;
+import static com.sundown.maplists.network.GeocodeConstants.SUCCESS_RESULT;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_ZOOMING;
@@ -64,17 +74,20 @@ import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_NAVIGATION;
 public class MapFragment extends Fragment implements
         OnMapReadyCallback,
         MapView.MapViewListener,
+        EnterAddressDialogFragment.EnterAddressListener,
         //for intent service and map stuff
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, EnterAddressDialogFragment.EnterAddressListener {
+        GoogleApiClient.OnConnectionFailedListener {
 
 
 
     /** Constants */
+    private static final String FRAGMENT_GMAP ="FRAGMENT_GMAP";
     private static final String LAT ="LAT";
     private static final String LON ="LON";
     private static final String ZOOM_LEVEL = "ZOOM";
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    public static final float DEFAULT_ZOOM = 2.0f;
 
     private ToolbarManager toolbarManager;
     public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
@@ -166,7 +179,7 @@ public class MapFragment extends Fragment implements
             prefs.remove(LON);
             prefs.apply();
         }
-        view.setZoomLevel(prefs.getFloat(ZOOM_LEVEL, Constants.SPECS.DEFAULT_ZOOM));
+        view.setZoomLevel(prefs.getFloat(ZOOM_LEVEL, DEFAULT_ZOOM));
     }
 
     ////TOOLBAR INTERACTION METHODS ////
@@ -243,7 +256,6 @@ public class MapFragment extends Fragment implements
             marker.setPosition(oldLatLng);
 
         } else {
-            Log.m("MAIN","marker is dragged");
             drag = true;
             model.swap(oldLatLng, newLatLng);
             savedLatLng = newLatLng;
@@ -280,11 +292,9 @@ public class MapFragment extends Fragment implements
                 new MenuOption(MARKER_MOVE, true),
                 new MenuOption(MARKER_COMPONENTS, getSelectedMapList().multipleListsEnabled));
 
-        Log.m("MapFragment marker selected: " + marker.getId());
     }
 
     private void releaseMarker() {
-        Log.m("MapFragment No marker selected");
         selectedMarker = null;
         toolbarManager.drawMenu(new MenuOption(EDIT_DELETE, false),
                 new MenuOption(MARKER_MOVE, false),
@@ -302,16 +312,13 @@ public class MapFragment extends Fragment implements
     ////MAP SETUP METHODS ////
 
     private void initMap() {
-        // Do a null check to confirm that we have not already instantiated the map.
         FragmentManager fm = getChildFragmentManager();
-        //mapFragment = (SupportMapFragment) fm.findFragmentById(R.id.fragment_map_container);
-
-        Log.m("MapFragment creating new map and calling getMapAsync");
-        mapFragment = SupportMapFragment.newInstance();
-        fm.beginTransaction().replace(R.id.fragment_map_container, mapFragment).commit();
+        mapFragment = (SupportMapFragment) fm.findFragmentByTag(FRAGMENT_GMAP);
+        if (mapFragment == null)
+            mapFragment = SupportMapFragment.newInstance();
+        fm.beginTransaction().replace(R.id.fragment_map_container, mapFragment, FRAGMENT_GMAP).commit();
         mapFragment.getMapAsync(this);
 
-        Log.m("MapFragment GoogleApiClient connect");
     }
 
     @Override //called when getMapAsync is done (iirc)
@@ -324,35 +331,25 @@ public class MapFragment extends Fragment implements
                 .addOnConnectionFailedListener(this)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
-
                 .build();
 
-
-
         mGoogleApiClient.connect();
-
         loader = new Loader().start();
-
     }
-
-
-
-
-
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.m("MapFragment Location services connected.");
+        Log.m("GoogleApiClient connected.");
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.m("MapFragment Location services suspended. Please reconnect.");
+        Log.m("GoogleApiClient suspended. Please reconnect.");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.m("MapFragment onConnectionFailed");
+        Log.m("GoogleApiClient onConnectionFailed");
         /* todo this may be the old way.. check out bottom of https://developers.google.com/android/guides/setup for different ways to handle this..
         * Google Play services can resolve some errors it detects.
         * If the error has a resolution, try sending an Intent to
@@ -376,7 +373,7 @@ public class MapFragment extends Fragment implements
             * If no resolution is available, display a dialog to the
             * user with the error.
             */
-            Log.m("Location services connection failed with code " + connectionResult.getErrorCode());
+            Log.m("GoogleApiClient connection failed with code " + connectionResult.getErrorCode());
         }
     }
 
@@ -386,10 +383,10 @@ public class MapFragment extends Fragment implements
     private void startIntentService(LatLng latLng) {
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             Intent intent = new Intent(getActivity(), FetchAddressIntentService.class);
-            intent.putExtra(Constants.GEOCODE.RECEIVER, mResultReceiver);
-            intent.putExtra(Constants.GEOCODE.MAP_LATITUDE, latLng.latitude);
-            intent.putExtra(Constants.GEOCODE.MAP_LONGITUDE, latLng.longitude);
-            intent.putExtra(Constants.GEOCODE.GEO_OPERATION, Constants.GEOCODE.FROM_LATLNG);
+            intent.putExtra(RECEIVER, mResultReceiver);
+            intent.putExtra(MAP_LATITUDE, latLng.latitude);
+            intent.putExtra(MAP_LONGITUDE, latLng.longitude);
+            intent.putExtra(GEO_OPERATION, FROM_LATLNG);
             getActivity().startService(intent);
         }
     }
@@ -398,9 +395,9 @@ public class MapFragment extends Fragment implements
     public void onAddressAdded(String address) {
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             Intent intent = new Intent(getActivity(), FetchAddressIntentService.class);
-            intent.putExtra(Constants.GEOCODE.RECEIVER, mResultReceiver);
-            intent.putExtra(Constants.GEOCODE.MAP_ADDRESS, address);
-            intent.putExtra(Constants.GEOCODE.GEO_OPERATION, Constants.GEOCODE.FROM_ADDRESS);
+            intent.putExtra(RECEIVER, mResultReceiver);
+            intent.putExtra(MAP_ADDRESS, address);
+            intent.putExtra(GEO_OPERATION, FROM_ADDRESS);
             getActivity().startService(intent);
         }
     }
@@ -421,22 +418,22 @@ public class MapFragment extends Fragment implements
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
             try {
-                if (resultCode == Constants.GEOCODE.SUCCESS_RESULT) {
-                    int operation = Integer.parseInt(resultData.getString(Constants.GEOCODE.GEO_OPERATION));
+                if (resultCode == SUCCESS_RESULT) {
+                    int operation = Integer.parseInt(resultData.getString(GEO_OPERATION));
 
-                    if (operation == Constants.GEOCODE.FROM_ADDRESS) {
-                        double lat = resultData.getDouble(Constants.GEOCODE.MAP_LATITUDE);
-                        double lon = resultData.getDouble(Constants.GEOCODE.MAP_LONGITUDE);
+                    if (operation == FROM_ADDRESS) {
+                        double lat = resultData.getDouble(MAP_LATITUDE);
+                        double lon = resultData.getDouble(MAP_LONGITUDE);
                         createNewLocation(new LatLng(lat, lon));
 
-                    } else if (operation == Constants.GEOCODE.FROM_LATLNG) {
-                        String address = resultData.getString(Constants.GEOCODE.RESULT_DATA_KEY);
+                    } else if (operation == FROM_LATLNG) {
+                        String address = resultData.getString(RESULT_DATA_KEY);
                         Log.m("MapFragment", address);
                         showToast(getActivity().getApplicationContext(), address);
                     }
 
-                } else if (resultCode == Constants.GEOCODE.FAILURE_RESULT) {
-                    String errorMessage = resultData.getString(Constants.GEOCODE.MAP_ERROR);
+                } else if (resultCode == FAILURE_RESULT) {
+                    String errorMessage = resultData.getString(MAP_ERROR);
                     if (errorMessage == null) errorMessage = "Sorry, an unknown error has occurred";
                     showToast(getActivity().getApplicationContext(), errorMessage);
                 }
@@ -447,7 +444,7 @@ public class MapFragment extends Fragment implements
     }
 
 
-    //LIVE QUERY - Couchbases answer to Loaders
+
     private class Loader extends ContentLoader {
 
         @Override

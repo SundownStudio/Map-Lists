@@ -1,7 +1,6 @@
 package com.sundown.maplists.models;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.sundown.maplists.extras.Constants;
 import com.sundown.maplists.storage.JsonConstants;
 
 import java.util.Map;
@@ -17,8 +16,8 @@ public class MapList extends List {
 
     public MapList(){
         super(-1);
-        super.addField(new EntryField(-1, "Name", "New Location", Constants.FIELDS.FIELD_TEXT, true));
-        super.addField(new EntryField(-1, "Snippet", "Empty", Constants.FIELDS.FIELD_TEXT, true));
+        super.addField(new EntryField(-1, "Name", "New Location", FieldType.FIELD_TEXT, true));
+        super.addField(new EntryField(-1, "Snippet", "Empty", FieldType.FIELD_TEXT, true));
         super.addField(new PhotoField(-1, true));
         multipleListsEnabled = false;
     }

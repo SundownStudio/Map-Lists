@@ -1,7 +1,5 @@
 package com.sundown.maplists.models;
 
-import com.sundown.maplists.extras.Constants;
-
 import java.util.Map;
 
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
@@ -19,7 +17,7 @@ public class LocationList extends List {
     public LocationList(int mapId){
         super(mapId);
         listId = -1;
-        super.addField(new EntryField(listId, "Name", "", Constants.FIELDS.FIELD_TEXT, true));
+        super.addField(new EntryField(listId, "Name", "", FieldType.FIELD_TEXT, true));
     }
 
 

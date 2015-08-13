@@ -3,7 +3,6 @@ package com.sundown.maplists.models;
 import com.sundown.maplists.storage.JsonConstants;
 
 import java.util.Map;
-
 /**
  * Created by Sundown on 6/16/2015.
  */
@@ -14,10 +13,10 @@ public class EntryField extends Field {
 
 
     public EntryField(boolean permanent){
-        super(0, null, 0, permanent);
+        super(0, null, FieldType.FIELD_NAME, permanent);
     }
 
-    public EntryField(int id, String title, String entry, int type, boolean permanent){ //todo: remove
+    public EntryField(int id, String title, String entry, FieldType type, boolean permanent){ //todo: remove
         super(id, title, type, permanent);
         this.entry = entry;
     }

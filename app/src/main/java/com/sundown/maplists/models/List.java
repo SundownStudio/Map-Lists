@@ -1,6 +1,5 @@
 package com.sundown.maplists.models;
 
-import com.sundown.maplists.extras.Constants;
 import com.sundown.maplists.interfaces.PropertiesHandler;
 
 import java.util.ArrayList;
@@ -61,7 +60,7 @@ public abstract class List implements PropertiesHandler {
 
         for (Integer key: keys){
             Field field = fields.get(key);
-            if (field.type == Constants.FIELDS.FIELD_PIC){
+            if (field.type == FieldType.FIELD_PIC){
                 photoFields.add((PhotoField) field);
             }
         }
@@ -100,10 +99,10 @@ public abstract class List implements PropertiesHandler {
             int size = entries.size();
             for (int i = 0; i < size; ++i) {
                 Map<String, Object> props = (Map<String, Object>) entries.get(i);
-                int type = (Integer) props.get(FIELD_TYPE);
+                FieldType type = FieldType.valueOf(props.get(FIELD_TYPE).toString());
                 boolean permanent = Boolean.parseBoolean(String.valueOf(properties.get(FIELD_PERMANENT)));
 
-                if (type == Constants.FIELDS.FIELD_PIC){
+                if (type == FieldType.FIELD_PIC){
                     fields.put(i, new PhotoField(permanent).setProperties(props));
                 } else {
                     fields.put(i, new EntryField(permanent).setProperties(props));
