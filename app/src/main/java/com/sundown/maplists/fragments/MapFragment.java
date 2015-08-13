@@ -574,6 +574,7 @@ public class MapFragment extends Fragment implements
 
                         marker = addMarker(latLng);
                         if (savedLatLng != null && savedLatLng.equals(marker.getPosition())) {
+                            view.moveToLocation(latLng);
                             selectMarker(marker);
                             savedLatLng = null;
                             Log.m("Selected Marker Restored from Saved Coords");
