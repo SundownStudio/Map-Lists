@@ -1,0 +1,11 @@
+package com.sundown.maplists.models;
+
+/**
+ * Created by Sundown on 8/13/2015.
+ */
+public enum FieldType {
+    FIELD_NAME, FIELD_TEXT, FIELD_NUMBER, FIELD_DECIMAL,
+    FIELD_DROPDOWN, FIELD_DATE, FIELD_TIME, FIELD_CHECKED,
+    FIELD_PIC, FIELD_URL, FIELD_PHONE, FIELD_RATING;
+}
+/* FIELD TITLES ARE LOCATED IN STRINGS.XML*/
