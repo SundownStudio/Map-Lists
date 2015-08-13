@@ -3,7 +3,6 @@ package com.sundown.maplists.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -20,9 +19,6 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -66,7 +62,6 @@ import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_NAVIGATION;
  * Created by Sundown on 4/13/2015.
  */
 public class MapFragment extends Fragment implements
-        LocationListener,
         OnMapReadyCallback,
         MapView.MapViewListener,
         //for intent service and map stuff
@@ -86,13 +81,13 @@ public class MapFragment extends Fragment implements
     private DatabaseCommunicator db;
     private SupportMapFragment mapFragment;
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
     private PreferenceManager prefs;
     private MapView view;
     private Locations model;
     private ContentLoader loader;
     private AddressResultReceiver mResultReceiver;
     private static Toast toast = null;
+    private boolean drag;
 
 
     public Marker selectedMarker; //the selected marker with infowindow open
@@ -103,7 +98,6 @@ public class MapFragment extends Fragment implements
         MapFragment fragment = new MapFragment();
         fragment.toolbarManager = toolbarManager;
         return fragment;
-
     }
 
 
@@ -118,7 +112,6 @@ public class MapFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         prefs = PreferenceManager.getInstance();
-
         view = (MapView) inflater.inflate(R.layout.fragment_map, container, false);
         view.setListener(this);
         return view;
@@ -131,21 +124,14 @@ public class MapFragment extends Fragment implements
         setUserVisibleHint(true);
         model.clear();
         initMap();
-        try {
-            //mGoogleApiClient.connect(); disabled for now cuz keeps crashing
-        } catch (Exception e) {
-            Log.e(e);
-        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.m("MapFragment OnPause");
         setUserVisibleHint(false);
         savePrefs();
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             mGoogleApiClient.disconnect();
             Log.m("MapFragment GoogleApiClient disconnected");
         }
@@ -257,8 +243,8 @@ public class MapFragment extends Fragment implements
             marker.setPosition(oldLatLng);
 
         } else {
-            view.animateToLocation(newLatLng);
-            marker.setPosition(newLatLng);
+            Log.m("MAIN","marker is dragged");
+            drag = true;
             model.swap(oldLatLng, newLatLng);
             savedLatLng = newLatLng;
             MapList list = model.getMapList(newLatLng);
@@ -336,17 +322,11 @@ public class MapFragment extends Fragment implements
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
 
                 .build();
 
-        // Create the LocationRequest object
-        mLocationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
-                .setFastestInterval(1 * 1000); // 1 second, in milliseconds - if another app is using location services, we will get loc after this interval for minimal additional power
 
 
         mGoogleApiClient.connect();
@@ -358,50 +338,11 @@ public class MapFragment extends Fragment implements
 
 
 
-    ////AUTOCALL OVERRIDE METHODS ////
-    private void handleNewLocation(Location location) {
-        //Log.m("MapFragment handle new location : " + location.toString());
-        /*  I dont care about this right now.. if ultimately we dont use these services we should remove them.. */
-        //double currentLatitude = location.getLatitude();
-        //double currentLongitude = location.getLongitude();
-        //LatLng latLng = new LatLng(currentLatitude, currentLongitude);
 
-        //MarkerOptions options = new MarkerOptions()
-        //        .position(latLng)
-        //        .title("I am here!")
-        //        .draggable(true)
-        //        .snippet("snippet")
-         //       .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-
-        //try { //surrounding this because i'm not sure if this will work on all phones during rotation.. connect() will call this and if mMap hasnt been
-            //attached yet this might fail, it doesnt on my phone but it may be an issue of speed, better safe than sorry
-
-            //mMap.addMarker(options);
-            //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            //mMap.animateCamera(CameraUpdateFactory.zoomTo(12.0f));
-        //} catch (Exception e) {
-        //    Log.e(e);
-        //}
-
-    }
 
     @Override
     public void onConnected(Bundle bundle) {
         Log.m("MapFragment Location services connected.");
-        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (location == null) {
-            Log.m("Last loc null.");
-            // for this example were only gonna request loc updates when last loc is not known
-            try {
-                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-            } catch (Exception e){
-                Log.e(e);
-            }
-
-        } else {
-            handleNewLocation(location);
-        }
-
     }
 
     @Override
@@ -439,11 +380,7 @@ public class MapFragment extends Fragment implements
         }
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.m("MapFragment Location changed");
-        handleNewLocation(location);
-    }
+
 
 
     private void startIntentService(LatLng latLng) {
@@ -563,19 +500,20 @@ public class MapFragment extends Fragment implements
                         LatLng latLng = (LatLng) pair.getKey();
 
                         marker = addMarker(latLng);
-                        if (savedLatLng != null) {
-
-                            if (savedLatLng.equals(marker.getPosition())) {
+                        if (savedLatLng != null && savedLatLng.equals(marker.getPosition())) {
+                            //this is the marker to select and focus on..
+                            if (!drag) //dragging should glide, rotations should not
                                 view.moveToLocation(latLng);
-                                selectMarker(marker);
-                                savedLatLng = null;
-                                Log.m("Selected Marker Restored from Saved Coords");
-
-                            } else {
-                                view.moveToLocation(savedLatLng);
-                            }
+                            selectMarker(marker);
+                            drag = false;
+                            savedLatLng = null;
                         }
                     }
+
+                    if (savedLatLng != null){ //we haven't focused on any markers so this denotes an empty location
+                        view.moveToLocation(savedLatLng);
+                    }
+
 
                     toolbarManager.drawMenu(new MenuOption(MAP_ZOOMING, true),
                             new MenuOption(MAP_COMPONENTS, true),
