@@ -135,6 +135,11 @@ public class PhotoField extends Field {
         Log.m("Photo: bitmap resized! W: " + width + " H: " + height);
     }
 
+    public void rotateImages(){
+        image = photoUtils.rotateImage(image, 90);
+        thumb = photoUtils.rotateImage(thumb, 90);
+    }
+
     public void extractThumb(){
         thumb = ThumbnailUtils.extractThumbnail(image, photoUtils.thumbnailDimens, photoUtils.thumbnailDimens);
     }

@@ -19,12 +19,11 @@ public class TaskOptimizeImage extends AsyncTask<String, Void, Boolean> {
     private TaskOptimizeImageListener listener;
     private int width, height;
     public PhotoField model;
-    private int id;
 
-    public TaskOptimizeImage(int id, PhotoField model, int width, int height, TaskOptimizeImageListener listener){
+
+    public TaskOptimizeImage(PhotoField model, int width, int height, TaskOptimizeImageListener listener){
 
         // Use a WeakReference to ensure the ImageView can be garbage collected todo not anymore.. but relearn weakreferences so we know them cuz i kinda forget how to..
-        this.id = id;
         this.model = model;
         this.width = width;
         this.height = height;

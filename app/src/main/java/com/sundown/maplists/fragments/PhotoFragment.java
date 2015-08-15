@@ -19,6 +19,7 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.tasks.TaskOptimizeImage;
+import com.sundown.maplists.tasks.TaskRotateImage;
 import com.sundown.maplists.utils.PhotoUtils;
 import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.views.PhotoView;
@@ -35,7 +36,9 @@ import java.io.IOException;
  *  3) because nested fragments are not retainable, they do not get their onActivityResult called directly by OS
  */
 public class PhotoFragment extends Fragment implements
-        PhotoView.PhotoViewListener, TaskOptimizeImage.TaskOptimizeImageListener {
+        PhotoView.PhotoViewListener, TaskOptimizeImage.TaskOptimizeImageListener, TaskRotateImage.TaskRotateImageListener {
+
+
 
 
     public interface PhotoFragmentListener{
@@ -64,9 +67,13 @@ public class PhotoFragment extends Fragment implements
         this.width = width;
         this.height = height;
 
-        String imageName = model.imageName;
-        if (imageName != null && imageName.length() > 0 && model.image == null){
-            model.image = DatabaseCommunicator.getInstance().loadBitmap(documentId, imageName);
+        String name = model.imageName;
+        if (name != null && name.length() > 0 && model.image == null){
+            model.image = DatabaseCommunicator.getInstance().loadBitmap(documentId, name);
+        }
+        name = model.thumbName;
+        if (name != null && name.length() > 0 && model.thumb == null){
+            model.thumb = DatabaseCommunicator.getInstance().loadBitmap(documentId, name);
         }
     }
 
@@ -154,6 +161,18 @@ public class PhotoFragment extends Fragment implements
     }
 
     @Override
+    public void rotatePicture() {
+        if (model.image != null){
+            new TaskRotateImage(model, this).execute();
+        }
+    }
+
+    @Override
+    public void onImageRotated(boolean success) {
+        view.setBitmap(model.image);
+    }
+
+    @Override
     public void removeFragment() {
         deletePicture(true);
         listener.removePhotoFragment(id);
@@ -173,7 +192,7 @@ public class PhotoFragment extends Fragment implements
         if (resultCode == Activity.RESULT_OK && callingId == this.id){
 
             deletePicture(false);
-            taskOptimizeImage = new TaskOptimizeImage(id, model, width, height, this);
+            taskOptimizeImage = new TaskOptimizeImage(model, width, height, this);
 
             switch(requestCode){
 

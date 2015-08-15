@@ -29,6 +29,7 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
         void takePicture();
         void deletePicture(boolean clearFiles);
         void loadPicture();
+        void rotatePicture();
         void removeFragment();
     }
 
@@ -115,6 +116,11 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
                 break;
 
             case R.id.rotatePicture:
+                if (locationImage.getDrawable() != null) {
+                    dispose();
+                    drawContainer(SHOW_PROGRESS, CLEAR_CONTAINER);
+                    listener.rotatePicture();
+                }
                 break;
 
             case R.id.removeFragment:
