@@ -24,7 +24,7 @@ public class LocationListView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        container = (LinearLayout) findViewById(R.id.itemViewContainer);
+        container = (LinearLayout) findViewById(R.id.listViewContainer);
     }
 
     public void updateView(LinearLayout layout){

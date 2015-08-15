@@ -39,7 +39,7 @@ public class AddListView extends LinearLayout implements View.OnClickListener {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        container = (LinearLayout) findViewById(R.id.add_item_container);
+        container = (LinearLayout) findViewById(R.id.add_list_container);
 
         cancel = (Button) findViewById(R.id.cancel);
         enter = (Button) findViewById(R.id.enter);
