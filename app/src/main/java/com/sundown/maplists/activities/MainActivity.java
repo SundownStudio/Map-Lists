@@ -76,7 +76,8 @@ public class MainActivity extends ActionBarActivity implements
     /** Enter an address to place a map marker */
     private EnterAddressDialogFragment enterAddressDialogFragment;
 
-
+    /** Navigation drawer */
+    private NavigationDrawerFragment drawerFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +141,7 @@ public class MainActivity extends ActionBarActivity implements
         getSupportActionBar().setDisplayShowHomeEnabled(true); //we want the logo so we can click on it and trigger the navigation drawer
         toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom);
 
-        NavigationDrawerFragment drawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.fragment_navigation_drawer);
+        drawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbarManager.toolbarTop);
     }
 

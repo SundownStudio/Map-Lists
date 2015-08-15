@@ -98,7 +98,7 @@ public class NavigationDrawerFragment extends Fragment implements AdapterNavigat
 
                 //force activity to draw action bar again.. need this in both open/close because the drawer
                 //will come in front of actionbar and block stuff
-                getActivity().invalidateOptionsMenu();
+                //getActivity().invalidateOptionsMenu();
             }
 
             //THIS METHOD only gets called once drawer is completely closed after being open
@@ -106,7 +106,7 @@ public class NavigationDrawerFragment extends Fragment implements AdapterNavigat
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
                 //Log.d("debug", "onDrawerClosed");
-                getActivity().invalidateOptionsMenu(); //make activity draw toolbar again
+                //getActivity().invalidateOptionsMenu(); //make activity draw toolbar again
             }
 
 
