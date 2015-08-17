@@ -25,7 +25,7 @@ import com.sundown.maplists.views.FieldView;
 import java.util.HashMap;
 import java.util.Set;
 
-import static com.sundown.maplists.models.FieldType.FIELD_PIC;
+import static com.sundown.maplists.models.FieldType.FIELD_PHOTO;
 
 /**
  * Created by Sundown on 7/15/2015.
@@ -210,7 +210,7 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
     private void addToForm(int id, Field field){
         field.setId(id);
         field.setObserver(addFieldView(field));
-        if (field.type == FIELD_PIC) {
+        if (field.type == FIELD_PHOTO) {
             addPhotoFragment(id, field);
         }
     }
@@ -296,7 +296,7 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
         Integer[] keys = model.getKeys();
         for (Integer k : keys){
             FieldView fieldView = (FieldView) form.findViewWithTag(k);
-            if (fieldView.getType() != FIELD_PIC) {
+            if (fieldView.getType() != FIELD_PHOTO) {
                 EntryField entryField = (EntryField) model.getField(k);
                 entryField.entry = fieldView.getEntry();
             }

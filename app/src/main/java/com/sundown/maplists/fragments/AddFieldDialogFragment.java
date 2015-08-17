@@ -52,7 +52,7 @@ public class AddFieldDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         AddFieldView view = (AddFieldView) inflater.inflate(R.layout.dialog_select_field, null);
-        view.setAdapter(listener, list);
+        view.setAdapter(listener, list, getResources().obtainTypedArray(R.array.add_field_images));
 
         builder.setView(view);
         builder.setTitle(getString(R.string.add_field));

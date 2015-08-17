@@ -1,6 +1,7 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,13 +14,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
+import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.PhotoField;
 
 import java.util.Collections;
 import java.util.List;
 
-import static com.sundown.maplists.models.FieldType.FIELD_PIC;
+import static com.sundown.maplists.models.FieldType.FIELD_PHOTO;
 
 /**
  * Created by Sundown on 5/20/2015.
@@ -32,7 +34,7 @@ public class AddFieldView extends LinearLayout {
 
     private AdapterSelectField adapter;
     private RecyclerView recyclerView;
-
+    private TypedArray imageResources;
 
     public AddFieldView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -48,10 +50,17 @@ public class AddFieldView extends LinearLayout {
     }
 
 
-    public void setAdapter(FieldSelector listener, List<Field> list){
+    public void setAdapter(final FieldSelector listener, final List<Field> list, final TypedArray imageResources){
+        this.imageResources = imageResources;
         adapter = new AdapterSelectField(listener, list);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        imageResources.recycle();
+        super.onDetachedFromWindow();
     }
 
     private class SpacesItemDecoration extends RecyclerView.ItemDecoration {
@@ -80,7 +89,7 @@ public class AddFieldView extends LinearLayout {
         private FieldSelector listener;
 
 
-        private AdapterSelectField(FieldSelector listener, List<Field> fields){
+        private AdapterSelectField(final FieldSelector listener, final List<Field> fields){
             inflater = LayoutInflater.from(getContext());
             this.fields = fields;
             this.listener = listener;
@@ -90,14 +99,18 @@ public class AddFieldView extends LinearLayout {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = inflater.inflate(R.layout.row_select_field, parent, false);
-            ViewHolder holder = new ViewHolder(view);
-            return holder;
+            return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(AdapterSelectField.ViewHolder holder, int position) {
             Field field = fields.get(position);
             holder.title.setText(field.title);
+            try {
+                holder.image.setImageResource(imageResources.getResourceId(position, -1)); //we don't have images for all screensizes yet so will use default if fails
+            } catch (Exception e){
+                Log.e(e);
+            }
         }
 
         @Override
@@ -126,7 +139,7 @@ public class AddFieldView extends LinearLayout {
             public void onClick(View v) {
                 if (listener != null){
                     Field field = fields.get(getPosition());
-                    if (field.type == FIELD_PIC){
+                    if (field.type == FIELD_PHOTO){
                         field = new PhotoField(false);
                     }
                     listener.addNewField(field);

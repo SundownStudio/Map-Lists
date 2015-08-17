@@ -116,7 +116,7 @@ public class LocationListsView extends RelativeLayout {
 
             for (Field i: list){
                 FieldType type = i.type;
-                if (type != FieldType.FIELD_PIC && type != FieldType.FIELD_CHECKED){
+                if (type != FieldType.FIELD_PHOTO && type != FieldType.FIELD_CHECKBOX){
                     EntryField entryField = (EntryField) i;
 
                     if (type == FieldType.FIELD_RATING && !ratingSet){

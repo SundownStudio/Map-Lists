@@ -111,7 +111,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
         View view;
 
         switch (field.type) {
-            case FIELD_PIC: {
+            case FIELD_PHOTO: {
                 view = new RelativeLayout(context);
                 view.setId(field.id);
                 view.setTag(PHOTO); //NOTE: this works! retains tag even though we add fragment here
@@ -143,7 +143,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 //todo
                 break;*/
 
-            case FIELD_CHECKED: {
+            case FIELD_CHECKBOX: {
                 EntryField entry = (EntryField) field;
                 CheckBox checkBox = new CheckBox(context);
                 checkBox.setTag(CHECKBOX);

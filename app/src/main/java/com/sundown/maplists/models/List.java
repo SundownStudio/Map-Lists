@@ -60,7 +60,7 @@ public abstract class List implements PropertiesHandler {
 
         for (Integer key: keys){
             Field field = fields.get(key);
-            if (field.type == FieldType.FIELD_PIC){
+            if (field.type == FieldType.FIELD_PHOTO){
                 photoFields.add((PhotoField) field);
             }
         }
@@ -102,7 +102,7 @@ public abstract class List implements PropertiesHandler {
                 FieldType type = FieldType.valueOf(props.get(FIELD_TYPE).toString());
                 boolean permanent = Boolean.parseBoolean(String.valueOf(properties.get(FIELD_PERMANENT)));
 
-                if (type == FieldType.FIELD_PIC){
+                if (type == FieldType.FIELD_PHOTO){
                     fields.put(i, new PhotoField(permanent).setProperties(props));
                 } else {
                     fields.put(i, new EntryField(permanent).setProperties(props));

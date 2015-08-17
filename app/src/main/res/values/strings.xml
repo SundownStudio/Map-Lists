@@ -59,18 +59,37 @@
 
     <string-array name="add_field_names">
         <item>Name</item>
+        <item>Phone Number</item>
+        <item>Email</item>
+        <item>Photo</item>
         <item>Text</item>
         <item>Number</item>
+        <item>Price</item>
         <item>Decimal</item>
-        <item>Dropdown</item>
         <item>Date</item>
         <item>Time</item>
+        <item>Dropdown</item>
         <item>Checkbox</item>
-        <item>Photo</item>
         <item>URL</item>
-        <item>Phone Number</item>
         <item>Rating</item>
     </string-array>
+
+    <array name="add_field_images">
+        <item>@drawable/ic_name</item>
+        <item>@drawable/ic_phonenumber</item>
+        <item>@drawable/ic_email</item>
+        <item>@drawable/ic_photo</item>
+        <item>@drawable/ic_text</item>
+        <item>@drawable/ic_number</item>
+        <item>@drawable/ic_price</item>
+        <item>@drawable/ic_decimal</item>
+        <item>@drawable/ic_date</item>
+        <item>@drawable/ic_time</item>
+        <item>@drawable/ic_dropdown</item>
+        <item>@drawable/ic_checkbox</item>
+        <item>@drawable/ic_url</item>
+        <item>@drawable/ic_rating</item>
+    </array>
 
     <string name="service_not_available">Service not available</string>
     <string name="invalid_lat_long_used">Invalid Lat/Lon used</string>
