@@ -55,10 +55,9 @@ import static com.sundown.maplists.network.GeocodeConstants.RESULT_DATA_KEY;
 import static com.sundown.maplists.network.GeocodeConstants.SUCCESS_RESULT;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_ZOOMING;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_COMPONENTS;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_MOVE;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_NAVIGATION;
+
     /* NOTE: oldLatLng & savedLatLng = why not just use one since neither can coexist?
     Answer: Better readability.. but how much extra space?
     This is empty pointer, is 4 bytes on 32-bit systems or 8 bytes on 64-bit systems. However, you're not consuming any space
@@ -79,7 +78,9 @@ public class MapFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-
+    public interface MapFragmentListener{
+        void displayNavigationButtons(boolean display);
+    }
 
     /** Constants */
     private static final String FRAGMENT_GMAP ="FRAGMENT_GMAP";
@@ -99,6 +100,8 @@ public class MapFragment extends Fragment implements
     private Locations model;
     private ContentLoader loader;
     private AddressResultReceiver mResultReceiver;
+    private MapFragmentListener listener;
+    public void setMapFragmentListener(MapFragmentListener listener) { this.listener = listener;}
     private static Toast toast = null;
     private boolean drag;
 
@@ -107,9 +110,8 @@ public class MapFragment extends Fragment implements
     public LatLng oldLatLng;    //latLng of marker prior to drag
     public LatLng savedLatLng; //latLng of selectedMarker from bundle on rotation so we can reset selectedMarker on redraw
 
-    public static MapFragment newInstance(ToolbarManager toolbarManager){
+    public static MapFragment newInstance(){
         MapFragment fragment = new MapFragment();
-        fragment.toolbarManager = toolbarManager;
         return fragment;
     }
 
@@ -512,9 +514,8 @@ public class MapFragment extends Fragment implements
                     }
 
 
-                    toolbarManager.drawMenu(new MenuOption(MAP_ZOOMING, true),
-                            new MenuOption(MAP_COMPONENTS, true),
-                            new MenuOption(MARKER_NAVIGATION, (model.numLocations() > 1) ? true : false));
+                    toolbarManager.drawMenu(new MenuOption(MAP_COMPONENTS, true));
+                    listener.displayNavigationButtons((model.numLocations() > 1) ? true : false);
                 }
             });
 

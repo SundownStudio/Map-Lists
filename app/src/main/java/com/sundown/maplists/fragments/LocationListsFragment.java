@@ -24,8 +24,7 @@ import java.util.Map;
 
 import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_ZOOMING;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_NAVIGATION;
+
 
 /**
  * Created by Sundown on 4/30/2015.
@@ -72,9 +71,8 @@ public class LocationListsFragment extends Fragment {
 
         loader = new Loader().start();
 
-        toolbarManager.drawMenu(new MenuOption(MAP_ZOOMING, false),
+        toolbarManager.drawMenu(
                 new MenuOption(MAP_COMPONENTS, false),
-                new MenuOption(MARKER_NAVIGATION, false),
                 new MenuOption(EDIT_DELETE, false));
 
     }

@@ -17,6 +17,7 @@ public class ToolbarManager {
     public ToolbarManager(Toolbar toolbarTop, Toolbar toolbarBottom){
         this.toolbarTop = toolbarTop;
         this.toolbarBottom = toolbarBottom;
+        toolbarTop.setTitle("Map-Lists");
     }
 
 
@@ -39,16 +40,8 @@ public class ToolbarManager {
                     toolbarBottom.getMenu().setGroupVisible(R.id.group_marker_move, option.show);
                     break;
 
-                case MARKER_NAVIGATION:
-                    toolbarTop.getMenu().setGroupVisible(R.id.group_marker_navigation, option.show);
-                    break;
-
                 case MAP_COMPONENTS:
                     toolbarTop.getMenu().setGroupVisible(R.id.group_map_components, option.show);
-                    break;
-
-                case MAP_ZOOMING:
-                    toolbarTop.getMenu().setGroupVisible(R.id.group_map_zooming, option.show);
                     break;
 
 

@@ -2,6 +2,8 @@ package com.sundown.maplists.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -10,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.fragments.AddListDialogFragment;
@@ -33,7 +37,7 @@ import com.sundown.maplists.views.LocationListsView;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
 public class MainActivity extends AppCompatActivity implements
-        DeleteDialogFragment.ConfirmDeleter, AddListDialogFragment.AddListListener, LocationListsView.LocationListsListener {
+        DeleteDialogFragment.ConfirmDeleter, AddListDialogFragment.AddListListener, LocationListsView.LocationListsListener, MapFragment.MapFragmentListener {
 
 
     //NOTE: This app follows a MVC pattern:
@@ -51,6 +55,29 @@ public class MainActivity extends AppCompatActivity implements
     private FragmentManager fm;
     private DatabaseCommunicator db;
     private ToolbarManager toolbarManager;
+
+    private FloatingActionButton zoomIn;
+    private FloatingActionButton zoomOut;
+    private FloatingActionButton navigateNext;
+    private FloatingActionButton navigatePrior;
+
+    private final int INTERVAL = 100;
+    private Handler handler = new Handler();
+    private Runnable zoomInRunnable =  new Runnable() {
+        @Override
+        public void run() {
+            mapFragment.zoom(true);
+            schedulePeriodicMethod(zoomInRunnable);
+        }
+    };
+    private Runnable zoomOutRunnable =  new Runnable() {
+        @Override
+        public void run() {
+            mapFragment.zoom(false);
+            schedulePeriodicMethod(zoomOutRunnable);
+        }
+    };
+
 
     //FRAGMENTS
 
@@ -79,28 +106,32 @@ public class MainActivity extends AppCompatActivity implements
     /** Navigation drawer */
     private NavigationDrawerFragment drawerFragment;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setUpButtons();
+
 
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
         setUpToolBars();
 
         if (savedInstanceState == null){ //activity first created, show map fragment as default..
-            mapFragment = MapFragment.newInstance(toolbarManager);
+            mapFragment = MapFragment.newInstance();
+            mapFragment.setToolbarManager(toolbarManager);
+            mapFragment.setMapFragmentListener(this);
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, mapFragment, FRAGMENT_MAP);
             transaction.commit();
 
         } else { //activity recreated, grab existing retained fragments and reset their listeners
             mapFragment = (MapFragment) fm.findFragmentByTag(FRAGMENT_MAP);
-            if (mapFragment == null){
-                mapFragment = MapFragment.newInstance(toolbarManager);
-            } else {
-                mapFragment.setToolbarManager(toolbarManager);
-            }
+            if (mapFragment == null)
+                mapFragment = MapFragment.newInstance();
+            mapFragment.setToolbarManager(toolbarManager);
+            mapFragment.setMapFragmentListener(this);
 
             locationListsFragment = (LocationListsFragment) fm.findFragmentByTag(FRAGMENT_LOCATION_LISTS);
             if (locationListsFragment != null){
@@ -125,6 +156,64 @@ public class MainActivity extends AppCompatActivity implements
 
             deleteDialogFragment = (DeleteDialogFragment) fm.findFragmentByTag(FRAGMENT_DELETE);
         }
+
+    }
+
+    private void setUpButtons(){
+        zoomIn = (FloatingActionButton) findViewById(R.id.fab_zoomIn);
+        zoomOut = (FloatingActionButton) findViewById(R.id.fab_zoomOut);
+        navigateNext = (FloatingActionButton) findViewById(R.id.fab_navigateNext);
+        navigatePrior = (FloatingActionButton) findViewById(R.id.fab_navigatePrior);
+
+        zoomIn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        v.setPressed(true);
+                        schedulePeriodicMethod(zoomInRunnable);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        v.setPressed(false);
+                        stopPeriodicMethod(zoomInRunnable);
+                        break;
+                }
+                return true;
+            }
+        });
+
+
+        zoomOut.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        v.setPressed(true);
+                        schedulePeriodicMethod(zoomOutRunnable);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        v.setPressed(false);
+                        stopPeriodicMethod(zoomOutRunnable);
+                        break;
+                }
+                return true;
+            }
+        });
+
+        navigateNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mapFragment.navigateNext(true);
+            }
+        });
+
+        navigatePrior.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mapFragment.navigateNext(false);
+            }
+        });
+
     }
 
 
@@ -210,22 +299,6 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             }
 
-            case R.id.action_navigate_prior:
-                mapFragment.navigateNext(false);
-                break;
-
-            case R.id.action_navigate_next:
-                mapFragment.navigateNext(true);
-                break;
-
-            case R.id.action_zoom_in:
-                mapFragment.zoom(true);
-                break;
-
-            case R.id.action_zoom_out:
-                mapFragment.zoom(false);
-                break;
-
         }
         return true;
     }
@@ -283,6 +356,14 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
         return true;
+    }
+
+    public void schedulePeriodicMethod(Runnable runnable) {
+        handler.postDelayed(runnable, INTERVAL);
+    }
+
+    public void stopPeriodicMethod(Runnable runnable) {
+        handler.removeCallbacks(runnable);
     }
 
 
@@ -426,5 +507,16 @@ public class MainActivity extends AppCompatActivity implements
 
         } catch (Exception e){Log.e(e);}
 
+    }
+
+    @Override
+    public void displayNavigationButtons(boolean display) {
+        if (display){
+            navigateNext.setVisibility(View.VISIBLE);
+            navigatePrior.setVisibility(View.VISIBLE);
+        } else {
+            navigateNext.setVisibility(View.GONE);
+            navigatePrior.setVisibility(View.GONE);
+        }
     }
 }

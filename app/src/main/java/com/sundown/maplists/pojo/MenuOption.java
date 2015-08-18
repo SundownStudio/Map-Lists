@@ -6,7 +6,7 @@ package com.sundown.maplists.pojo;
 public class MenuOption{
 
     public enum GroupView {
-        EDIT_DELETE, MARKER_COMPONENTS, MARKER_MOVE, MARKER_NAVIGATION, MAP_COMPONENTS, MAP_ZOOMING
+        EDIT_DELETE, MARKER_COMPONENTS, MARKER_MOVE, MAP_COMPONENTS
     }
 
     public GroupView groupView;
