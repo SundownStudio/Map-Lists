@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +32,7 @@ import com.sundown.maplists.views.LocationListsView;
 
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
-public class MainActivity extends ActionBarActivity implements
+public class MainActivity extends AppCompatActivity implements
         DeleteDialogFragment.ConfirmDeleter, AddListDialogFragment.AddListListener, LocationListsView.LocationListsListener {
 
 

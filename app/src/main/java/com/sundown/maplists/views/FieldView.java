@@ -1,6 +1,8 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.AttributeSet;
@@ -15,13 +17,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.Field;
+import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
+import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 
 
 /**
@@ -174,24 +176,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                                 listener.entryTyped((int) getTag(), text);
                         }
                     }
-                }); /*
-                v.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        listener.entryTyped((int) getTag(), s.toString());
-                        Log.m("afterTextChanged fired");
-                    }
-                });*/
+                });
 
                 switch (entry.type) {
                     case FIELD_NUMBER:
@@ -205,6 +190,27 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                         break;
                     case FIELD_TIME:
                         v.setHint(timeFormat.format(new Date()));
+                        break;
+                    case FIELD_PHONE:
+                        v.setInputType(InputType.TYPE_CLASS_PHONE);
+                        v.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                //PhoneNumberUtils.formatNumber(s, PhoneNumberUtils.getFormatTypeForLocale(Locale.getDefault()));
+                                //listener.entryTyped((int) getTag(), s.toString());
+                                Log.m("FieldView", "afterTextChanged fire: " + s);
+                            }
+                        });
                         break;
                 }
 
