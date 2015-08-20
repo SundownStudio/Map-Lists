@@ -31,19 +31,19 @@ import java.util.List;
 /**
  * Created by Sundown on 5/21/2015.
  */
-public class LocationListsView extends RelativeLayout {
+public class AllListsView extends RelativeLayout {
 
-    public interface LocationListsListener{
+    public interface AllListsListener{
         void LocationListSelected(LocationList list);
     }
 
     private RecyclerView recyclerView;
     private TextView emptyListText;
     private AdapterLocationItems adapter;
-    private LocationListsListener listener;
+    private AllListsListener listener;
 
 
-    public LocationListsView(Context context, AttributeSet attrs) {
+    public AllListsView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -51,7 +51,7 @@ public class LocationListsView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        emptyListText = (TextView) findViewById(R.id.locationListText);
+        emptyListText = (TextView) findViewById(R.id.emptyText);
         recyclerView = (RecyclerView) findViewById(R.id.locationList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new AdapterLocationItems(getContext());
@@ -59,7 +59,7 @@ public class LocationListsView extends RelativeLayout {
 
     }
 
-    public void setListAndListener(List<LocationList> items, LocationListsListener listener){
+    public void setListAndListener(List<LocationList> items, AllListsListener listener){
         if (items.size() > 0)
             emptyListText.setVisibility(View.GONE);
         adapter.setList(items);

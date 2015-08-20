@@ -16,14 +16,12 @@
             android:orientation="vertical">
 
 
-
-        <LinearLayout
-            android:id="@+id/add_list_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            android:orientation="vertical" />
-
+            <LinearLayout
+                android:id="@+id/add_list_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:orientation="vertical" />
 
 
             <LinearLayout
@@ -32,24 +30,24 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:layout_weight="1"
                     android:id="@+id/cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/cancel" />
 
                 <Button
-                    android:layout_weight="1"
                     android:id="@+id/add"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/add_field" />
 
                 <Button
-                    android:layout_weight="1"
                     android:id="@+id/enter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/enter" />
 
             </LinearLayout>

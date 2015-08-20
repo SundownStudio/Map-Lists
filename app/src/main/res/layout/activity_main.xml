@@ -27,8 +27,8 @@
         <RelativeLayout
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </RelativeLayout>
+            android:layout_height="match_parent" />
+
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_zoomIn"
@@ -37,6 +37,7 @@
                 android:src="@drawable/ic_zoom_in"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:visibility="gone"
                 app:fabSize="mini" />
 
             <android.support.design.widget.FloatingActionButton
@@ -47,6 +48,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="55dp"
+                android:visibility="gone"
                 app:fabSize="mini"/>
 
             <android.support.design.widget.FloatingActionButton
@@ -57,6 +59,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginBottom="55dp"
+                android:visibility="gone"
                 app:fabSize="mini"/>
 
             <android.support.design.widget.FloatingActionButton
@@ -68,6 +71,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginBottom="55dp"
                 android:layout_marginRight="55dp"
+                android:visibility="gone"
                 app:fabSize="mini"/>
 
         </RelativeLayout>

@@ -5,7 +5,7 @@
 
 
 
-    <string name="app_name">MapLists</string>
+    <string name="app_name">Map-Lists</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Settings</string>
 
@@ -34,7 +34,7 @@
     <string name="location_list">List</string>
     <string name="navigate_prior">Prior Location</string>
     <string name="navigate_next">Next Location</string>
-    <string name="delete_confirm">will be deleted along with all of its contents.</string>
+    <string name="delete_confirm"> will be deleted along with all of its contents.</string>
 
 
     <string name="enter_address">ENTER AN ADDRESS</string>
@@ -96,5 +96,7 @@
     <string name="no_address_found">No Address Found, it may not be there anymore</string>
     <string name="address_found">Address Found</string>
     <string name="edit">"Edit "</string>
-
+    <string name="add_lists_activity">AddLists</string>
+    <string name="all_lists_activity">AllLists</string>
+    <string name="location_list_activity">LocationList</string>
 </resources>

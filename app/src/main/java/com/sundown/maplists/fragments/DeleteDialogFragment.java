@@ -9,9 +9,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.List;
 import com.sundown.maplists.views.DeleteView;
 
 /**
@@ -20,22 +17,18 @@ import com.sundown.maplists.views.DeleteView;
 public class DeleteDialogFragment extends DialogFragment {
 
     public interface ConfirmDeleter {
-        void confirmDelete(List list);
+        void confirmDelete(boolean confirmed);
     }
 
     private final static String TEXT = "text";
     private ConfirmDeleter confirmDeleter;
-    private List list;
 
 
-    public static DeleteDialogFragment newInstance(List list, String confirmText) {
+    public static DeleteDialogFragment newInstance(String confirmText) {
         DeleteDialogFragment d = new DeleteDialogFragment();
-        EntryField entryField = (EntryField) list.getField(0);
-
         Bundle args = new Bundle();
-        args.putString(TEXT, entryField.entry + " " + confirmText);
+        args.putString(TEXT, confirmText);
         d.setArguments(args);
-        d.list = list;
         return d;
     }
 
@@ -52,7 +45,7 @@ public class DeleteDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.m("DeleteDialogFragment onCreate");
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         confirmDeleter = (ConfirmDeleter) getActivity();
 
@@ -66,14 +59,14 @@ public class DeleteDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                confirmDeleter.confirmDelete(list);
+                confirmDeleter.confirmDelete(true);
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-
+                confirmDeleter.confirmDelete(false);
             }
         });
 

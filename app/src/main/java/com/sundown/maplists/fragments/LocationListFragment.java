@@ -28,7 +28,7 @@ public class LocationListFragment extends Fragment {
     private ToolbarManager toolbarManager;
     public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
     private LocationListView view;
-    public LocationList model;
+    private LocationList model;
     private LinearLayout layout;
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

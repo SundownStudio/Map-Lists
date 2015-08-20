@@ -1,9 +1,10 @@
 package com.sundown.maplists.fragments;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import com.sundown.maplists.models.List;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.storage.DatabaseCommunicator;
-import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.views.AddFieldView;
 import com.sundown.maplists.views.AddListView;
@@ -28,15 +28,10 @@ import java.util.Set;
 import static com.sundown.maplists.models.FieldType.FIELD_PHOTO;
 
 /**
- * Created by Sundown on 7/15/2015.
+ * Created by Sundown on 8/18/2015.
  */
-public class AddListDialogFragment extends DialogFragment implements AddListView.AddItemViewListener,
-        AddFieldView.FieldSelector, FieldView.FieldViewListener, PhotoFragment.PhotoFragmentListener{
+public class AddListFragment extends Fragment implements AddListView.AddItemViewListener, FieldView.FieldViewListener, PhotoFragment.PhotoFragmentListener, AddFieldView.FieldSelector {
 
-
-    public interface AddListListener {
-        void listAdded(List list, Operation operation);
-    }
 
     public static final String FRAGMENT_SELECT_FIELD = "SELECT_FIELD";
     public static final String FRAGMENT_EDIT_FIELD_TITLE = "EDIT_TITLE";
@@ -54,10 +49,6 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
     /** serves as a container for our photo fragments */
     private HashMap<Integer, PhotoFragment> photoFragments = new HashMap<>();
 
-    /** the listener for this fragment */
-    private AddListListener listener;
-    public void setListener(AddListListener listener){ this.listener = listener;}
-
     /** the view for this fragment */
     private AddListView view;
 
@@ -68,71 +59,37 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
     private LinearLayout form;
     private LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-    /** the title for this dialog */
-    private String title;
-
-    /** the operation to be performed once the user has accepted modifications to this list */
-    private Operation operation;
-
     /** the width/height of this dialog fragment */
     private int width, height;
 
-    /** denotes whether view has been shown yet and thus whether screen-dimensions already defined  */
-    private static boolean setupCalled;
+    private ActivityResult result;
 
-    /**
-     * Always create a new instance this way, leave the empty public constructor
-     *
-     * @param model the current list be displayed as a form
-     * @param title for this dialog
-     * @param operation to be performed upon the DB after user modifies list
-     * */
-    public static AddListDialogFragment newInstance(List model, String title, Operation operation) {
-        AddListDialogFragment fragment = new AddListDialogFragment();
+
+    public static AddListFragment newInstance(List model) {
+        AddListFragment fragment = new AddListFragment();
         fragment.model = model;
-        fragment.title = title;
-        fragment.operation = operation;
         return fragment;
     }
 
-    /** NEVER CALL THIS */
-    public AddListDialogFragment(){}
-
-
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup viewGroup, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         //NOTE: if user rotates in camera/gallery, upon returning to our app THIS method gets called BEFORE the main activity's onResult... however
-        //if user DOESNT rotate in camera/gallery, then this doesn't get called AT ALL..
+        //if user DOESNT rotate in camera/gallery, then this doesn't get called AT ALL.. //todo see if this is true now..
 
         setRetainInstance(true);
         fm = getChildFragmentManager();
-        listener = (AddListListener) getActivity();
-
-        view = (AddListView) inflater.inflate(R.layout.dialog_add_list, viewGroup);
+        view = (AddListView) inflater.inflate(R.layout.fragment_add_list, container, false);
         view.setListener(this);
-        setupCalled = false;
-
-        getDialog().setTitle(title);
-        getDialog().setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                setup();
-            }
-        });
-
         return view;
     }
-
 
     @Override
     public void onResume() {
         super.onResume();
         setUserVisibleHint(true);
-        if (height > 0 && width > 0) { //we only want to init photofrags if height/width is set, otherwise let the onShowListener call it cuz height/width is never 0 then
-            setup();
-        }
+        drawForm();
     }
 
     @Override
@@ -141,57 +98,34 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
         setUserVisibleHint(false);
     }
 
-
     @Override //cant do transactions after this method is called.. leads to that wonderful crash.. but must remove fragments for them to display on reload and cant do it when putting together layout
     public void onSaveInstanceState(Bundle outState) {
         Set<Integer> keys = photoFragments.keySet();
         for (Integer key: keys){
             fm.beginTransaction().remove(photoFragments.get(key)).commit();
         }
-        setupCalled = false;
+        photoFragments.clear();
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onDestroyView() {
-        //needed due to a bug with the compatibility library but only if you do onRetainInstance
-        if (getDialog() != null && getRetainInstance())
-            getDialog().setDismissMessage(null);
-        super.onDestroyView();
-    }
+    public void setActivityResult(ActivityResult result){ this.result = result;}
 
 
-    @Override
-    public void dismiss() {
-        photoFragments.clear();
-        super.dismiss();
-    }
-
-    /**
-     * Called by main activity, hand these results off to the relevant photo-fragment
-     *
-     * @param result results either from camera or gallery
-     */
-    public void handleActivityResults(ActivityResult result){
-        PreferenceManager preferenceManager = PreferenceManager.getInstance();
-        int callingId = preferenceManager.getInt(PhotoFragment.FRAGMENT_ID);
-        photoFragments.get(callingId).onActivityResult(result.requestCode, result.resultCode, result.data);
-    }
-
-
-    private void setup(){
-        if (!setupCalled) {
-            setupCalled = true;
-
-            if (height == 0) {height = (int) (getDialog().getWindow().getDecorView().getHeight() * PROP_HEIGHT);}
-            if (width == 0) {width = (int) (getDialog().getWindow().getDecorView().getWidth() * PROP_WIDTH);}
-
-            drawForm();
+    public void handleActivityResult(){
+        if (result != null) {
+            PreferenceManager preferenceManager = PreferenceManager.getInstance();
+            int callingId = preferenceManager.getInt(PhotoFragment.FRAGMENT_ID);
+            photoFragments.get(callingId).onActivityResult(result.requestCode, result.resultCode, result.data);
+            result = null;
         }
     }
 
 
     private void drawForm(){
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        height = (int) (displaymetrics.heightPixels * PROP_HEIGHT);
+        width = (int) (displaymetrics.widthPixels * PROP_WIDTH);
 
         if (form != null)
             form.removeAllViews();
@@ -205,6 +139,7 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
             addToForm(k, model.getField(k));
         }
         view.updateView(form);
+        handleActivityResult();
     }
 
     private void addToForm(int id, Field field){
@@ -214,6 +149,7 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
             addPhotoFragment(id, field);
         }
     }
+
 
     private FieldView addFieldView(Field field) {
 
@@ -237,61 +173,7 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
         fm.beginTransaction().replace(containerViewId, photoFragment).commit();
     }
 
-    //VIEW BUTTONS
-
-    @Override
-    public void cancelPressed(){
-        listener.listAdded(null, Operation.NOTHING);
-        dismiss();
-    }
-
-    @Override
-    public void addFieldPressed(){
-        addFieldDialogFragment = AddFieldDialogFragment.newInstance(this);
-        addFieldDialogFragment.show(fm, FRAGMENT_SELECT_FIELD);
-    }
-
-    @Override
-    public void enterPressed(){
-        listener.listAdded(refreshModel(), operation);
-        dismiss();
-    }
-
-    @Override
-    public void addNewField(Field field) {
-        addFieldDialogFragment.dismiss();
-        int id = model.addField(field);
-        addToForm(id, field);
-    }
-
-    @Override
-    public void editFieldTitle(int tag) {
-        Field field = model.getField(tag);
-        editTitleDialogFragment = EditTitleDialogFragment.newInstance(field);
-        editTitleDialogFragment.show(fm, FRAGMENT_EDIT_FIELD_TITLE);
-
-    }
-
-    @Override
-    public void deleteField(int tag) {
-        model.removeField(tag); //remove from model
-        FieldView fieldView = (FieldView) form.findViewWithTag(tag); //and from view
-        int index = form.indexOfChild(fieldView);
-        form.removeViewAt(index);
-
-    }
-
-    @Override
-    public void entryTyped(int tag, String entry) {
-        EntryField entryField = (EntryField) model.getField(tag);
-        entryField.entry = entry;
-    }
-
-
-    //why refresh all at once upon leaving the fragment? why not update it continually along the way?
-    //because TextWatcher is expensive if updating model every time char is typed.. and OnFocusChangeListener may not always trigger if
-    //focus doesnt leave it before button pressed to leave fragment
-    private List refreshModel() {
+    public List refreshModel() {
 
         Integer[] keys = model.getKeys();
         for (Integer k : keys){
@@ -302,6 +184,44 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
             }
         }
         return model;
+    }
+
+
+    @Override
+    public void cancelPressed() {
+
+    }
+
+    @Override
+    public void addFieldPressed() {
+        addFieldDialogFragment = AddFieldDialogFragment.newInstance(this);
+        addFieldDialogFragment.show(fm, FRAGMENT_SELECT_FIELD);
+    }
+
+    @Override
+    public void enterPressed() {
+
+    }
+
+    @Override
+    public void editFieldTitle(int tag) {
+        Field field = model.getField(tag);
+        editTitleDialogFragment = EditTitleDialogFragment.newInstance(field);
+        editTitleDialogFragment.show(fm, FRAGMENT_EDIT_FIELD_TITLE);
+    }
+
+    @Override
+    public void deleteField(int tag) {
+        model.removeField(tag); //remove from model
+        FieldView fieldView = (FieldView) form.findViewWithTag(tag); //and from view
+        int index = form.indexOfChild(fieldView);
+        form.removeViewAt(index);
+    }
+
+    @Override
+    public void entryTyped(int tag, String entry) {
+        EntryField entryField = (EntryField) model.getField(tag);
+        entryField.entry = entry;
     }
 
     @Override
@@ -320,4 +240,10 @@ public class AddListDialogFragment extends DialogFragment implements AddListView
         model.removeField(id);
     }
 
+    @Override
+    public void addNewField(Field field) {
+        addFieldDialogFragment.dismiss();
+        int id = model.addField(field);
+        addToForm(id, field);
+    }
 }

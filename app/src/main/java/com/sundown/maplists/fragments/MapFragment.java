@@ -79,7 +79,7 @@ public class MapFragment extends Fragment implements
         GoogleApiClient.OnConnectionFailedListener {
 
     public interface MapFragmentListener{
-        void displayNavigationButtons(boolean display);
+        void displayFloatingButtons(boolean displayNavigationButtons);
     }
 
     /** Constants */
@@ -110,10 +110,7 @@ public class MapFragment extends Fragment implements
     public LatLng oldLatLng;    //latLng of marker prior to drag
     public LatLng savedLatLng; //latLng of selectedMarker from bundle on rotation so we can reset selectedMarker on redraw
 
-    public static MapFragment newInstance(){
-        MapFragment fragment = new MapFragment();
-        return fragment;
-    }
+    public static MapFragment newInstance(){ return new MapFragment();}
 
 
     @Override
@@ -122,6 +119,7 @@ public class MapFragment extends Fragment implements
         model = Locations.getInstance();
         mResultReceiver = new AddressResultReceiver(new Handler());
         db = DatabaseCommunicator.getInstance();
+        Log.m("toolbar", "mapfragment onCreate");
     }
 
     @Override
@@ -129,6 +127,7 @@ public class MapFragment extends Fragment implements
         prefs = PreferenceManager.getInstance();
         view = (MapView) inflater.inflate(R.layout.fragment_map, container, false);
         view.setListener(this);
+        Log.m("toolbar", "mapfragment onCreateView");
         return view;
     }
 
@@ -138,8 +137,11 @@ public class MapFragment extends Fragment implements
         super.onResume();
         setUserVisibleHint(true);
         model.clear();
-        initMap();
+        getActivity().invalidateOptionsMenu();
+        Log.m("toolbar", "mapfragment onResume");
+
     }
+
 
     @Override
     public void onPause() {
@@ -155,6 +157,7 @@ public class MapFragment extends Fragment implements
         model.clear();
         view.cleanup();
         loader.stop();
+        Log.m("toolbar", "mapfragment onPause");
     }
 
 
@@ -313,7 +316,7 @@ public class MapFragment extends Fragment implements
 
     ////MAP SETUP METHODS ////
 
-    private void initMap() {
+    public void initMap() {
         FragmentManager fm = getChildFragmentManager();
         mapFragment = (SupportMapFragment) fm.findFragmentByTag(FRAGMENT_GMAP);
         if (mapFragment == null)
@@ -515,7 +518,7 @@ public class MapFragment extends Fragment implements
 
 
                     toolbarManager.drawMenu(new MenuOption(MAP_COMPONENTS, true));
-                    listener.displayNavigationButtons((model.numLocations() > 1) ? true : false);
+                    listener.displayFloatingButtons((model.numLocations() > 1) ? true : false);
                 }
             });
 

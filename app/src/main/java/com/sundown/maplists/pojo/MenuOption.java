@@ -16,4 +16,8 @@ public class MenuOption{
         this.groupView = groupView;
         this.show = show;
     }
+
+    public String toString(){
+        return "Groupview: " + groupView + " show: " + show;
+    }
 }

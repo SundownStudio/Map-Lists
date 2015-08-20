@@ -16,8 +16,7 @@
         <ImageView
             android:id="@+id/locationImage"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/removeFragment" />
+            android:layout_height="wrap_content" />
 
 
 

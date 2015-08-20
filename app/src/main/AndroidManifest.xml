@@ -38,6 +38,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.sundown.maplists.activities.AddListActivity"
+            android:label="@string/add_lists_activity"
+            android:parentActivityName="com.sundown.maplists.activities.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sundown.maplists.activities.MainActivity" />
+        </activity>
+        <activity android:name="com.sundown.maplists.activities.AllListsActivity"
+            android:label="@string/all_lists_activity"
+            android:parentActivityName="com.sundown.maplists.activities.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sundown.maplists.activities.MainActivity" />
+        </activity>
+        <activity android:name="com.sundown.maplists.activities.LocationListActivity"
+            android:label="@string/location_list_activity"
+            android:parentActivityName="com.sundown.maplists.activities.AllListsActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sundown.maplists.activities.AllListsActivity" />
+        </activity>
         <service
             android:name="com.sundown.maplists.network.FetchAddressIntentService"
             android:exported="false"/>

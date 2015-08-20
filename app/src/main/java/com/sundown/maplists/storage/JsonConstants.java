@@ -5,7 +5,7 @@ package com.sundown.maplists.storage;
  */
 public final class JsonConstants {
 
-
+    public static final String PARENT_DOC_ID = "parent_doc";
     public static final String DOCUMENT_ID = "_id"; //underscore REQUIRED for cb, do not use for our own fields
 
     public static final String MAP_ID = "mapId";
@@ -17,11 +17,12 @@ public final class JsonConstants {
 
 
     public static final String TYPE = "type";
-    public static final String COUNTS = "counts";
-
-    public static final String COUNT_SCHEMAS = "schemas";
     public static final String TYPE_MAP_LIST = "mapList";
     public static final String TYPE_LOCATION_LIST = "locationList";
+    public static final String OPERATION = "operation";
+    public static final String COUNTS = "counts";
+    public static final String COUNT_SCHEMAS = "schemas";
+
     public static final String LIST_ID = "listId";
     public static final String FIELD_ENTRIES = "entries";
     public static final String FIELD_TITLE = "title";

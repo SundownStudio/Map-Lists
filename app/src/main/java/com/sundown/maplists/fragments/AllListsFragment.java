@@ -17,7 +17,7 @@ import com.sundown.maplists.models.LocationLists;
 import com.sundown.maplists.storage.ContentLoader;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.utils.ToolbarManager;
-import com.sundown.maplists.views.LocationListsView;
+import com.sundown.maplists.views.AllListsView;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -29,20 +29,20 @@ import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
 /**
  * Created by Sundown on 4/30/2015.
  */
-public class LocationListsFragment extends Fragment {
+public class AllListsFragment extends Fragment {
 
     public int mapId;
-    private LocationListsView view;
+    private AllListsView view;
     private LocationLists model;
     private ContentLoader loader;
-    private LocationListsView.LocationListsListener listener;
-    public void setListener(LocationListsView.LocationListsListener listener){ this.listener = listener;}
+    private AllListsView.AllListsListener listener;
+    public void setListener(AllListsView.AllListsListener listener){ this.listener = listener;}
     private ToolbarManager toolbarManager;
     public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
 
 
-    public static LocationListsFragment newInstance(int mapId, LocationListsView.LocationListsListener listener, ToolbarManager toolbarManager){
-        LocationListsFragment fragment = new LocationListsFragment();
+    public static AllListsFragment newInstance(int mapId, AllListsView.AllListsListener listener, ToolbarManager toolbarManager){
+        AllListsFragment fragment = new AllListsFragment();
         fragment.mapId = mapId;
         fragment.listener = listener;
         fragment.toolbarManager = toolbarManager;
@@ -58,7 +58,7 @@ public class LocationListsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = (LocationListsView) inflater.inflate(R.layout.fragment_location, container, false);
+        view = (AllListsView) inflater.inflate(R.layout.fragment_all_lists, container, false);
         return view;
     }
 
@@ -112,8 +112,7 @@ public class LocationListsFragment extends Fragment {
             model.clear();
             for (Iterator<QueryRow> it = result; it.hasNext(); ) {
                 QueryRow row = it.next();
-                Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
-
+                Map<String, Object> properties = db.read(row.getSourceDocumentId());
                 model.addItem(new LocationList(mapId).setProperties(properties));
             }
 

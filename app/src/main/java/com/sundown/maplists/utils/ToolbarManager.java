@@ -3,6 +3,7 @@ package com.sundown.maplists.utils;
 import android.support.v7.widget.Toolbar;
 
 import com.sundown.maplists.R;
+import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.pojo.MenuOption;
 
 /**
@@ -17,7 +18,6 @@ public class ToolbarManager {
     public ToolbarManager(Toolbar toolbarTop, Toolbar toolbarBottom){
         this.toolbarTop = toolbarTop;
         this.toolbarBottom = toolbarBottom;
-        toolbarTop.setTitle("Map-Lists");
     }
 
 
@@ -26,6 +26,7 @@ public class ToolbarManager {
             return;
 
         for (MenuOption option: options){
+            Log.m("toolbar", "drawing toolbar " + option);
             switch(option.groupView){
 
                 case EDIT_DELETE:
