@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.fragments.AllListsFragment;
@@ -65,13 +66,14 @@ public class AllListsActivity extends AppCompatActivity implements AllListsView.
     }
 
     private void setUpToolBars(){
+        LinearLayout toolbarTopLayout = (LinearLayout) findViewById(R.id.toolbar_top_layout);
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 
         toolbarTop.setTitle(R.string.all_lists_activity);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom);
+        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
 
     }
 

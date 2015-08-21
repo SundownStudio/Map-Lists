@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.fragments.DeleteDialogFragment;
@@ -196,13 +197,14 @@ public class MainActivity extends AppCompatActivity implements
      * also setup Navigation Drawer (third toolbar)
      */
     private void setUpToolBars(){
+        LinearLayout toolbarTopLayout = (LinearLayout) findViewById(R.id.toolbar_top_layout);
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 
         toolbarTop.setTitle(getString(R.string.app_name));
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayShowHomeEnabled(true); //we want the logo so we can click on it and trigger the navigation drawer
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom);
+        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
 
         drawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbarManager.toolbarTop);

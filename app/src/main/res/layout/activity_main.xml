@@ -11,7 +11,7 @@
 
         <!-- this is defined in toolbar_top.xml -->
         <include
-            android:id="@+id/toolbar_top"
+            android:id="@+id/toolbar_top_layout"
             layout="@layout/toolbar_top" />
 
         <include
@@ -22,7 +22,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/toolbar_bottom"
-            android:layout_below="@+id/toolbar_top">
+            android:layout_below="@+id/toolbar_top_layout"
+            android:layout_marginTop="-6dp">
 
         <RelativeLayout
             android:id="@+id/fragment_container"

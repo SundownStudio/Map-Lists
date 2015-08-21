@@ -519,6 +519,7 @@ public class MapFragment extends Fragment implements
 
                     toolbarManager.drawMenu(new MenuOption(MAP_COMPONENTS, true));
                     listener.displayFloatingButtons((model.numLocations() > 1) ? true : false);
+
                 }
             });
 

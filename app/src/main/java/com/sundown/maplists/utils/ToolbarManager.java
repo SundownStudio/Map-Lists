@@ -1,6 +1,7 @@
 package com.sundown.maplists.utils;
 
 import android.support.v7.widget.Toolbar;
+import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
@@ -13,11 +14,14 @@ public class ToolbarManager {
 
     public Toolbar toolbarTop;
     public Toolbar toolbarBottom;
+    public LinearLayout toolbarTopLayout;
 
 
-    public ToolbarManager(Toolbar toolbarTop, Toolbar toolbarBottom){
+
+    public ToolbarManager(Toolbar toolbarTop, Toolbar toolbarBottom, LinearLayout toolbarTopLayout){
         this.toolbarTop = toolbarTop;
         this.toolbarBottom = toolbarBottom;
+        this.toolbarTopLayout = toolbarTopLayout;
     }
 
 
@@ -48,6 +52,8 @@ public class ToolbarManager {
 
             }
         }
+
+        toolbarTopLayout.bringToFront();
     }
 
 
