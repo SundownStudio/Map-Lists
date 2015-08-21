@@ -6,53 +6,19 @@
 
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbarFadeDuration="0">
+        android:scrollbarFadeDuration="0"
+        android:paddingBottom="10dp">
 
         <LinearLayout
+            android:id="@+id/add_list_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_margin="12dp"
+            android:orientation="vertical" />
 
-
-            <LinearLayout
-                android:id="@+id/add_list_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="12dp"
-                android:orientation="vertical" />
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/cancel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/cancel" />
-
-                <Button
-                    android:id="@+id/add"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/add_field" />
-
-                <Button
-                    android:id="@+id/enter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/enter" />
-
-            </LinearLayout>
-
-        </LinearLayout>
 
     </ScrollView>
 

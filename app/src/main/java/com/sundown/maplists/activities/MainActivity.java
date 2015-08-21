@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements
         bottomMenu.clear();
 
         getMenuInflater().inflate(R.menu.menu_top, topMenu);
-        getMenuInflater().inflate(R.menu.menu_bottom, bottomMenu);
+        getMenuInflater().inflate(R.menu.menu_bottom_map, bottomMenu);
 
 
         toolbarManager.toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             case R.id.action_delete: {
                 EntryField entry = (EntryField) mapFragment.getSelectedMapList().getField(0);
-                String confirmText = entry.entry + getResources().getString(R.string.delete_confirm);
+                String confirmText = entry.entry + " " + getResources().getString(R.string.delete_confirm);
 
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
                     mapFragment.gotoLocation();

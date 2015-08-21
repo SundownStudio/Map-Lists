@@ -16,9 +16,10 @@ import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.List;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.pojo.ActivityResult;
+import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.utils.PreferenceManager;
-import com.sundown.maplists.views.AddFieldView;
+import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.AddListView;
 import com.sundown.maplists.views.FieldView;
 
@@ -26,22 +27,23 @@ import java.util.HashMap;
 import java.util.Set;
 
 import static com.sundown.maplists.models.FieldType.FIELD_PHOTO;
+import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
+import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
 
 /**
  * Created by Sundown on 8/18/2015.
  */
-public class AddListFragment extends Fragment implements AddListView.AddItemViewListener, FieldView.FieldViewListener, PhotoFragment.PhotoFragmentListener, AddFieldView.FieldSelector {
+public class AddListFragment extends Fragment implements FieldView.FieldViewListener, PhotoFragment.PhotoFragmentListener {
 
 
-    public static final String FRAGMENT_SELECT_FIELD = "SELECT_FIELD";
+
     public static final String FRAGMENT_EDIT_FIELD_TITLE = "EDIT_TITLE";
     public static final double PROP_HEIGHT = .41;
     public static final double PROP_WIDTH = .85;
 
     private FragmentManager fm;
-
-    /** Fragment for select a new field to add onto this list */
-    private AddFieldDialogFragment addFieldDialogFragment;
+    private ToolbarManager toolbarManager;
+    public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
 
     /** Fragment for editing the title of a current field in this list */
     private EditTitleDialogFragment editTitleDialogFragment;
@@ -65,9 +67,10 @@ public class AddListFragment extends Fragment implements AddListView.AddItemView
     private ActivityResult result;
 
 
-    public static AddListFragment newInstance(List model) {
+    public static AddListFragment newInstance(List model, ToolbarManager toolbarManager) {
         AddListFragment fragment = new AddListFragment();
         fragment.model = model;
+        fragment.toolbarManager = toolbarManager;
         return fragment;
     }
 
@@ -81,7 +84,6 @@ public class AddListFragment extends Fragment implements AddListView.AddItemView
         setRetainInstance(true);
         fm = getChildFragmentManager();
         view = (AddListView) inflater.inflate(R.layout.fragment_add_list, container, false);
-        view.setListener(this);
         return view;
     }
 
@@ -90,6 +92,10 @@ public class AddListFragment extends Fragment implements AddListView.AddItemView
         super.onResume();
         setUserVisibleHint(true);
         drawForm();
+
+        toolbarManager.drawMenu(
+                new MenuOption(MAP_COMPONENTS, false),
+                new MenuOption(EDIT_DELETE, false));
     }
 
     @Override
@@ -142,12 +148,18 @@ public class AddListFragment extends Fragment implements AddListView.AddItemView
         handleActivityResult();
     }
 
-    private void addToForm(int id, Field field){
+    public void addToForm(int id, Field field){
         field.setId(id);
         field.setObserver(addFieldView(field));
         if (field.type == FIELD_PHOTO) {
             addPhotoFragment(id, field);
         }
+    }
+
+    public void addNewField(Field field){
+        int id = model.addField(field);
+        addToForm(id, field);
+        view.scrollToBottom();
     }
 
 
@@ -184,23 +196,6 @@ public class AddListFragment extends Fragment implements AddListView.AddItemView
             }
         }
         return model;
-    }
-
-
-    @Override
-    public void cancelPressed() {
-
-    }
-
-    @Override
-    public void addFieldPressed() {
-        addFieldDialogFragment = AddFieldDialogFragment.newInstance(this);
-        addFieldDialogFragment.show(fm, FRAGMENT_SELECT_FIELD);
-    }
-
-    @Override
-    public void enterPressed() {
-
     }
 
     @Override
@@ -240,10 +235,4 @@ public class AddListFragment extends Fragment implements AddListView.AddItemView
         model.removeField(id);
     }
 
-    @Override
-    public void addNewField(Field field) {
-        addFieldDialogFragment.dismiss();
-        int id = model.addField(field);
-        addToForm(id, field);
-    }
 }

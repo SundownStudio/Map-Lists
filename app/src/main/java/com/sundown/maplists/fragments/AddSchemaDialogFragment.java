@@ -9,31 +9,30 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.views.DeleteView;
+import com.sundown.maplists.logging.Log;
+import com.sundown.maplists.views.AddSchemaView;
+
 
 /**
- * Created by Sundown on 4/17/2015.
+ * Created by Sundown on 8/21/2015.
  */
-public class DeleteDialogFragment extends DialogFragment {
+public class AddSchemaDialogFragment extends DialogFragment {
 
-    public interface ConfirmDeleter {
-        void confirmDelete(boolean confirmed);
+    public interface AddSchemaListener {
+        void schemaAdded(String schema);
     }
 
-    private final static String TEXT = "text";
-    private ConfirmDeleter confirmDeleter;
+    private final static String HINT = "hint";
+    private AddSchemaListener listener;
 
-
-    public static DeleteDialogFragment newInstance(String confirmText) {
-        DeleteDialogFragment d = new DeleteDialogFragment();
+    public static AddSchemaDialogFragment getInstance(String hint){
+        AddSchemaDialogFragment fragment = new AddSchemaDialogFragment();
         Bundle args = new Bundle();
-        args.putString(TEXT, confirmText);
-        d.setArguments(args);
-        return d;
+        args.putString(HINT, hint);
+        fragment.setArguments(args);
+        return fragment;
     }
 
-    //EMPTY CONSTRUCTOR REQUIRED!!!
-    public DeleteDialogFragment(){}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,28 +44,28 @@ public class DeleteDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        confirmDeleter = (ConfirmDeleter) getActivity();
+        listener = (AddSchemaListener) getActivity();
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        DeleteView view = (DeleteView) inflater.inflate(R.layout.dialog_confirm_delete, null);
-        view.setText(getArguments().getString(TEXT));
+        final AddSchemaView view = (AddSchemaView) inflater.inflate(R.layout.dialog_add_schema, null);
+        view.setHint(getArguments().getString(HINT));
 
         builder.setView(view);
-        builder.setTitle(getString(R.string.delete_location));
-        builder.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener() {
+        builder.setTitle(getString(R.string.save_schema));
+        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                notice();
                 dialog.dismiss();
-                confirmDeleter.confirmDelete(true);
+                listener.schemaAdded(view.getEnteredText());
             }
         });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.skip, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                confirmDeleter.confirmDelete(false);
+                listener.schemaAdded(null);
             }
         });
 
@@ -82,5 +81,8 @@ public class DeleteDialogFragment extends DialogFragment {
         super.onDestroyView();
     }
 
+    private void notice(){
+        Log.Toast(getActivity(), "Saving schemas not implemented yet", Log.TOAST_SHORT);
+    }
 
 }

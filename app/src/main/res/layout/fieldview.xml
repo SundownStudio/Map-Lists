@@ -34,6 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:orientation="vertical" />
+        android:orientation="vertical"
+        android:paddingBottom="10dp"/>
 
 </com.sundown.maplists.views.FieldView>

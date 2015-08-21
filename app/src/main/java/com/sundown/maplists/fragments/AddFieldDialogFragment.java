@@ -51,7 +51,7 @@ public class AddFieldDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        AddFieldView view = (AddFieldView) inflater.inflate(R.layout.dialog_select_field, null);
+        AddFieldView view = (AddFieldView) inflater.inflate(R.layout.dialog_add_field, null);
         view.setAdapter(listener, list, getResources().obtainTypedArray(R.array.add_field_images));
 
         builder.setView(view);

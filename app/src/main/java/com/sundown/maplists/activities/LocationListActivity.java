@@ -100,7 +100,7 @@ public class LocationListActivity extends AppCompatActivity implements DeleteDia
         bottomMenu.clear();
 
         getMenuInflater().inflate(R.menu.menu_top, topMenu);
-        getMenuInflater().inflate(R.menu.menu_bottom, bottomMenu);
+        getMenuInflater().inflate(R.menu.menu_bottom_map, bottomMenu);
 
 
         toolbarManager.toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -133,7 +133,7 @@ public class LocationListActivity extends AppCompatActivity implements DeleteDia
 
                 if (locationListFragment != null && locationListFragment.getUserVisibleHint()) {
                     EntryField entryField = (EntryField) model.getField(0);
-                    deleteDialogFragment = DeleteDialogFragment.newInstance(entryField.entry + getResources().getString(R.string.delete_confirm));
+                    deleteDialogFragment = DeleteDialogFragment.newInstance(entryField.entry + " " + getResources().getString(R.string.delete_confirm));
                 }
                 if (deleteDialogFragment != null)
                     deleteDialogFragment.show(fm, FRAGMENT_DELETE);

@@ -84,7 +84,7 @@ public class AllListsActivity extends AppCompatActivity implements AllListsView.
         bottomMenu.clear();
 
         getMenuInflater().inflate(R.menu.menu_top, topMenu);
-        getMenuInflater().inflate(R.menu.menu_bottom, bottomMenu);
+        getMenuInflater().inflate(R.menu.menu_bottom_map, bottomMenu);
 
 
         toolbarManager.toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -107,15 +107,8 @@ public class AllListsActivity extends AppCompatActivity implements AllListsView.
 
     private boolean topToolbarPressed(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-
-            case R.id.action_enter_address: {
-                break;
-            }
 
             case R.id.action_add: {
-                //If we are viewing a specific location, add a new list to that location
                 if (allListsFragment != null && allListsFragment.getUserVisibleHint()) {
                     Intent intent = new Intent(AllListsActivity.this, AddListActivity.class);
                     intent.putExtra(JsonConstants.TYPE, JsonConstants.TYPE_LOCATION_LIST);
