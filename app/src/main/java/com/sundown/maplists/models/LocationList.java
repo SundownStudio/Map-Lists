@@ -2,38 +2,33 @@ package com.sundown.maplists.models;
 
 import java.util.Map;
 
-import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
-import static com.sundown.maplists.storage.JsonConstants.TYPE;
-import static com.sundown.maplists.storage.JsonConstants.TYPE_LOCATION_LIST;
+import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
 
 /**
- * Created by Sundown on 5/4/2015.
+ * Created by Sundown on 8/25/2015.
  */
-public class LocationList extends List {
+public abstract class LocationList extends Schema implements PropertiesHandler {
 
-
-    public int listId;
+    public int mapId;
 
     public LocationList(int mapId){
-        super(mapId);
-        listId = -1;
-        super.addField(new EntryField(listId, "Name", "", FieldType.FIELD_TEXT, true));
+        super();
+        this.mapId = mapId;
     }
 
 
     @Override
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = super.getProperties();
-        properties.put(TYPE, TYPE_LOCATION_LIST);
-        properties.put(LIST_ID, listId);
+        properties.put(MAP_ID, mapId);
         return properties;
     }
-
 
     @Override
     public LocationList setProperties(Map properties) {
         super.setProperties(properties);
-        listId = (Integer) properties.get(LIST_ID);
+        mapId = (Integer) properties.get(MAP_ID);
         return this;
     }
+
 }

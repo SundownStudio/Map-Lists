@@ -16,14 +16,19 @@
 
     </group>
 
+    <group
+        android:id="@+id/group_default_top"
+        android:visible="true">
 
     <item
+        android:background="?attr/selectableItemBackground"
         android:id="@+id/action_add"
         android:icon="@drawable/ic_add_black_24dp"
         android:orderInCategory="200"
         android:title="@string/add"
         app:showAsAction="always" />
 
+    </group>
 
     <item
         android:id="@+id/action_settings"

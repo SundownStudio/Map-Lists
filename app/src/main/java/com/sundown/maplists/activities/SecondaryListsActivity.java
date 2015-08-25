@@ -11,26 +11,26 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.fragments.AllListsFragment;
-import com.sundown.maplists.models.LocationList;
+import com.sundown.maplists.fragments.SecondaryListsFragment;
+import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.ToolbarManager;
-import com.sundown.maplists.views.AllListsView;
+import com.sundown.maplists.views.SecondaryListsView;
 
 /**
  * Created by Sundown on 8/19/2015.
  */
-public class AllListsActivity extends AppCompatActivity implements AllListsView.AllListsListener {
+public class SecondaryListsActivity extends AppCompatActivity implements SecondaryListsView.AllListsListener {
 
-    private static final String FRAGMENT_ALL_LISTS = "ALL_LISTS";
+    private static final String FRAGMENT_SECONDARY_LISTS = "SECONDARY_LISTS";
     private static final int REQUEST_CODE = 101;
 
     private FragmentManager fm;
     private ToolbarManager toolbarManager;
 
     /** shows the list of LocationLists associated with a particular location. */
-    private AllListsFragment allListsFragment;
+    private SecondaryListsFragment secondaryListsFragment;
     private String documentId;
     private int mapId;
 
@@ -49,17 +49,17 @@ public class AllListsActivity extends AppCompatActivity implements AllListsView.
         setUpToolBars();
 
         if (savedInstanceState == null){
-            allListsFragment = AllListsFragment.newInstance(mapId, this, toolbarManager);
+            secondaryListsFragment = SecondaryListsFragment.newInstance(mapId, this, toolbarManager);
             FragmentTransaction transaction = fm.beginTransaction();
-            transaction.replace(R.id.fragment_container, allListsFragment, FRAGMENT_ALL_LISTS);
+            transaction.replace(R.id.fragment_container, secondaryListsFragment, FRAGMENT_SECONDARY_LISTS);
             transaction.commit();
 
 
         } else {
-            allListsFragment = (AllListsFragment) fm.findFragmentByTag(FRAGMENT_ALL_LISTS);
-            if (allListsFragment != null){
-                allListsFragment.setToolbarManager(toolbarManager);
-                allListsFragment.setListener(this);
+            secondaryListsFragment = (SecondaryListsFragment) fm.findFragmentByTag(FRAGMENT_SECONDARY_LISTS);
+            if (secondaryListsFragment != null){
+                secondaryListsFragment.setToolbarManager(toolbarManager);
+                secondaryListsFragment.setListener(this);
             }
         }
 
@@ -70,7 +70,7 @@ public class AllListsActivity extends AppCompatActivity implements AllListsView.
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 
-        toolbarTop.setTitle(R.string.all_lists_activity);
+        toolbarTop.setTitle(R.string.secondary_lists_activity);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
@@ -111,8 +111,8 @@ public class AllListsActivity extends AppCompatActivity implements AllListsView.
         switch (item.getItemId()) {
 
             case R.id.action_add: {
-                if (allListsFragment != null && allListsFragment.getUserVisibleHint()) {
-                    Intent intent = new Intent(AllListsActivity.this, AddListActivity.class);
+                if (secondaryListsFragment != null && secondaryListsFragment.getUserVisibleHint()) {
+                    Intent intent = new Intent(SecondaryListsActivity.this, AddListActivity.class);
                     intent.putExtra(JsonConstants.TYPE, JsonConstants.TYPE_LOCATION_LIST);
                     intent.putExtra(JsonConstants.OPERATION, Operation.INSERT.name());
                     intent.putExtra(JsonConstants.DOCUMENT_ID, documentId);
@@ -135,8 +135,8 @@ public class AllListsActivity extends AppCompatActivity implements AllListsView.
 
 
     @Override
-    public void LocationListSelected(LocationList list) {
-        Intent intent = new Intent(AllListsActivity.this, LocationListActivity.class);
+    public void LocationListSelected(SecondaryList list) {
+        Intent intent = new Intent(SecondaryListsActivity.this, LocationListActivity.class);
         intent.putExtra(JsonConstants.PARENT_DOC_ID, documentId);
         intent.putExtra(JsonConstants.DOCUMENT_ID, list.documentId);
         intent.putExtra(JsonConstants.MAP_ID, list.mapId);

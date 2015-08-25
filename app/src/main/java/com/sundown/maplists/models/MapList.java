@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by Sundown on 4/13/2015.
  */
-public class MapList extends List {
+public class MapList extends LocationList {
 
     public boolean multipleListsEnabled;
     public LatLng latLng;

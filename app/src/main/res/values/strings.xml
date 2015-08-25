@@ -1,11 +1,12 @@
 <resources>
 
+
     <string name="google_maps_key">enter api key here</string>
     <string name="google_places_key">enter api key here</string>
 
 
 
-    <string name="app_name">Map-Lists</string>
+    <string name="app_name">MapLists</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Settings</string>
 
@@ -26,11 +27,11 @@
     <string name="goto_location">Go to Location</string>
     <string name="edit_location">Edit Location</string>
     <string name="drag_location">Drag Location</string>
-    <string name="delete_location">Delete Location</string>
+    <string name="delete_location">Delete Location?</string>
     <string name="search_location">Search Location</string>
 
 
-    <string name="location_list">List</string>
+    <string name="secondary_lists">Secondary Lists</string>
     <string name="navigate_prior">Prior Location</string>
     <string name="navigate_next">Next Location</string>
     <string name="delete_confirm"> will be deleted along with all of its contents.</string>
@@ -96,13 +97,16 @@
     <string name="address_found">Address Found</string>
     <string name="edit">"Edit "</string>
     <string name="add_lists_activity">AddLists</string>
-    <string name="all_lists_activity">AllLists</string>
+    <string name="secondary_lists_activity">SecondaryLists</string>
     <string name="location_list_activity">LocationList</string>
     <string name="add_list">Add List</string>
+    <string name="cancel_add_list">Cancel Add List</string>
     <string name="schema">Schema</string>
     <string name="import_schema">Import Schema</string>
     <string name="save_schema">Save Schema</string>
     <string name="save">Save</string>
     <string name="skip">Skip</string>
     <string name="add_schema_instruction">Enter a name for this schema and press Save to save it, or press Skip.</string>
+    <string name="abandon_changes_text">Abandon all changes without saving?</string>
+    <string name="abandon_changes">Abandon Changes?</string>
 </resources>

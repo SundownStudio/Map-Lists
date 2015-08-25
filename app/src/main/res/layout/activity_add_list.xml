@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/toolbar_top_layout"
+        layout="@layout/toolbar_top" />
+
+    <include
+        android:id="@+id/toolbar_top_spinner_layout"
+        layout="@layout/toolbar_top_spinner"
+        android:visible="false"/>
+
+    <include
+        android:id="@+id/toolbar_bottom"
+        layout="@layout/toolbar_bottom" />
+
+
+    <RelativeLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/toolbar_bottom"
+        android:layout_below="@+id/toolbar_top_layout"/>
+
+
+</RelativeLayout>

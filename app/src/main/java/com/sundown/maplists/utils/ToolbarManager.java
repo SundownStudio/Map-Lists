@@ -49,6 +49,9 @@ public class ToolbarManager {
                     toolbarTop.getMenu().setGroupVisible(R.id.group_map_components, option.show);
                     break;
 
+                case DEFAULT_TOP:
+                    toolbarTop.getMenu().setGroupVisible(R.id.group_default_top, option.show);
+                    break;
 
             }
         }

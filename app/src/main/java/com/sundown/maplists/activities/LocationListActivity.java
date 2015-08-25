@@ -11,10 +11,10 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.fragments.DeleteDialogFragment;
+import com.sundown.maplists.fragments.ActionDialogFragment;
 import com.sundown.maplists.fragments.LocationListFragment;
 import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.LocationList;
+import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.storage.Operation;
@@ -25,16 +25,16 @@ import java.util.Map;
 /**
  * Created by Sundown on 8/19/2015.
  */
-public class LocationListActivity extends AppCompatActivity implements DeleteDialogFragment.ConfirmDeleter {
+public class LocationListActivity extends AppCompatActivity implements ActionDialogFragment.ConfirmActionListener {
 
 
     private static final String FRAGMENT_LOCATION_LIST = "LOCATION_LIST";
-    private static final String FRAGMENT_DELETE = "DELETE";
+    public static final String FRAGMENT_ACTION= "ACTION";
 
     private FragmentManager fm;
     private DatabaseCommunicator db;
     private ToolbarManager toolbarManager;
-    private LocationList model;
+    private SecondaryList model;
     private int mapId;
     private String documentId;
     private String parentDocumentId;
@@ -43,7 +43,7 @@ public class LocationListActivity extends AppCompatActivity implements DeleteDia
     private LocationListFragment locationListFragment;
 
     /** Delete confirmation */
-    private DeleteDialogFragment deleteDialogFragment;
+    private ActionDialogFragment actionDialogFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +61,7 @@ public class LocationListActivity extends AppCompatActivity implements DeleteDia
 
 
         Map<String, Object> properties = db.read(documentId);
-        model = new LocationList(mapId).setProperties(properties);
+        model = new SecondaryList(mapId).setProperties(properties);
 
 
         if (savedInstanceState == null){
@@ -77,7 +77,7 @@ public class LocationListActivity extends AppCompatActivity implements DeleteDia
                 locationListFragment.setToolbarManager(toolbarManager);
             }
 
-            deleteDialogFragment = (DeleteDialogFragment) fm.findFragmentByTag(FRAGMENT_DELETE);
+            actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
         }
 
     }
@@ -135,10 +135,10 @@ public class LocationListActivity extends AppCompatActivity implements DeleteDia
 
                 if (locationListFragment != null && locationListFragment.getUserVisibleHint()) {
                     EntryField entryField = (EntryField) model.getField(0);
-                    deleteDialogFragment = DeleteDialogFragment.newInstance(entryField.entry + " " + getResources().getString(R.string.delete_confirm));
+                    actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.delete_location), entryField.entry + " " + getResources().getString(R.string.delete_confirm));
                 }
-                if (deleteDialogFragment != null)
-                    deleteDialogFragment.show(fm, FRAGMENT_DELETE);
+                if (actionDialogFragment != null)
+                    actionDialogFragment.show(fm, FRAGMENT_ACTION);
                 break;
             }
 
@@ -175,7 +175,7 @@ public class LocationListActivity extends AppCompatActivity implements DeleteDia
     }
 
     @Override
-    public void confirmDelete(boolean confirmed) {
+    public void confirmAction(boolean confirmed) {
         db.delete(model.documentId, model.mapId, Operation.DELETE_LOCATION_LIST);
         returnActivityResult();
     }

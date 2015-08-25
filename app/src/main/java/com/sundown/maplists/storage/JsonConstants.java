@@ -12,16 +12,7 @@ public final class JsonConstants {
     public static final String MAP_LATITUDE = "lat";
     public static final String MAP_LONGITUDE = "lon";
     public static final String MAP_MULTIPLE_LISTS_ENABLED = "multiple_lists_enabled";
-    public static final String COUNT_MAP_LISTS = "mapLists";
 
-
-
-    public static final String TYPE = "type";
-    public static final String TYPE_MAP_LIST = "mapList";
-    public static final String TYPE_LOCATION_LIST = "locationList";
-    public static final String OPERATION = "operation";
-    public static final String COUNTS = "counts";
-    public static final String COUNT_SCHEMAS = "schemas";
 
     public static final String LIST_ID = "listId";
     public static final String FIELD_ENTRIES = "entries";
@@ -31,4 +22,16 @@ public final class JsonConstants {
     public static final String FIELD_PERMANENT = "permanent";
     public static final String IMAGE = "image";
     public static final String THUMB = "thumb";
+
+    public static final String SCHEMA_ID = "schemaId";
+    public static final String SCHEMA_NAME = "schemaName";
+
+    public static final String TYPE = "type";
+    public static final String TYPE_MAP_LIST = "mapList";
+    public static final String TYPE_LOCATION_LIST = "locationList";
+    public static final String TYPE_SCHEMA_LIST = "schemaList";
+    public static final String OPERATION = "operation";
+    public static final String COUNTS = "counts";
+    public static final String COUNT_SCHEMAS = "schema_counts";
+    public static final String COUNT_MAP_LISTS = "mapList_counts";
 }

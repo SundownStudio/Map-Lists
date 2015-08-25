@@ -1,39 +1,38 @@
 package com.sundown.maplists.fragments;
 
-import android.app.AlertDialog;
+
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.views.DeleteView;
+import com.sundown.maplists.views.ConfirmActionView;
 
 /**
- * Created by Sundown on 4/17/2015.
+ * Created by Sundown on 8/25/2015.
  */
-public class DeleteDialogFragment extends DialogFragment {
+public class ActionDialogFragment extends DialogFragment {
 
-    public interface ConfirmDeleter {
-        void confirmDelete(boolean confirmed);
+    public interface ConfirmActionListener {
+        void confirmAction(boolean confirmed);
     }
 
     private final static String TEXT = "text";
-    private ConfirmDeleter confirmDeleter;
+    private final static String TITLE = "title";
+    private ConfirmActionListener listener;
 
-
-    public static DeleteDialogFragment newInstance(String confirmText) {
-        DeleteDialogFragment d = new DeleteDialogFragment();
+    public static ActionDialogFragment newInstance(String confirmTitle, String confirmText) {
+        ActionDialogFragment fragment = new ActionDialogFragment();
         Bundle args = new Bundle();
+        args.putString(TITLE, confirmTitle);
         args.putString(TEXT, confirmText);
-        d.setArguments(args);
-        return d;
+        fragment.setArguments(args);
+        return fragment;
     }
-
-    //EMPTY CONSTRUCTOR REQUIRED!!!
-    public DeleteDialogFragment(){}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,26 +46,29 @@ public class DeleteDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        confirmDeleter = (ConfirmDeleter) getActivity();
+        listener = (ConfirmActionListener) getActivity();
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        DeleteView view = (DeleteView) inflater.inflate(R.layout.dialog_confirm_delete, null);
+        ConfirmActionView view = (ConfirmActionView) inflater.inflate(R.layout.dialog_confirm_action, null);
         view.setText(getArguments().getString(TEXT));
 
+
         builder.setView(view);
-        builder.setTitle(getString(R.string.delete_location));
+
+
+        builder.setTitle(getArguments().getString(TITLE));
         builder.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                confirmDeleter.confirmDelete(true);
+                listener.confirmAction(true);
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                confirmDeleter.confirmDelete(false);
+                listener.confirmAction(false);
             }
         });
 

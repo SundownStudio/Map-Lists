@@ -8,36 +8,54 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
+import com.couchbase.lite.LiveQuery;
+import com.couchbase.lite.QueryEnumerator;
+import com.couchbase.lite.QueryRow;
 import com.sundown.maplists.R;
+import com.sundown.maplists.fragments.ActionDialogFragment;
 import com.sundown.maplists.fragments.AddFieldDialogFragment;
 import com.sundown.maplists.fragments.AddListFragment;
 import com.sundown.maplists.fragments.AddSchemaDialogFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
-import com.sundown.maplists.models.List;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.MapList;
+import com.sundown.maplists.models.Schema;
+import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
+import com.sundown.maplists.pojo.MenuOption;
+import com.sundown.maplists.storage.ContentLoader;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.AddFieldView;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
+import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
+import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
 /**
  * Created by Sundown on 8/18/2015.
  */
-public class AddListActivity extends AppCompatActivity implements AddFieldView.FieldSelector, AddSchemaDialogFragment.AddSchemaListener {
+public class AddListActivity extends AppCompatActivity implements AddFieldView.FieldSelector, AddSchemaDialogFragment.AddSchemaListener,
+        ActionDialogFragment.ConfirmActionListener{
 
     private static final String FRAGMENT_ADD_LIST = "ADD_LIST";
     public static final String FRAGMENT_ADD_FIELD = "ADD_FIELD";
     public static final String FRAGMENT_ADD_SCHEMA = "ADD_SCHEMA";
+    public static final String FRAGMENT_ACTION= "ACTION";
 
     private FragmentManager fm;
     private DatabaseCommunicator db;
@@ -51,13 +69,22 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     /** Fragment for adding a new schema */
     private AddSchemaDialogFragment addSchemaFragment;
 
+    /** Delete confirmation */
+    private ActionDialogFragment actionDialogFragment;
+
     private Operation operation;
-    private List model;
+    private LocationList model;
+    private boolean saveUpdate;
+
+    /** our list of saved schemas */
+    private ArrayList<Schema> savedSchemas;
+    private ContentLoader schemaLoader;
+    private List<Field> originalSchema;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_one_fragment);
+        setContentView(R.layout.activity_add_list);
 
         Bundle bundle = getIntent().getExtras();
         String type = bundle.getString(JsonConstants.TYPE);
@@ -67,6 +94,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
+        savedSchemas = new ArrayList<>();
         setUpToolBars();
 
         if (type.equals(JsonConstants.TYPE_MAP_LIST)){
@@ -77,40 +105,40 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
         } else if (type.equals(JsonConstants.TYPE_LOCATION_LIST)){
             if (operation == Operation.INSERT) {
-                model = new LocationList(mapId);
+                model = new SecondaryList(mapId);
 
             } else if (operation == Operation.UPDATE){
                 Map<String, Object> properties = db.read(documentId);
-                model = new LocationList(mapId).setProperties(properties);
+                model = new SecondaryList(mapId).setProperties(properties);
             }
         }
 
         if (savedInstanceState == null){
-            addListFragment = AddListFragment.newInstance(model, toolbarManager);
+            addListFragment = AddListFragment.newInstance(model);
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, addListFragment, FRAGMENT_ADD_LIST);
             transaction.commit();
 
         } else {
             addListFragment = (AddListFragment) fm.findFragmentByTag(FRAGMENT_ADD_LIST);
-            if (addListFragment != null){
-                addListFragment.setToolbarManager(toolbarManager);
-            }
-
             addFieldDialogFragment = (AddFieldDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_FIELD);
             addSchemaFragment = (AddSchemaDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_SCHEMA);
+            actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        addListFragment.refreshModel();
+        model = addListFragment.refreshModel();
+        schemaLoader.stop();
 
-        if (operation == Operation.INSERT){
-            db.insert(model, String.valueOf(model.mapId), LIST_ID);
-        } else if (operation == Operation.UPDATE){
-            db.update(model);
+        if (saveUpdate) {
+            if (operation == Operation.INSERT) {
+                db.insert(model, String.valueOf(model.mapId), LIST_ID);
+            } else if (operation == Operation.UPDATE) {
+                db.update(model);
+            }
         }
     }
 
@@ -122,8 +150,32 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         toolbarTop.setTitle(R.string.add_lists_activity);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
 
+    }
+
+    private void setUpToolbarSpinner(){
+        toolbarManager.toolbarTopLayout.setVisibility(View.GONE);
+        LinearLayout toolbarTopLayout = (LinearLayout) findViewById(R.id.toolbar_top_spinner_layout);
+        Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
+        Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
+
+        setSupportActionBar(toolbarTop);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
+
+        Spinner spinner = (Spinner) findViewById(R.id.spinner_schema);
+        ArrayList<String> list = new ArrayList<>();
+        for (Schema schema: savedSchemas){
+            list.add(schema.schemaName);
+        }
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, list);
+        dataAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        spinner.setAdapter(dataAdapter);
+
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -151,16 +203,21 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             }
         });
 
+        toolbarManager.drawMenu(
+                new MenuOption(MAP_COMPONENTS, false),
+                new MenuOption(EDIT_DELETE, false),
+                new MenuOption(DEFAULT_TOP, false));
+
+        if (schemaLoader == null) {
+            schemaLoader = new Loader().start();
+        }
+
         return true;
     }
 
     private boolean topToolbarPressed(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add: {
-                addFieldDialogFragment = AddFieldDialogFragment.newInstance(this);
-                addFieldDialogFragment.show(fm, FRAGMENT_ADD_FIELD);
-                break;
-            }
+
         }
         return true;
     }
@@ -169,10 +226,22 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     private boolean bottomToolbarPressed(MenuItem item) {
         switch (item.getItemId()) {
 
+            case R.id.action_add_field: {
+                addFieldDialogFragment = AddFieldDialogFragment.newInstance(this);
+                addFieldDialogFragment.show(fm, FRAGMENT_ADD_FIELD);
+                break;
+            }
+
             case R.id.action_add_list:
-                addSchemaFragment = AddSchemaDialogFragment.getInstance(getString(R.string.schema) + "1");
+                saveUpdate = true;
+                addSchemaFragment = AddSchemaDialogFragment.getInstance(getString(R.string.schema) + "0" + savedSchemas.size()+1);
                 addSchemaFragment.show(fm, FRAGMENT_ADD_SCHEMA);
                 break;
+
+            case R.id.action_cancel_add_list:
+                actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.abandon_changes), getString(R.string.abandon_changes_text));
+                if (actionDialogFragment != null)
+                    actionDialogFragment.show(fm, FRAGMENT_ACTION);
 
         }
         return true;
@@ -214,5 +283,61 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     @Override
     public void schemaAdded(String schema) {
         finish();
+    }
+
+    @Override
+    public void confirmAction(boolean confirmed) {
+        if (confirmed){
+            saveUpdate = false;
+            finish();
+        }
+    }
+
+
+
+
+    private class Loader extends ContentLoader {
+
+        @Override
+        public Loader start() {
+            liveQuery = db.getLiveQuery(db.QUERY_SCHEMA);
+            if (liveQuery != null) {
+                liveQuery.addChangeListener(new LiveQuery.ChangeListener() {
+                    @Override
+                    public void changed(LiveQuery.ChangeEvent event) {
+                        if (event.getSource().equals(liveQuery)) {
+                            updateModel(event.getRows());
+                        }
+                    }
+                });
+                liveQuery.start();
+            }
+            return this;
+        }
+
+        @Override
+        public void updateModel(QueryEnumerator result) {
+            savedSchemas.clear();
+            for (Iterator<QueryRow> it = result; it.hasNext(); ) {
+                QueryRow row = it.next();
+                Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
+                savedSchemas.add(new Schema().setProperties(properties));
+            }
+
+            if (savedSchemas.size() > 0)
+                drawModel();
+        }
+
+        @Override
+        public void drawModel() {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setUpToolbarSpinner();
+                }
+            });
+
+        }
     }
 }

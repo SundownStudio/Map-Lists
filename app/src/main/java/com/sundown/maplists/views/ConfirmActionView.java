@@ -2,29 +2,28 @@ package com.sundown.maplists.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
 
 /**
- * Created by Sundown on 5/21/2015.
+ * Created by Sundown on 8/25/2015.
  */
-public class DeleteView extends RelativeLayout {
+public class ConfirmActionView extends LinearLayout {
 
 
     private TextView textView;
 
 
-    public DeleteView(Context context, AttributeSet attrs) {
+    public ConfirmActionView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-
-        textView = (TextView) findViewById(R.id.delete_confirm_text);
+        textView = (TextView) findViewById(R.id.confirm_action_text);
     }
 
     public void setText(String text){

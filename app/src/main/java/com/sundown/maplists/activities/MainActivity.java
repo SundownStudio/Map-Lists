@@ -16,7 +16,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.fragments.DeleteDialogFragment;
+import com.sundown.maplists.fragments.ActionDialogFragment;
 import com.sundown.maplists.fragments.EnterAddressDialogFragment;
 import com.sundown.maplists.fragments.MapFragment;
 import com.sundown.maplists.fragments.NavigationDrawerFragment;
@@ -29,7 +29,7 @@ import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.ToolbarManager;
 
 public class MainActivity extends AppCompatActivity implements
-        DeleteDialogFragment.ConfirmDeleter, MapFragment.MapFragmentListener {
+        ActionDialogFragment.ConfirmActionListener, MapFragment.MapFragmentListener {
 
 
     //NOTE: This app follows a MVC pattern:
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements
     //If you add more Activities/Fragments please try to keep this pattern intact
 
     public static final String FRAGMENT_MAP = "MAP";
-    public static final String FRAGMENT_DELETE = "DELETE";
+    public static final String FRAGMENT_ACTION= "ACTION";
     public static final String FRAGMENT_ENTER_ADDRESS= "ENTER_ADDRESS";
 
 
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements
     private MapFragment mapFragment;
 
     /** Delete confirmation */
-    private DeleteDialogFragment deleteDialogFragment;
+    private ActionDialogFragment actionDialogFragment;
 
     /** Enter an address to place a map marker */
     private EnterAddressDialogFragment enterAddressDialogFragment;
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements
                 enterAddressDialogFragment.setListener(mapFragment);
             }
 
-            deleteDialogFragment = (DeleteDialogFragment) fm.findFragmentByTag(FRAGMENT_DELETE);
+            actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
         }
         Log.m("toolbar", "main onCreate");
     }
@@ -287,9 +287,9 @@ public class MainActivity extends AppCompatActivity implements
      */
     private boolean bottomToolbarPressed(MenuItem item){
         switch (item.getItemId()) {
-            case R.id.action_location_list: {
+            case R.id.action_secondary_lists: {
                 MapList list = mapFragment.getSelectedMapList();
-                Intent intent = new Intent(MainActivity.this, AllListsActivity.class);
+                Intent intent = new Intent(MainActivity.this, SecondaryListsActivity.class);
                 intent.putExtra(JsonConstants.DOCUMENT_ID, list.documentId);
                 intent.putExtra(JsonConstants.MAP_ID, list.mapId);
                 startActivity(intent);
@@ -309,10 +309,10 @@ public class MainActivity extends AppCompatActivity implements
 
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
                     mapFragment.gotoLocation();
-                    deleteDialogFragment = DeleteDialogFragment.newInstance(confirmText);
+                    actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.delete_location), confirmText);
                 }
-                if (deleteDialogFragment != null)
-                    deleteDialogFragment.show(fm, FRAGMENT_DELETE);
+                if (actionDialogFragment != null)
+                    actionDialogFragment.show(fm, FRAGMENT_ACTION);
                 break;
             }
             case R.id.action_edit: {
@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements
      * @param confirmed delete list or not
      */
     @Override
-    public void confirmDelete (boolean confirmed){
+    public void confirmAction (boolean confirmed){
         if (confirmed) {
             MapList list = mapFragment.getSelectedMapList();
             db.delete(list.documentId, list.mapId, Operation.DELETE_LOCATION);

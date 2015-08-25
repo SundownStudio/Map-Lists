@@ -9,10 +9,10 @@
         android:visible="false">
 
         <item
-            android:id="@+id/action_location_list"
+            android:id="@+id/action_secondary_lists"
             android:icon="@drawable/ic_list_black_24dp"
             android:orderInCategory="200"
-            android:title="@string/location_list"
+            android:title="@string/secondary_lists"
             app:showAsAction="always" />
 
 

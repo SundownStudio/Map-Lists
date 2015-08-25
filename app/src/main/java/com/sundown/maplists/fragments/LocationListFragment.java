@@ -16,6 +16,7 @@ import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
+import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.LocationListView;
@@ -35,7 +36,7 @@ public class LocationListFragment extends Fragment {
 
 
 
-    public static LocationListFragment newInstance(LocationList model, ToolbarManager toolbarManager) {
+    public static LocationListFragment newInstance(SecondaryList model, ToolbarManager toolbarManager) {
         LocationListFragment fragment = new LocationListFragment();
         fragment.model = model;
         fragment.toolbarManager = toolbarManager;

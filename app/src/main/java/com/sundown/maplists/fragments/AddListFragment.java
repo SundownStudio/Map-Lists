@@ -13,13 +13,11 @@ import android.widget.LinearLayout;
 import com.sundown.maplists.R;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
-import com.sundown.maplists.models.List;
+import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.pojo.ActivityResult;
-import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.utils.PreferenceManager;
-import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.AddListView;
 import com.sundown.maplists.views.FieldView;
 
@@ -27,8 +25,6 @@ import java.util.HashMap;
 import java.util.Set;
 
 import static com.sundown.maplists.models.FieldType.FIELD_PHOTO;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
 
 /**
  * Created by Sundown on 8/18/2015.
@@ -42,8 +38,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     public static final double PROP_WIDTH = .85;
 
     private FragmentManager fm;
-    private ToolbarManager toolbarManager;
-    public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
+
 
     /** Fragment for editing the title of a current field in this list */
     private EditTitleDialogFragment editTitleDialogFragment;
@@ -55,7 +50,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     private AddListView view;
 
     /** our model, can either be a MapList or a LocationList */
-    private List model;
+    private LocationList model;
 
     /** the form of fields used to populate our view */
     private LinearLayout form;
@@ -67,10 +62,9 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     private ActivityResult result;
 
 
-    public static AddListFragment newInstance(List model, ToolbarManager toolbarManager) {
+    public static AddListFragment newInstance(LocationList model) {
         AddListFragment fragment = new AddListFragment();
         fragment.model = model;
-        fragment.toolbarManager = toolbarManager;
         return fragment;
     }
 
@@ -93,9 +87,6 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         setUserVisibleHint(true);
         drawForm();
 
-        toolbarManager.drawMenu(
-                new MenuOption(MAP_COMPONENTS, false),
-                new MenuOption(EDIT_DELETE, false));
     }
 
     @Override
@@ -185,7 +176,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         fm.beginTransaction().replace(containerViewId, photoFragment).commit();
     }
 
-    public List refreshModel() {
+    public LocationList refreshModel() {
 
         Integer[] keys = model.getKeys();
         for (Integer k : keys){
@@ -234,5 +225,4 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         fm.beginTransaction().remove(photoFragment).commit();
         model.removeField(id);
     }
-
 }

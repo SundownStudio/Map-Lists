@@ -12,13 +12,13 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.LocationList;
-import com.sundown.maplists.models.LocationLists;
-import com.sundown.maplists.storage.ContentLoader;
+import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
+import com.sundown.maplists.storage.ContentLoader;
 import com.sundown.maplists.utils.ToolbarManager;
-import com.sundown.maplists.views.AllListsView;
+import com.sundown.maplists.views.SecondaryListsView;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -29,20 +29,20 @@ import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
 /**
  * Created by Sundown on 4/30/2015.
  */
-public class AllListsFragment extends Fragment {
+public class SecondaryListsFragment extends Fragment {
 
     public int mapId;
-    private AllListsView view;
-    private LocationLists model;
+    private SecondaryListsView view;
+    private ArrayList<SecondaryList> model;
     private ContentLoader loader;
-    private AllListsView.AllListsListener listener;
-    public void setListener(AllListsView.AllListsListener listener){ this.listener = listener;}
+    private SecondaryListsView.AllListsListener listener;
+    public void setListener(SecondaryListsView.AllListsListener listener){ this.listener = listener;}
     private ToolbarManager toolbarManager;
     public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
 
 
-    public static AllListsFragment newInstance(int mapId, AllListsView.AllListsListener listener, ToolbarManager toolbarManager){
-        AllListsFragment fragment = new AllListsFragment();
+    public static SecondaryListsFragment newInstance(int mapId, SecondaryListsView.AllListsListener listener, ToolbarManager toolbarManager){
+        SecondaryListsFragment fragment = new SecondaryListsFragment();
         fragment.mapId = mapId;
         fragment.listener = listener;
         fragment.toolbarManager = toolbarManager;
@@ -52,13 +52,13 @@ public class AllListsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new LocationLists();
+        model = new ArrayList();
         setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = (AllListsView) inflater.inflate(R.layout.fragment_all_lists, container, false);
+        view = (SecondaryListsView) inflater.inflate(R.layout.fragment_secondary_lists, container, false);
         return view;
     }
 
@@ -113,7 +113,7 @@ public class AllListsFragment extends Fragment {
             for (Iterator<QueryRow> it = result; it.hasNext(); ) {
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId());
-                model.addItem(new LocationList(mapId).setProperties(properties));
+                model.add(new SecondaryList(mapId).setProperties(properties));
             }
 
             drawModel();
@@ -124,7 +124,7 @@ public class AllListsFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    view.setListAndListener(model.getList(), listener);
+                    view.setListAndListener(model, listener);
                 }
             });
         }

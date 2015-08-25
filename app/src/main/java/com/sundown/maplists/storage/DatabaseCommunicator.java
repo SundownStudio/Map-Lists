@@ -41,6 +41,7 @@ import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
 import static com.sundown.maplists.storage.JsonConstants.TYPE;
 import static com.sundown.maplists.storage.JsonConstants.TYPE_LOCATION_LIST;
 import static com.sundown.maplists.storage.JsonConstants.TYPE_MAP_LIST;
+import static com.sundown.maplists.storage.JsonConstants.TYPE_SCHEMA_LIST;
 
 /**
  * Created by Sundown on 7/14/2015.
@@ -49,6 +50,7 @@ public class DatabaseCommunicator {
 
     public static final int QUERY_MAP = 1;
     public static final int QUERY_LOCATION = 2;
+    public static final int QUERY_SCHEMA = 3;
     public static final int MAX_ITEMS_PER_LIST = 9999;
 
     private static CBManager cbManager;
@@ -119,13 +121,18 @@ public class DatabaseCommunicator {
         return null;
     }
 
+    public LiveQuery getLiveQuery(int query){
+        if (query == QUERY_MAP){
+            return cbManager.getMapQuery().toLiveQuery();
+        } else if (query == QUERY_SCHEMA){
+            return cbManager.getSchemaQuery().toLiveQuery();
+        }
+        return null;
+    }
 
     public LiveQuery getLiveQuery(int query, int mapId){
-        switch (query){
-            case QUERY_MAP:
-                return cbManager.getMapQuery().toLiveQuery();
-            case QUERY_LOCATION:
-                return cbManager.getLocationQuery(mapId).toLiveQuery();
+        if (query == QUERY_LOCATION){
+            return cbManager.getLocationQuery(mapId).toLiveQuery();
         }
         return null;
     }
@@ -137,9 +144,10 @@ public class DatabaseCommunicator {
         private static final String TAG = "inventory";
         private static final String VIEW_BY_MAP_ID = "view-by-map-id";
         private static final String VIEW_BY_LIST_ID = "view-by-list-id";
+        private static final String VIEW_BY_SCHEMA_ID = "view-by-schema-id";
         private static final String VIEW_VERSION = "1";
         private static final String DOC_COUNTS = "doc-counts";
-        private static final String DOC_DEFAULT_SCHEMA = "doc-default-schemas";
+
 
 
         private Manager manager;
@@ -168,7 +176,6 @@ public class DatabaseCommunicator {
 
 
             initViews();
-
             createDefaultDocs();
 
         }
@@ -193,13 +200,25 @@ public class DatabaseCommunicator {
             viewByItemId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
-                    String type = (String) properties.get(JsonConstants.TYPE);
+                    String type = (String) properties.get(TYPE);
                     if (type.equals(TYPE_LOCATION_LIST)) {
                         int[] arr = new int[]{(Integer) properties.get(MAP_ID), (Integer) properties.get(LIST_ID)};
                         emitter.emit(arr, null);
                     }
                 }
             }, VIEW_VERSION);     //view last parameter is version, this is retained so if map/reduce updated it will go back
+
+
+            View viewBySchemaId = database.getView(VIEW_BY_SCHEMA_ID);
+            viewBySchemaId.setMap(new Mapper() {
+                @Override
+                public void map(Map<String, Object> document, Emitter emitter) {
+                    String type = (String) document.get(TYPE);
+                    if (type.equals(TYPE_SCHEMA_LIST)) {
+                        emitter.emit(document.get(JsonConstants.SCHEMA_ID), null);
+                    }
+                }
+            }, VIEW_VERSION);
         }
 
 
@@ -212,6 +231,9 @@ public class DatabaseCommunicator {
             query.setEndKey(new int[]{mapId, MAX_ITEMS_PER_LIST});
             return query;
         }
+
+        public Query getSchemaQuery(){ return database.getView(VIEW_BY_SCHEMA_ID).createQuery();}
+
 
         public void insert(List list, String countId, String idType) throws CouchbaseLiteException {
             int count = increaseCount(countId);
@@ -253,7 +275,6 @@ public class DatabaseCommunicator {
                     photoField.recycle(true);
                 }
             }
-
             newRevision.save();
         }
 
@@ -289,6 +310,9 @@ public class DatabaseCommunicator {
                 if (deleteDocument(documentId)){
                     decreaseCount(String.valueOf(mapId));
                 }
+
+            } else if (operation == Operation.DELETE_SCHEMA){
+                deleteDocument(documentId);
             }
 
             //todo: when do we compact? We need to get rid of big attachments too.. look up if that gets taken care of when deleting doc.. iirc it gets handled automatically on compact
@@ -355,11 +379,6 @@ public class DatabaseCommunicator {
             if (existingDocument == null) {
                 createCountsDoc();
             }
-
-            existingDocument = database.getExistingDocument(DOC_DEFAULT_SCHEMA);
-            if (existingDocument == null){
-                createSchemasDoc();
-            }
         }
 
 
@@ -370,19 +389,13 @@ public class DatabaseCommunicator {
             properties.put(TYPE, JsonConstants.COUNTS);
             properties.put(JsonConstants.COUNT_MAP_LISTS, 0);
             properties.put(JsonConstants.COUNT_SCHEMAS, 0);
-            Document document = database.getDocument(DOC_COUNTS); //todo make this global.. see if it works..
+            Document document = database.getDocument(DOC_COUNTS);
             try {
                 document.putProperties(properties);
             } catch (CouchbaseLiteException e) {
-                com.couchbase.lite.util.Log.e(TAG, "doc already exists", e);
+                com.couchbase.lite.util.Log.e(TAG, "doc counts already exists", e);
             }
         }
 
-        private void createSchemasDoc(){
-            //todo
-        }
-
     }
-
-
 }

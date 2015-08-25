@@ -455,7 +455,7 @@ public class MapFragment extends Fragment implements
         @Override
         public Loader start() {
             // Set up my live query during view initialization:
-            liveQuery = db.getLiveQuery(db.QUERY_MAP, 0);
+            liveQuery = db.getLiveQuery(db.QUERY_MAP);
             if (liveQuery != null) {
                 liveQuery.addChangeListener(new LiveQuery.ChangeListener() {
                     @Override

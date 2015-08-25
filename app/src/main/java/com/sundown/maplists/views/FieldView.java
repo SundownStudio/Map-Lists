@@ -263,6 +263,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
     public String getEntry(){
         View child = getChild();
         String tag = String.valueOf(child.getTag());
+        String text = "";
 
         switch(tag){
             case PHOTO:
@@ -274,7 +275,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
             case EDIT:
                 EditText e = (EditText)child;
-                String text = e.getText().toString().trim();
+                text = e.getText().toString().trim();
                 if (text == null || text.length() == 0) {
                     if (e.getHint() != null) {
                         text = e.getHint().toString().trim();
@@ -294,7 +295,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 return String.valueOf(x);
 
             default:
-                return "";
+                return text;
         }
     }
 

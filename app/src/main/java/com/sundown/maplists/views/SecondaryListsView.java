@@ -19,7 +19,7 @@ import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.models.LocationList;
+import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 
 import java.util.ArrayList;
@@ -31,10 +31,10 @@ import java.util.List;
 /**
  * Created by Sundown on 5/21/2015.
  */
-public class AllListsView extends RelativeLayout {
+public class SecondaryListsView extends RelativeLayout {
 
     public interface AllListsListener{
-        void LocationListSelected(LocationList list);
+        void LocationListSelected(SecondaryList list);
     }
 
     private RecyclerView recyclerView;
@@ -43,7 +43,7 @@ public class AllListsView extends RelativeLayout {
     private AllListsListener listener;
 
 
-    public AllListsView(Context context, AttributeSet attrs) {
+    public SecondaryListsView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -59,7 +59,7 @@ public class AllListsView extends RelativeLayout {
 
     }
 
-    public void setListAndListener(List<LocationList> items, AllListsListener listener){
+    public void setListAndListener(List<SecondaryList> items, AllListsListener listener){
         if (items.size() > 0)
             emptyListText.setVisibility(View.GONE);
         adapter.setList(items);
@@ -78,7 +78,7 @@ public class AllListsView extends RelativeLayout {
 
         private LayoutInflater inflater;
         private Context context;
-        private List<LocationList> locationItems = Collections.emptyList();
+        private List<SecondaryList> locationItems = Collections.emptyList();
 
         private DatabaseCommunicator db;
 
@@ -107,8 +107,8 @@ public class AllListsView extends RelativeLayout {
         }
 
 
-        private void fillTextViews(ViewHolder holder, LocationList locationItem){
-            List<Field> list = new ArrayList<>(locationItem.getValues());
+        private void fillTextViews(ViewHolder holder, SecondaryList locationItem){
+            List<Field> list = locationItem.getValues();
             int counter = 0;
             String title;
             String text;
@@ -151,7 +151,7 @@ public class AllListsView extends RelativeLayout {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            LocationList locationItem = locationItems.get(position);
+            SecondaryList locationItem = locationItems.get(position);
 
             fillTextViews(holder, locationItem);
 
@@ -183,7 +183,7 @@ public class AllListsView extends RelativeLayout {
 
         @Override
         public int getItemViewType(int position) {
-            LocationList location = locationItems.get(position);
+            SecondaryList location = locationItems.get(position);
             ArrayList<PhotoField> photos = location.getPhotos(); //todo this may be slow.. maybe we should keep them in a list so dont need to do this each time..
 
             if (photos != null){
@@ -199,7 +199,7 @@ public class AllListsView extends RelativeLayout {
             return TYPE_NO_IMAGE;
         }
 
-        public void setList(List<LocationList> locationItems) {
+        public void setList(List<SecondaryList> locationItems) {
             this.locationItems = locationItems;
             notifyItemRangeChanged(0, locationItems.size());
         }
