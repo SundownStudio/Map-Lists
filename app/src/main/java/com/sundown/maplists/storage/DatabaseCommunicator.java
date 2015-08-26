@@ -235,7 +235,7 @@ public class DatabaseCommunicator {
         public Query getSchemaQuery(){ return database.getView(VIEW_BY_SCHEMA_ID).createQuery();}
 
 
-        public void insert(List list, String countId, String idType) throws CouchbaseLiteException {
+        public void insert(List list, String countId, String idName) throws CouchbaseLiteException {
             int count = increaseCount(countId);
 
             UUID uuid = UUID.randomUUID();
@@ -249,9 +249,14 @@ public class DatabaseCommunicator {
             Map<String, Object> properties = list.getProperties();
             properties.put("_id", id);
             properties.put("created_at", currentTimeString);
-            properties.put(idType, count);
+            properties.put(idName, count); //mapID = count, listID = count, schemaID = count.. all increasing
 
-            saveDocument(document.createRevision(), properties, list.getPhotos());
+            if (idName == JsonConstants.SCHEMA_ID){
+                saveDocument(document.createRevision(), properties, null);
+            } else {
+                saveDocument(document.createRevision(), properties, list.getPhotos());
+            }
+
         }
 
         public void update(final List list) throws CouchbaseLiteException {

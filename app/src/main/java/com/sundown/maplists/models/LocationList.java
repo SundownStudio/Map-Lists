@@ -7,7 +7,7 @@ import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
 /**
  * Created by Sundown on 8/25/2015.
  */
-public abstract class LocationList extends Schema implements PropertiesHandler {
+public abstract class LocationList extends List implements PropertiesHandler {
 
     public int mapId;
 

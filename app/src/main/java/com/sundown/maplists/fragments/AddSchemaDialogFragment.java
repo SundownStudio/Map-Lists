@@ -1,15 +1,14 @@
 package com.sundown.maplists.fragments;
 
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.views.AddSchemaView;
 
 
@@ -19,7 +18,7 @@ import com.sundown.maplists.views.AddSchemaView;
 public class AddSchemaDialogFragment extends DialogFragment {
 
     public interface AddSchemaListener {
-        void schemaAdded(String schema);
+        void schemaAdded(String schemaName);
     }
 
     private final static String HINT = "hint";
@@ -56,7 +55,6 @@ public class AddSchemaDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                notice();
                 dialog.dismiss();
                 listener.schemaAdded(view.getEnteredText());
             }
@@ -80,9 +78,4 @@ public class AddSchemaDialogFragment extends DialogFragment {
             getDialog().setDismissMessage(null);
         super.onDestroyView();
     }
-
-    private void notice(){
-        Log.Toast(getActivity(), "Saving schemas not implemented yet", Log.TOAST_SHORT);
-    }
-
 }

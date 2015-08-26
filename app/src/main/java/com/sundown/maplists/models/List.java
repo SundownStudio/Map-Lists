@@ -16,7 +16,8 @@ import static com.sundown.maplists.storage.JsonConstants.FIELD_TYPE;
 public abstract class List implements PropertiesHandler {
 
     public String documentId;
-    protected Map<Integer, Field> fields;
+    public Map<Integer, Field> fields;
+
 
     public List(){
         fields = new HashMap<>();
@@ -48,6 +49,10 @@ public abstract class List implements PropertiesHandler {
         return nextKey;
     }
 
+    public void putField(Integer key, Field value){
+        fields.put(key, value);
+    }
+
     public ArrayList<PhotoField> getPhotos(){
         ArrayList<PhotoField> photoFields = new ArrayList<>();
         Integer[] keys = getKeys();
@@ -61,6 +66,9 @@ public abstract class List implements PropertiesHandler {
 
         return photoFields;
     }
+
+    public java.util.List<Field> getFieldValues(){ return (java.util.List<Field>) getValues(); }
+
 
 
     @Override
@@ -91,7 +99,7 @@ public abstract class List implements PropertiesHandler {
             for (int i = 0; i < size; ++i) {
                 Map<String, Object> props = (Map<String, Object>) entries.get(i);
                 FieldType type = FieldType.valueOf(props.get(FIELD_TYPE).toString());
-                boolean permanent = Boolean.parseBoolean(String.valueOf(properties.get(FIELD_PERMANENT)));
+                boolean permanent = Boolean.parseBoolean(String.valueOf(props.get(FIELD_PERMANENT)));
 
                 if (type == FieldType.FIELD_PHOTO){
                     fields.put(i, new PhotoField(permanent).setProperties(props));

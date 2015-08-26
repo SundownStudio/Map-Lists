@@ -25,7 +25,7 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.MapList;
-import com.sundown.maplists.models.Schema;
+import com.sundown.maplists.models.SchemaList;
 import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.pojo.MenuOption;
@@ -38,7 +38,6 @@ import com.sundown.maplists.views.AddFieldView;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
@@ -77,9 +76,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     private boolean saveUpdate;
 
     /** our list of saved schemas */
-    private ArrayList<Schema> savedSchemas;
+    private ArrayList<SchemaList> savedSchemaLists;
     private ContentLoader schemaLoader;
-    private List<Field> originalSchema;
+    private SchemaList originalSchemaList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,7 +93,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
-        savedSchemas = new ArrayList<>();
+        savedSchemaLists = new ArrayList<>();
         setUpToolBars();
 
         if (type.equals(JsonConstants.TYPE_MAP_LIST)){
@@ -125,12 +124,14 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             addSchemaFragment = (AddSchemaDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_SCHEMA);
             actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
         }
+
+
+        originalSchemaList = new SchemaList(model);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        model = addListFragment.refreshModel();
         schemaLoader.stop();
 
         if (saveUpdate) {
@@ -156,7 +157,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     }
 
     private void setUpToolbarSpinner(){
-        toolbarManager.toolbarTopLayout.setVisibility(View.GONE);
+        toolbarManager.toolbarTopLayout.setVisibility(View.INVISIBLE);
         LinearLayout toolbarTopLayout = (LinearLayout) findViewById(R.id.toolbar_top_spinner_layout);
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
@@ -167,8 +168,8 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner_schema);
         ArrayList<String> list = new ArrayList<>();
-        for (Schema schema: savedSchemas){
-            list.add(schema.schemaName);
+        for (SchemaList schemaList : savedSchemaLists){
+            list.add(schemaList.getSchemaName());
         }
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, list);
@@ -234,8 +235,14 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
             case R.id.action_add_list:
                 saveUpdate = true;
-                addSchemaFragment = AddSchemaDialogFragment.getInstance(getString(R.string.schema) + "0" + savedSchemas.size()+1);
-                addSchemaFragment.show(fm, FRAGMENT_ADD_SCHEMA);
+                model = addListFragment.refreshModel();
+                SchemaList newSchemaList = new SchemaList(model);
+                if (!originalSchemaList.equals(newSchemaList)){ //schema has changed! prompt user to save new schema
+                    addSchemaFragment = AddSchemaDialogFragment.getInstance(getString(R.string.schema) + "0" + (savedSchemaLists.size()+1));
+                    addSchemaFragment.show(fm, FRAGMENT_ADD_SCHEMA);
+                } else {
+                    finish();
+                }
                 break;
 
             case R.id.action_cancel_add_list:
@@ -281,7 +288,13 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     }
 
     @Override
-    public void schemaAdded(String schema) {
+    public void schemaAdded(String schemaName) {
+        schemaLoader.stop();
+        if (schemaName != null) {
+            SchemaList schemaList = new SchemaList(model);
+            schemaList.setSchemaName(schemaName);
+            db.insert(schemaList, JsonConstants.COUNT_SCHEMAS, JsonConstants.SCHEMA_ID);
+        }
         finish();
     }
 
@@ -292,9 +305,6 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             finish();
         }
     }
-
-
-
 
     private class Loader extends ContentLoader {
 
@@ -317,27 +327,25 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
         @Override
         public void updateModel(QueryEnumerator result) {
-            savedSchemas.clear();
+            savedSchemaLists.clear();
             for (Iterator<QueryRow> it = result; it.hasNext(); ) {
                 QueryRow row = it.next();
-                Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
-                savedSchemas.add(new Schema().setProperties(properties));
+                Map<String, Object> properties = db.read(row.getSourceDocumentId());
+                savedSchemaLists.add(new SchemaList().setProperties(properties));
             }
 
-            if (savedSchemas.size() > 0)
+            if (savedSchemaLists.size() > 0)
                 drawModel();
         }
 
         @Override
         public void drawModel() {
-
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     setUpToolbarSpinner();
                 }
             });
-
         }
     }
 }
