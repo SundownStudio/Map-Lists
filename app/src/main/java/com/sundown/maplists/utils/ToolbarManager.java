@@ -57,6 +57,10 @@ public class ToolbarManager {
                     toolbarBottom.getMenu().setGroupVisible(R.id.group_schema_actions, option.show);
                     break;
 
+                case DEFAULT_ADDLIST:
+                    toolbarBottom.getMenu().setGroupVisible(R.id.group_addlist_default, option.show);
+                    break;
+
             }
         }
 

@@ -30,7 +30,7 @@ public class SchemaList extends List implements PropertiesHandler {
         }
     }
 
-    public String getTitles(StringBuffer buffer){
+    public String getTitles(StringBuffer buffer){            //todo: condense this crap
         ArrayList<Field> fields = getValues();
         for (Field field: fields){
             buffer.append(field.getTitle());

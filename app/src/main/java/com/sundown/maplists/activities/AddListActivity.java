@@ -100,7 +100,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
         savedSchemaLists = new ArrayList<>();
-        setUpToolBars();
+        setUpToolBars(getString(R.string.add_lists_activity));
 
         if (type.equals(JsonConstants.TYPE_MAP_LIST)){
             Map<String, Object> properties = db.read(documentId);
@@ -130,6 +130,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             addSchemaFragment = (AddSchemaDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_SCHEMA);
             actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
             manageSchemasFragment = (ManageSchemasFragment) fm.findFragmentByTag(FRAGMENT_MANAGE_SCHEMAS);
+            if (manageSchemasFragment != null){
+                manageSchemasFragment.setToolbarManager(toolbarManager);
+            }
         }
 
         originalSchemaList = new SchemaList(model);
@@ -149,12 +152,13 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         }
     }
 
-    private void setUpToolBars(){
+    private void setUpToolBars(String title){
         LinearLayout toolbarTopLayout = (LinearLayout) findViewById(R.id.toolbar_top_layout);
+        toolbarTopLayout.setVisibility(View.VISIBLE);
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 
-        toolbarTop.setTitle(R.string.add_lists_activity);
+        toolbarTop.setTitle(title);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -265,10 +269,10 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
                 break;
 
             case R.id.action_manage_schemas:
-                manageSchemasFragment = ManageSchemasFragment.getInstance(savedSchemaLists);
+                setUpToolBars(getString(R.string.manage_schemas_activity));
+                manageSchemasFragment = ManageSchemasFragment.getInstance(savedSchemaLists, toolbarManager);
                 FragmentTransaction transaction = fm.beginTransaction();
                 transaction.replace(R.id.fragment_container, manageSchemasFragment, FRAGMENT_MANAGE_SCHEMAS);
-                transaction.addToBackStack(FRAGMENT_ADD_LIST);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 transaction.commit();
                 break;
@@ -294,7 +298,15 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                if (manageSchemasFragment.isVisible()){
+                    setUpToolbarSpinner();
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.replace(R.id.fragment_container, addListFragment, FRAGMENT_ADD_LIST);
+                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    transaction.commit();
+                } else {
+                    finish();
+                }
         }
         return true;
     }
