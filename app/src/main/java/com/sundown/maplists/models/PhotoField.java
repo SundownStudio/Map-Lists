@@ -29,13 +29,13 @@ public class PhotoField extends Field {
     public Bitmap image, thumb;
 
     public PhotoField(boolean permanent){
-        super(0, "Photo", FieldType.FIELD_PHOTO, permanent);
+        super(0, "Photo", FieldType.PHOTO, permanent);
         init();
     }
 
 
     public PhotoField(int id, boolean permanent){
-        super(id, "Photo", FieldType.FIELD_PHOTO, permanent);
+        super(id, "Photo", FieldType.PHOTO, permanent);
         init();
     }
 

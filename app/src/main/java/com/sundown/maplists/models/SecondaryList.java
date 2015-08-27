@@ -17,7 +17,7 @@ public class SecondaryList extends LocationList {
     public SecondaryList(int mapId){
         super(mapId);
         listId = -1;
-        super.addField(new EntryField(listId, "Name", "", FieldType.FIELD_TEXT, true));
+        super.addField(new EntryField(listId, "Name", "", FieldType.TEXT, true));
     }
 
 

@@ -11,10 +11,10 @@
         android:visible="false">
 
         <item
-            android:id="@+id/action_goto_location"
-            android:icon="@drawable/ic_white_list_comment"
+            android:id="@+id/action_manage_schemas"
+            android:icon="@drawable/ic_script_editor"
             android:orderInCategory="200"
-            android:title="@string/import_schema"
+            android:title="@string/manage_schema"
             app:showAsAction="always" />
 
     </group>

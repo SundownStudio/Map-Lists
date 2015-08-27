@@ -2,7 +2,6 @@ package com.sundown.maplists.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.LinearLayout;
@@ -34,6 +33,7 @@ public class ManageSchemasActivity extends AppCompatActivity {
         db = DatabaseCommunicator.getInstance();
         setUpToolBars();
 
+        /* todo decide what to do with this activity.. do we want this accessible from nav-bar? if so move loader to this activity.. once model loads load frag
         if (savedInstanceState == null){
             manageSchemasFragment = ManageSchemasFragment.getInstance();
             FragmentTransaction transaction = fm.beginTransaction();
@@ -42,7 +42,7 @@ public class ManageSchemasActivity extends AppCompatActivity {
 
         } else {
             manageSchemasFragment = (ManageSchemasFragment) fm.findFragmentByTag(FRAGMENT_MANAGE_SCHEMAS);
-        }
+        }*/
     }
 
     private void setUpToolBars(){

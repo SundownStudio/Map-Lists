@@ -53,6 +53,10 @@ public class ToolbarManager {
                     toolbarTop.getMenu().setGroupVisible(R.id.group_default_top, option.show);
                     break;
 
+                case SCHEMA_ACTIONS:
+                    toolbarBottom.getMenu().setGroupVisible(R.id.group_schema_actions, option.show);
+                    break;
+
             }
         }
 

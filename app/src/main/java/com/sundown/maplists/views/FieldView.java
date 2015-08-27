@@ -113,7 +113,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
         View view;
 
         switch (field.type) {
-            case FIELD_PHOTO: {
+            case PHOTO: {
                 view = new RelativeLayout(context);
                 view.setId(field.id);
                 view.setTag(PHOTO); //NOTE: this works! retains tag even though we add fragment here
@@ -121,7 +121,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 break;
             }
 
-            case FIELD_RATING: {
+            case RATING: {
                 EntryField entry = (EntryField) field;
                 final RatingBar bar = new RatingBar(context);
                 bar.setNumStars(5);
@@ -145,7 +145,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 //todo
                 break;*/
 
-            case FIELD_CHECKBOX: {
+            case CHECKBOX: {
                 EntryField entry = (EntryField) field;
                 CheckBox checkBox = new CheckBox(context);
                 checkBox.setTag(CHECKBOX);
@@ -179,19 +179,19 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 });
 
                 switch (entry.type) {
-                    case FIELD_NUMBER:
+                    case NUMBER:
                         v.setInputType(InputType.TYPE_CLASS_NUMBER);
                         break;
-                    case FIELD_DECIMAL:
+                    case DECIMAL:
                         v.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                         break;
-                    case FIELD_DATE:
+                    case DATE:
                         v.setHint(dateFormat.format(new Date()));
                         break;
-                    case FIELD_TIME:
+                    case TIME:
                         v.setHint(timeFormat.format(new Date()));
                         break;
-                    case FIELD_PHONE:
+                    case PHONE:
                         v.setInputType(InputType.TYPE_CLASS_PHONE);
                         v.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
                             @Override
@@ -220,7 +220,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
         }
 
-        if (field.type == FieldType.FIELD_RATING){
+        if (field.type == FieldType.RATING){
             view.setLayoutParams(layoutWrapWidth);
         } else {
             view.setLayoutParams(layoutFillWidth);

@@ -115,10 +115,10 @@ public class SecondaryListsView extends RelativeLayout {
 
             for (Field i: list){
                 FieldType type = i.type;
-                if (type != FieldType.FIELD_PHOTO && type != FieldType.FIELD_CHECKBOX){
+                if (type != FieldType.PHOTO && type != FieldType.CHECKBOX){
                     EntryField entryField = (EntryField) i;
 
-                    if (type == FieldType.FIELD_RATING && !ratingSet){
+                    if (type == FieldType.RATING && !ratingSet){
 
                         try {
                             Float f = Float.parseFloat(entryField.entry);

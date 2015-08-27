@@ -21,7 +21,7 @@ import com.sundown.maplists.models.PhotoField;
 import java.util.Collections;
 import java.util.List;
 
-import static com.sundown.maplists.models.FieldType.FIELD_PHOTO;
+import static com.sundown.maplists.models.FieldType.PHOTO;
 
 /**
  * Created by Sundown on 5/20/2015.
@@ -139,7 +139,7 @@ public class AddFieldView extends LinearLayout {
             public void onClick(View v) {
                 if (listener != null){
                     Field field = fields.get(getPosition());
-                    if (field.type == FIELD_PHOTO){
+                    if (field.type == PHOTO){
                         field = new PhotoField(false);
                     }
                     listener.addNewField(field);

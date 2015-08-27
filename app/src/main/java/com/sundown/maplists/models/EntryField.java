@@ -13,7 +13,7 @@ public class EntryField extends Field {
 
 
     public EntryField(boolean permanent){
-        super(0, null, FieldType.FIELD_NAME, permanent);
+        super(0, null, FieldType.NAME, permanent);
     }
 
     public EntryField(int id, String title, String entry, FieldType type, boolean permanent){ //todo: remove

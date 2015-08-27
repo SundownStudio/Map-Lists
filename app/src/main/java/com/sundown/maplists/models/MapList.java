@@ -16,8 +16,8 @@ public class MapList extends LocationList {
 
     public MapList(){
         super(-1);
-        super.addField(new EntryField(-1, "Name", "New Location", FieldType.FIELD_TEXT, true));
-        super.addField(new EntryField(-1, "Snippet", "Empty", FieldType.FIELD_TEXT, true));
+        super.addField(new EntryField(-1, "Name", "New Location", FieldType.TEXT, true));
+        super.addField(new EntryField(-1, "Snippet", "Empty", FieldType.TEXT, true));
         super.addField(new PhotoField(-1, true));
         multipleListsEnabled = false;
     }

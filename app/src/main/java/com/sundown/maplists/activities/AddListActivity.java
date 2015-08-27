@@ -21,6 +21,7 @@ import com.sundown.maplists.fragments.ActionDialogFragment;
 import com.sundown.maplists.fragments.AddFieldDialogFragment;
 import com.sundown.maplists.fragments.AddListFragment;
 import com.sundown.maplists.fragments.AddSchemaDialogFragment;
+import com.sundown.maplists.fragments.ManageSchemasFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.LocationList;
@@ -43,6 +44,7 @@ import java.util.Map;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
+import static com.sundown.maplists.pojo.MenuOption.GroupView.SCHEMA_ACTIONS;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
 /**
@@ -55,6 +57,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     private static final String FRAGMENT_ADD_FIELD = "ADD_FIELD";
     private static final String FRAGMENT_ADD_SCHEMA = "ADD_SCHEMA";
     private static final String FRAGMENT_ACTION= "ACTION";
+    private static final String FRAGMENT_MANAGE_SCHEMAS = "MANAGE_SCHEMAS";
 
     private FragmentManager fm;
     private DatabaseCommunicator db;
@@ -70,6 +73,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
     /** Delete confirmation */
     private ActionDialogFragment actionDialogFragment;
+
+    /** Manage Schemas */
+    private ManageSchemasFragment manageSchemasFragment;
 
     private Operation operation;
     private LocationList model;
@@ -123,8 +129,8 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             addFieldDialogFragment = (AddFieldDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_FIELD);
             addSchemaFragment = (AddSchemaDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_SCHEMA);
             actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
+            manageSchemasFragment = (ManageSchemasFragment) fm.findFragmentByTag(FRAGMENT_MANAGE_SCHEMAS);
         }
-
 
         originalSchemaList = new SchemaList(model);
     }
@@ -177,6 +183,8 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         spinner.setAdapter(dataAdapter);
 
         invalidateOptionsMenu();
+
+
     }
 
     @Override
@@ -204,10 +212,15 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             }
         });
 
+        boolean showSchemaActions = false;
+        if (savedSchemaLists.size() > 0)
+            showSchemaActions = true;
+
         toolbarManager.drawMenu(
                 new MenuOption(MAP_COMPONENTS, false),
                 new MenuOption(EDIT_DELETE, false),
-                new MenuOption(DEFAULT_TOP, false));
+                new MenuOption(DEFAULT_TOP, false),
+                new MenuOption(SCHEMA_ACTIONS, showSchemaActions));
 
         if (schemaLoader == null) {
             schemaLoader = new Loader().start();
@@ -249,6 +262,16 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
                 actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.abandon_changes), getString(R.string.abandon_changes_text));
                 if (actionDialogFragment != null)
                     actionDialogFragment.show(fm, FRAGMENT_ACTION);
+                break;
+
+            case R.id.action_manage_schemas:
+                manageSchemasFragment = ManageSchemasFragment.getInstance(savedSchemaLists);
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.replace(R.id.fragment_container, manageSchemasFragment, FRAGMENT_MANAGE_SCHEMAS);
+                transaction.addToBackStack(FRAGMENT_ADD_LIST);
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                transaction.commit();
+                break;
 
         }
         return true;

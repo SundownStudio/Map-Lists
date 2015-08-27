@@ -34,6 +34,14 @@ public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
         this.permanent = permanent;
     }
 
+    public String getTitle(){
+        return title;
+    }
+
+    public String getType(){
+        return type.name();
+    }
+
     @Override //NOTE does not override hashCode because we dont care about that for our purposes
     public boolean equals(Object o) {
         if (o instanceof Field){

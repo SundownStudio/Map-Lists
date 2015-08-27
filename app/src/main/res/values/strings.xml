@@ -104,7 +104,7 @@
     <string name="add_list">Add List</string>
     <string name="cancel_add_list">Cancel Add List</string>
     <string name="schema">Schema</string>
-    <string name="import_schema">Import Schema</string>
+    <string name="manage_schema">Manage Schemas</string>
     <string name="save_schema">Save Schema</string>
     <string name="save">Save</string>
     <string name="skip">Skip</string>

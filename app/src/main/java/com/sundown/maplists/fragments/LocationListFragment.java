@@ -96,7 +96,7 @@ public class LocationListFragment extends Fragment {
 
 
     public void addTitleView(Field field){
-        if (field.type != FieldType.FIELD_PHOTO){
+        if (field.type != FieldType.PHOTO){
             String title = field.title;
             if (title != null && title.length() > 0) {
                 TextView titleView = new TextView(getActivity());
@@ -112,11 +112,11 @@ public class LocationListFragment extends Fragment {
         View view;
 
         switch (field.type) {
-            case FIELD_PHOTO:
+            case PHOTO:
                 view = new ImageView(getActivity());
                 break;
 
-            case FIELD_RATING: {
+            case RATING: {
                 EntryField entry = (EntryField) field;
                 RatingBar bar = new RatingBar(getActivity());
                 bar.setNumStars(5);
@@ -130,7 +130,7 @@ public class LocationListFragment extends Fragment {
                 break;
             }
 
-            case FIELD_CHECKBOX: {
+            case CHECKBOX: {
                 EntryField entryField = (EntryField) field;
                 CheckBox checkBox = new CheckBox(getActivity());
                 checkBox.setEnabled(false);
@@ -154,7 +154,7 @@ public class LocationListFragment extends Fragment {
             }
         }
 
-        if (field.type == FieldType.FIELD_RATING){
+        if (field.type == FieldType.RATING){
             view.setLayoutParams(layoutWrapWidth);
         } else {
             view.setLayoutParams(layoutFillWidth);

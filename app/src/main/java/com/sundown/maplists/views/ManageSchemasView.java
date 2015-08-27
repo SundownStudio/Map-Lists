@@ -50,6 +50,7 @@ public class ManageSchemasView extends RelativeLayout {
 
         private LayoutInflater inflater;
         private List<SchemaList> schemaLists = Collections.emptyList();
+        StringBuffer buffer = new StringBuffer();
 
 
         public AdapterManageSchemas(Context context) {
@@ -65,8 +66,11 @@ public class ManageSchemasView extends RelativeLayout {
         public void onBindViewHolder(AdapterManageSchemas.ViewHolder holder, int position) {
             SchemaList schemaList = schemaLists.get(position);
 
-            holder.title.setText(schemaList.getSchemaName());
-
+            holder.name.setText(schemaList.getSchemaName());
+            buffer.setLength(0);
+            holder.titles.setText(schemaList.getTitles(buffer));
+            buffer.setLength(0);
+            holder.types.setText(schemaList.getTypes(buffer));
         }
 
         @Override
@@ -79,13 +83,15 @@ public class ManageSchemasView extends RelativeLayout {
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            TextView title;
-            TextView contents;
+            TextView name;
+            TextView titles;
+            TextView types;
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                title = (TextView) findViewById(R.id.rowTitle);
-                contents = (TextView) findViewById(R.id.rowContents);
+                name = (TextView) itemView.findViewById(R.id.rowName);
+                titles = (TextView) itemView.findViewById(R.id.rowTitles);
+                types = (TextView) itemView.findViewById(R.id.rowTypes);
             }
 
             @Override

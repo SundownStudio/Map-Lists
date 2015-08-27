@@ -30,6 +30,27 @@ public class SchemaList extends List implements PropertiesHandler {
         }
     }
 
+    public String getTitles(StringBuffer buffer){
+        ArrayList<Field> fields = getValues();
+        for (Field field: fields){
+            buffer.append(field.getTitle());
+            buffer.append("\n");
+        }
+        buffer.deleteCharAt(buffer.lastIndexOf("\n"));
+        return buffer.toString();
+    }
+
+    public String getTypes(StringBuffer buffer){
+        ArrayList<Field> fields = getValues();
+        for (Field field: fields){
+            buffer.append(field.getType());
+            buffer.append("\n");
+        }
+        buffer.deleteCharAt(buffer.lastIndexOf("\n"));
+        return buffer.toString();
+    }
+
+
     @Override
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = super.getProperties();
