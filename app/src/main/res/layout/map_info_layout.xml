@@ -2,32 +2,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@drawable/infowindow"
     android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
 
         <ImageView
             android:id="@+id/info_image"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/info_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/info_image"
-            android:text="Title"/>
+            android:text="Title"
+            android:textColor="@color/colorPrimaryText" />
 
         <TextView
             android:id="@+id/info_snippet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/info_image"
             android:layout_below="@+id/info_title"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/info_image"
             android:text="Snippet"
-            />
+            android:textColor="@color/colorSecondaryText" />
 
 
     </RelativeLayout>

@@ -143,8 +143,6 @@ public class MapView extends FrameLayout {
         });
     }
 
-
-
     private class AdapterInfoWindow implements GoogleMap.InfoWindowAdapter {
 
         ViewGroup infoWindow;
@@ -172,13 +170,7 @@ public class MapView extends FrameLayout {
 
         @Override
         public View getInfoWindow(Marker marker) {
-            return null;
-        }
 
-        @Override
-        public View getInfoContents(Marker marker) {
-
-            // Getting the position from the marker
             LatLng latLng = marker.getPosition();
 
             MapList list = model.getMapList(latLng);
@@ -188,7 +180,6 @@ public class MapView extends FrameLayout {
 
             infoTitle.setText(titleEntry.entry);
             infoSnippet.setText(snippetEntry.entry);
-
 
             Bitmap thumb = null;
 
@@ -204,12 +195,13 @@ public class MapView extends FrameLayout {
                 infoImage.setImageBitmap(icon.getBitmap());
             }
 
-
-            // Returning the view containing InfoWindow contents
             return infoWindow;
         }
 
-
+        @Override
+        public View getInfoContents(Marker marker) {
+            return null;
+        }
 
     }
 
