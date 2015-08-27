@@ -52,6 +52,7 @@
     <string name="snippet">Snippet</string>
     <string name="thumbnail">Thumbnail</string>
     <string name="empty_location_list">This location contains no items yet. \nPress the + button to begin adding some!</string>
+    <string name="empty_schemas_list">You have no saved schemas yet.</string>
     <string name="no_image_loaded">No image loaded</string>
     <string name="couldnt_load_image">Could not load image</string>
     <string name="photo">Photo</string>
@@ -99,6 +100,7 @@
     <string name="add_lists_activity">AddLists</string>
     <string name="secondary_lists_activity">SecondaryLists</string>
     <string name="location_list_activity">LocationList</string>
+    <string name="manage_schemas_activity">ManageSchemas</string>
     <string name="add_list">Add List</string>
     <string name="cancel_add_list">Cancel Add List</string>
     <string name="schema">Schema</string>

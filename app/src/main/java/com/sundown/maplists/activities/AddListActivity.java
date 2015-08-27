@@ -52,9 +52,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         ActionDialogFragment.ConfirmActionListener{
 
     private static final String FRAGMENT_ADD_LIST = "ADD_LIST";
-    public static final String FRAGMENT_ADD_FIELD = "ADD_FIELD";
-    public static final String FRAGMENT_ADD_SCHEMA = "ADD_SCHEMA";
-    public static final String FRAGMENT_ACTION= "ACTION";
+    private static final String FRAGMENT_ADD_FIELD = "ADD_FIELD";
+    private static final String FRAGMENT_ADD_SCHEMA = "ADD_SCHEMA";
+    private static final String FRAGMENT_ACTION= "ACTION";
 
     private FragmentManager fm;
     private DatabaseCommunicator db;

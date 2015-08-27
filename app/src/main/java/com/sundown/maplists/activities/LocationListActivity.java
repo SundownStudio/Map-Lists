@@ -29,7 +29,7 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
 
 
     private static final String FRAGMENT_LOCATION_LIST = "LOCATION_LIST";
-    public static final String FRAGMENT_ACTION= "ACTION";
+    private static final String FRAGMENT_ACTION= "ACTION";
 
     private FragmentManager fm;
     private DatabaseCommunicator db;

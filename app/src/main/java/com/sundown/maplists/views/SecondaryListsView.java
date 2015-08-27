@@ -77,14 +77,13 @@ public class SecondaryListsView extends RelativeLayout {
 
 
         private LayoutInflater inflater;
-        private Context context;
+
         private List<SecondaryList> locationItems = Collections.emptyList();
 
         private DatabaseCommunicator db;
 
         public AdapterLocationItems(Context context) {
             inflater = LayoutInflater.from(context);
-            this.context = context;
             db = DatabaseCommunicator.getInstance();
         }
 
@@ -237,7 +236,6 @@ public class SecondaryListsView extends RelativeLayout {
 
             @Override
             public void onClick(View v) {
-                Log.Toast(context, "getPosition: " + getPosition(), Log.TOAST_SHORT);
                 listener.LocationListSelected(locationItems.get(getPosition()));
             }
         }

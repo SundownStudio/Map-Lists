@@ -37,9 +37,9 @@ public class MainActivity extends AppCompatActivity implements
     //The Activity also handles all Toolbar clicks (since those usually result in starting new activities or displaying fragments).
     //If you add more Activities/Fragments please try to keep this pattern intact
 
-    public static final String FRAGMENT_MAP = "MAP";
-    public static final String FRAGMENT_ACTION= "ACTION";
-    public static final String FRAGMENT_ENTER_ADDRESS= "ENTER_ADDRESS";
+    private static final String FRAGMENT_MAP = "MAP";
+    private static final String FRAGMENT_ACTION= "ACTION";
+    private static final String FRAGMENT_ENTER_ADDRESS= "ENTER_ADDRESS";
 
 
     private FragmentManager fm;
