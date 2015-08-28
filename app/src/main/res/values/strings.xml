@@ -65,6 +65,7 @@
         <item>Email</item>
         <item>Photo</item>
         <item>Text</item>
+        <item>Comment</item>
         <item>Number</item>
         <item>Price</item>
         <item>Decimal</item>
@@ -82,6 +83,7 @@
         <item>@drawable/ic_email</item>
         <item>@drawable/ic_photo</item>
         <item>@drawable/ic_text</item>
+        <item>@drawable/ic_comment</item>
         <item>@drawable/ic_number</item>
         <item>@drawable/ic_price</item>
         <item>@drawable/ic_decimal</item>

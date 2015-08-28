@@ -1,6 +1,7 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,11 +42,10 @@ public class SecondaryListsView extends RelativeLayout {
     private TextView emptyListText;
     private AdapterLocationItems adapter;
     private AllListsListener listener;
+    private TypedArray imageResources;
 
-
-    public SecondaryListsView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+    public SecondaryListsView(Context context, AttributeSet attrs) { super(context, attrs);}
+    private void recycleImages(){ if (imageResources != null) imageResources.recycle(); }
 
     @Override
     protected void onFinishInflate() {
@@ -59,13 +59,21 @@ public class SecondaryListsView extends RelativeLayout {
 
     }
 
-    public void setListAndListener(List<SecondaryList> items, AllListsListener listener){
-        if (items.size() > 0)
-            emptyListText.setVisibility(View.GONE);
+    public void init(final List<SecondaryList> items, final AllListsListener listener, final TypedArray imageResources){
+        recycleImages();
+        this.imageResources = imageResources;
+        if (items.size() > 0) emptyListText.setVisibility(View.GONE);
         adapter.setList(items);
         this.listener = listener;
 
     }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        recycleImages();
+        super.onDetachedFromWindow();
+    }
+
 
 
     private class AdapterLocationItems extends RecyclerView.Adapter<AdapterLocationItems.ViewHolder> {
@@ -236,7 +244,7 @@ public class SecondaryListsView extends RelativeLayout {
 
             @Override
             public void onClick(View v) {
-                listener.LocationListSelected(locationItems.get(getPosition()));
+                listener.LocationListSelected(locationItems.get(getAdapterPosition ()));
             }
         }
 
@@ -252,8 +260,6 @@ public class SecondaryListsView extends RelativeLayout {
             }
 
         }
-
-
     }
 
 }

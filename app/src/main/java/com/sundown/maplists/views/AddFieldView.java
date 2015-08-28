@@ -138,7 +138,7 @@ public class AddFieldView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (listener != null){
-                    Field field = fields.get(getPosition());
+                    Field field = fields.get(getAdapterPosition ());
                     if (field.type == PHOTO){
                         field = new PhotoField(false);
                     }

@@ -11,7 +11,6 @@ import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.sundown.maplists.R;
-import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.ContentLoader;
@@ -66,7 +65,6 @@ public class SecondaryListsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.m("LocationItemsFragment is VISIBLE onResume");
         setUserVisibleHint(true);
 
         loader = new Loader().start();
@@ -81,7 +79,6 @@ public class SecondaryListsFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.m("LocationFragment is INVISIBLE onPause");
         setUserVisibleHint(false);
         loader.stop();
     }
@@ -124,7 +121,7 @@ public class SecondaryListsFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    view.setListAndListener(model, listener);
+                    view.init(model, listener, getResources().obtainTypedArray(R.array.add_field_images));
                 }
             });
         }
