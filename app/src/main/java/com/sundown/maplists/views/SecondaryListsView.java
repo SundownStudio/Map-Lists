@@ -1,32 +1,31 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RatingBar;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.EntryField;
+import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
-import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.models.SecondaryList;
-import com.sundown.maplists.storage.DatabaseCommunicator;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
-
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 
 /**
@@ -42,10 +41,21 @@ public class SecondaryListsView extends RelativeLayout {
     private TextView emptyListText;
     private AdapterLocationItems adapter;
     private AllListsListener listener;
-    private TypedArray imageResources;
+    private static final Map<FieldType, Integer> imageResources;
+    static
+    {
+        imageResources = new HashMap<>();
+        imageResources.put(FieldType.NAME, R.drawable.ic_name);
+        imageResources.put(FieldType.PHONE, R.drawable.ic_phonenumber);
+        imageResources.put(FieldType.EMAIL, R.drawable.ic_email);
+        imageResources.put(FieldType.DATE, R.drawable.ic_date);
+        imageResources.put(FieldType.TIME, R.drawable.ic_time);
+        imageResources.put(FieldType.URL, R.drawable.ic_url);
+        imageResources.put(FieldType.PRICE, R.drawable.ic_price);
+    }
 
     public SecondaryListsView(Context context, AttributeSet attrs) { super(context, attrs);}
-    private void recycleImages(){ if (imageResources != null) imageResources.recycle(); }
+
 
     @Override
     protected void onFinishInflate() {
@@ -59,152 +69,130 @@ public class SecondaryListsView extends RelativeLayout {
 
     }
 
-    public void init(final List<SecondaryList> items, final AllListsListener listener, final TypedArray imageResources){
-        recycleImages();
-        this.imageResources = imageResources;
+    public void init(final List<SecondaryList> items, final AllListsListener listener){
+
         if (items.size() > 0) emptyListText.setVisibility(View.GONE);
         adapter.setList(items);
         this.listener = listener;
-
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        recycleImages();
-        super.onDetachedFromWindow();
     }
 
 
 
     private class AdapterLocationItems extends RecyclerView.Adapter<AdapterLocationItems.ViewHolder> {
 
-        private final static int TYPE_NO_IMAGE = 10;
-        private final static int TYPE_ONE_IMAGE = 20;
-        private final static int TYPE_TWO_IMAGE = 30;
-        private final static int TYPE_THREE_IMAGE = 40;
-
 
         private LayoutInflater inflater;
-
         private List<SecondaryList> locationItems = Collections.emptyList();
 
-        private DatabaseCommunicator db;
+
 
         public AdapterLocationItems(Context context) {
             inflater = LayoutInflater.from(context);
-            db = DatabaseCommunicator.getInstance();
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            switch (viewType){
-                case TYPE_ONE_IMAGE:
-                    return new ViewHolder(inflater.inflate(R.layout.row_list_one_image, parent, false), viewType);
-
-                case TYPE_TWO_IMAGE:
-                    return new ViewHolder(inflater.inflate(R.layout.row_list_two_image, parent, false), viewType);
-
-                case TYPE_THREE_IMAGE:
-                    return new ViewHolder(inflater.inflate(R.layout.row_list_three_image, parent, false), viewType);
-
-                default:
-                    return new ViewHolder(inflater.inflate(R.layout.row_list_no_image, parent, false), viewType);
-            }
+            return new ViewHolder(inflater.inflate(R.layout.list_item_container_view, parent, false));
 
         }
 
 
-        private void fillTextViews(ViewHolder holder, SecondaryList locationItem){
-            List<Field> list = locationItem.getValues();
-            int counter = 0;
-            String title;
-            String text;
-            boolean ratingSet = false;
-
-            for (Field i: list){
-                FieldType type = i.type;
-                if (type != FieldType.PHOTO && type != FieldType.CHECKBOX){
-                    EntryField entryField = (EntryField) i;
-
-                    if (type == FieldType.RATING && !ratingSet){
-
-                        try {
-                            Float f = Float.parseFloat(entryField.entry);
-                            holder.field_rating.setRating(f);
-                            holder.field_rating.setVisibility(VISIBLE);
-                            ratingSet = true;
-                        } catch (Exception e){
-                            Log.m("could not parse: " + entryField.entry + " as float");
-                        }
-
-                    } else {
-
-                        title = entryField.title;
-                        if (counter != 0 && title != null && title.length() > 0) {
-                            text = entryField.title + ": " + entryField.entry;
-                        } else {
-                            text = entryField.entry;
-                        }
-                        holder.textViews.get(counter++).setText(text);
-                    }
-                }
-                if (counter == 4)
-                    break;
-            }
-
-
-        }
 
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
+            holder.container.removeAllViews();
+            LinkedHashMap<FieldType, LinkedList<String>> map = new LinkedHashMap<>();
+
+
             SecondaryList locationItem = locationItems.get(position);
+            List<Field> list = locationItem.getValues();
 
-            fillTextViews(holder, locationItem);
-
-            int type = holder.getItemViewType();
-            ArrayList<PhotoField> photos = locationItem.getPhotos();
-            String documentId = locationItem.documentId;
-
-            if (type != TYPE_NO_IMAGE) {
-                getBitmap(documentId, photos.get(0).thumbName, holder.field_image);
-
-                if (type >= TYPE_TWO_IMAGE) {
-                    getBitmap(documentId, photos.get(1).thumbName, holder.field_image_two);
-                    holder.field_image_two.setAlpha(.5f);
+            for (Field field: list) {
+                FieldType type = field.type;
+                switch (type) {
+                    case SUBJECT: { //reserved field only one per item
+                        EntryField entryField = (EntryField) field;
+                        holder.subjectText.setText(entryField.entry);
+                        break;
+                    }
+                    case NAME:
+                    case PHONE:
+                    case EMAIL:
+                    case DATE:
+                    case TIME:
+                    case URL:
+                    case PRICE: {
+                        EntryField entryField = (EntryField) field;
+                        LinkedList<String> entries = map.get(type);
+                        if (entries == null)
+                            entries = new LinkedList<>();
+                        entries.add(entryField.entry);
+                        map.put(type, entries);
+                        break;
+                    }
                 }
-                if (type >= TYPE_THREE_IMAGE) {
-                    getBitmap(documentId, photos.get(2).thumbName, holder.field_image_three);
-                    holder.field_image_three.setAlpha(.1f);
-                    holder.field_image_two.bringToFront();
+            }
+
+            Set set = map.entrySet();
+            Iterator i = set.iterator();
+            while(i.hasNext()) {
+                Map.Entry me = (Map.Entry)i.next();
+                FieldType type = (FieldType) me.getKey();
+                LinkedList<String> entries = (LinkedList<String>) me.getValue();
+
+                if (type == FieldType.DATE){
+                    LinkedList<String> entries2 = map.get(FieldType.TIME);
+                    drawDoubleViews(entries, entries2, FieldType.DATE, FieldType.TIME, holder);
+
+                } else if (type == FieldType.TIME){
+                    LinkedList<String> entries2 = map.get(FieldType.DATE);
+                    drawDoubleViews(entries2, entries, FieldType.DATE, FieldType.TIME, holder);
+
+                } else {
+                    drawSingleViews(entries, type, holder);
                 }
-                holder.field_image.bringToFront();
+
             }
         }
+
+        private void drawSingleViews(LinkedList<String> entries, FieldType type, ViewHolder holder){
+            if (entries != null) {
+                while (entries.size() > 0) {
+                    String entry = entries.pop();
+                    if (holder.singleViews.size() == 0) {
+                        break;
+                    } else {
+                        ListItemSingleView view = holder.singleViews.pop();
+                        view.init(imageResources.get(type), entry);
+                        holder.container.addView(view);
+                    }
+                }
+            }
+        }
+
+
+        private void drawDoubleViews(LinkedList<String> entries1, LinkedList<String> entries2, FieldType type1, FieldType type2, ViewHolder holder){
+            if (entries1 != null && entries2 != null) {
+                while (entries1.size() > 0 && entries2.size() > 0 && holder.doubleViews.size() > 0) {
+                    String entry1 = entries1.pop();
+                    String entry2 = entries2.pop();
+                    ListItemDoubleView view = holder.doubleViews.pop();
+                    view.init(imageResources.get(type1), imageResources.get(type2), entry1, entry2);
+                    holder.container.addView(view);
+                }
+            }
+            drawSingleViews(entries1, type1, holder);
+            drawSingleViews(entries2, type2, holder);
+
+        }
+
 
         @Override
         public int getItemCount() {
             return locationItems.size();
         }
 
-
-        @Override
-        public int getItemViewType(int position) {
-            SecondaryList location = locationItems.get(position);
-            ArrayList<PhotoField> photos = location.getPhotos(); //todo this may be slow.. maybe we should keep them in a list so dont need to do this each time..
-
-            if (photos != null){
-                int size = photos.size();
-                if (size >= 3) {
-                    return TYPE_THREE_IMAGE;
-                } else if (size == 2) {
-                    return TYPE_TWO_IMAGE;
-                } else if (size == 1){
-                    return TYPE_ONE_IMAGE;
-                }
-            }
-            return TYPE_NO_IMAGE;
-        }
 
         public void setList(List<SecondaryList> locationItems) {
             this.locationItems = locationItems;
@@ -213,52 +201,30 @@ public class SecondaryListsView extends RelativeLayout {
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            ImageView field_image;
-            ImageView field_image_two;
-            ImageView field_image_three;
-            ArrayList<TextView> textViews = new ArrayList<>(4);
-            RatingBar field_rating;
+            TextView subjectText;
+            LinearLayout container;
+            Stack<ListItemSingleView> singleViews = new Stack<>();
+            Stack<ListItemDoubleView> doubleViews = new Stack<>();
 
 
-            public ViewHolder(View itemView, int viewType) {
+            public ViewHolder(View itemView) {
                 super(itemView);
                 itemView.setOnClickListener(this);
 
-                textViews.add((TextView) itemView.findViewById(R.id.field_title));
-                textViews.add((TextView) itemView.findViewById(R.id.field_one));
-                textViews.add((TextView) itemView.findViewById(R.id.field_two));
-                textViews.add((TextView) itemView.findViewById(R.id.field_three));
-                field_rating = (RatingBar) itemView.findViewById(R.id.field_rating);
-                field_rating.setEnabled(false);
-                field_image = (ImageView) itemView.findViewById(R.id.field_image);
+                subjectText = (TextView) itemView.findViewById(R.id.listItemSubject);
+                container = (LinearLayout) itemView.findViewById(R.id.listItemContainer);
 
-
-                if (viewType >= TYPE_TWO_IMAGE) {
-                    field_image_two = (ImageView) itemView.findViewById(R.id.field_image_two);
-                }
-                if (viewType >= TYPE_THREE_IMAGE){
-                    field_image_three = (ImageView) itemView.findViewById(R.id.field_image_three);
+                for (int i = 0; i < 5; ++i){
+                    singleViews.push((ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, container, false));
+                    doubleViews.push((ListItemDoubleView)inflater.inflate(R.layout.list_item_double_view, container, false));
                 }
 
             }
 
             @Override
             public void onClick(View v) {
-                listener.LocationListSelected(locationItems.get(getAdapterPosition ()));
+                listener.LocationListSelected(locationItems.get(getAdapterPosition()));
             }
-        }
-
-        private void getBitmap(String documentId, String thumbName, ImageView imageView){
-            Bitmap thumb = null;
-
-            if (thumbName != null && thumbName.length() > 0) {
-                thumb = db.loadBitmap(documentId, thumbName);
-            }
-
-            if (thumb != null){
-                imageView.setImageBitmap(thumb);
-            }
-
         }
     }
 

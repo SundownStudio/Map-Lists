@@ -44,14 +44,6 @@ public class AddFieldDialogFragment extends DialogFragment {
         generateList();
     }
 
-    private void addTypedArrayToArrayList(TypedArray typedArray, ArrayList arrayList){
-        int len = typedArray.length();
-        for (int i = 0; i < len; ++i){
-            arrayList.add(typedArray.getResourceId(i, -1));
-        }
-        typedArray.recycle();
-    }
-
 
     @NonNull
     @Override
@@ -101,6 +93,14 @@ public class AddFieldDialogFragment extends DialogFragment {
         for (int i = 0; i < len; ++i){
             list.add(new EntryField(-1, fieldNames[i], "", types[i], false));
         }
+    }
+
+    private void addTypedArrayToArrayList(TypedArray typedArray, ArrayList arrayList){
+        int len = typedArray.length();
+        for (int i = 0; i < len; ++i){
+            arrayList.add(typedArray.getResourceId(i, -1));
+        }
+        typedArray.recycle();
     }
 
 }

@@ -2,22 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" android:layout_margin="8dp">
+    android:layout_margin="8dp">
 
     <ImageView
         android:id="@+id/rowImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@mipmap/ic_launcher" />
 
     <TextView
         android:id="@+id/rowTitle"
-        android:layout_toRightOf="@+id/rowImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
         android:layout_marginLeft="20dp"
+        android:layout_toRightOf="@+id/rowImage"
+        android:gravity="center_vertical"
         android:text="Title" />
 
 </RelativeLayout>

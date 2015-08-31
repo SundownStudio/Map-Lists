@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sundown.maplists.views.ListItemDoubleView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:weightSum="2"
+    android:padding="4dp">
+
+    <ImageView
+        android:id="@+id/listItemImageOne"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/listItemContentsOne"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:text=""
+        android:layout_marginLeft="5dp"/>
+
+    <ImageView
+        android:id="@+id/listItemImageTwo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/listItemContentsTwo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:text=""
+        android:layout_marginLeft="5dp"/>
+
+</com.sundown.maplists.views.ListItemDoubleView>

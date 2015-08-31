@@ -121,7 +121,7 @@ public class SecondaryListsFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    view.init(model, listener, getResources().obtainTypedArray(R.array.primary_field_images));
+                    view.init(model, listener);
                 }
             });
         }
