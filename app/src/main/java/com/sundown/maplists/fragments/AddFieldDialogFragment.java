@@ -1,5 +1,6 @@
 package com.sundown.maplists.fragments;
 
+import android.content.res.TypedArray;
 import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -43,6 +44,14 @@ public class AddFieldDialogFragment extends DialogFragment {
         generateList();
     }
 
+    private void addTypedArrayToArrayList(TypedArray typedArray, ArrayList arrayList){
+        int len = typedArray.length();
+        for (int i = 0; i < len; ++i){
+            arrayList.add(typedArray.getResourceId(i, -1));
+        }
+        typedArray.recycle();
+    }
+
 
     @NonNull
     @Override
@@ -52,7 +61,11 @@ public class AddFieldDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         AddFieldView view = (AddFieldView) inflater.inflate(R.layout.dialog_add_field, null);
-        view.setAdapter(listener, list, getResources().obtainTypedArray(R.array.add_field_images));
+
+        ArrayList<Integer> arr = new ArrayList<>();
+        addTypedArrayToArrayList(getResources().obtainTypedArray(R.array.primary_field_images), arr);
+        addTypedArrayToArrayList(getResources().obtainTypedArray(R.array.secondary_field_images), arr);
+        view.setAdapter(listener, list, arr);
 
         builder.setView(view);
         builder.setTitle(getString(R.string.add_field));

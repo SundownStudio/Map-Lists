@@ -1,7 +1,6 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +17,7 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.PhotoField;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class AddFieldView extends LinearLayout {
 
     private AdapterSelectField adapter;
     private RecyclerView recyclerView;
-    private TypedArray imageResources;
+    private ArrayList<Integer> imageResources;
 
     public AddFieldView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -50,7 +50,7 @@ public class AddFieldView extends LinearLayout {
     }
 
 
-    public void setAdapter(final FieldSelector listener, final List<Field> list, final TypedArray imageResources){
+    public void setAdapter(final FieldSelector listener, final List<Field> list, final ArrayList<Integer> imageResources){
         this.imageResources = imageResources;
         adapter = new AdapterSelectField(listener, list);
         recyclerView.setAdapter(adapter);
@@ -59,7 +59,7 @@ public class AddFieldView extends LinearLayout {
 
     @Override
     protected void onDetachedFromWindow() {
-        imageResources.recycle();
+        imageResources.clear();
         super.onDetachedFromWindow();
     }
 
@@ -107,7 +107,7 @@ public class AddFieldView extends LinearLayout {
             Field field = fields.get(position);
             holder.title.setText(field.title);
             try {
-                holder.image.setImageResource(imageResources.getResourceId(position, -1)); //we don't have images for all screensizes yet so will use default if fails
+                holder.image.setImageResource(imageResources.get(position)); //we don't have images for all screensizes yet so will use default if fails
             } catch (Exception e){
                 Log.e(e);
             }
