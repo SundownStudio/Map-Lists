@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:weightSum="2"
-    android:padding="4dp">
+    android:weightSum="2">
 
     <ImageView
         android:id="@+id/listItemImageOne"
@@ -19,8 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:text=""
-        android:layout_marginLeft="5dp"/>
+        android:text=""/>
 
     <ImageView
         android:id="@+id/listItemImageTwo"
@@ -35,7 +33,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center_vertical"
-        android:text=""
-        android:layout_marginLeft="5dp"/>
+        android:text=""/>
 
 </com.sundown.maplists.views.ListItemDoubleView>

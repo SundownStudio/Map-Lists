@@ -3,6 +3,7 @@ package com.sundown.maplists.views;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ public class ListItemDoubleView extends LinearLayout {
     private TextView contentsOne;
     private ImageView imageTwo;
     private TextView contentsTwo;
+    private LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
 
     public ListItemDoubleView(Context context, AttributeSet attrs) {
@@ -41,9 +43,11 @@ public class ListItemDoubleView extends LinearLayout {
         contentsTwo.setTypeface(null, Typeface.BOLD);
         contentsOne.setText(textOne);
         contentsTwo.setText(textTwo);
+        layoutParams.setMargins(10, 10, 10, 0);
+        this.setLayoutParams(layoutParams);
     }
 
-    public void initAsEntry(int resIdOne, int resIdTwo, String textOne, String textTwo){
+    public void initAsEntry(int resIdOne, int resIdTwo, String textOne, String textTwo, boolean addTopMargin){
         imageOne.setVisibility(VISIBLE);
         imageTwo.setVisibility(VISIBLE);
         imageOne.setImageResource(resIdOne);
@@ -52,6 +56,11 @@ public class ListItemDoubleView extends LinearLayout {
         contentsTwo.setTypeface(null, Typeface.NORMAL);
         contentsOne.setText(textOne);
         contentsTwo.setText(textTwo);
+        if (addTopMargin)
+            layoutParams.setMargins(20, 10, 10, 0);
+        else
+            layoutParams.setMargins(20, 0, 10, 0);
+        this.setLayoutParams(layoutParams);
     }
 
 }

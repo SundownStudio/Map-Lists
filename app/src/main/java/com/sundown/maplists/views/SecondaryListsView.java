@@ -169,23 +169,25 @@ public class SecondaryListsView extends RelativeLayout {
 
         private void drawSingleViews(LinkedList<EntryField> entries, FieldType type, ViewHolder holder){
             if (entries != null) {
+                boolean addTopMargin = true;
                 while (entries.size() > 0) {
                     EntryField entryField = entries.pop();
                     if (entryField.showTitle){
-                        addToSingleView(entryField.title, type, holder, true);
+                        addToSingleView(entryField.title, type, holder, true, false);
+                        addTopMargin = false;
                     }
-                    addToSingleView(entryField.entry, type, holder, false);
-
+                    addToSingleView(entryField.entry, type, holder, false, addTopMargin);
+                    addTopMargin = false;
                 }
             }
         }
 
-        private void addToSingleView(String text, FieldType type, ViewHolder holder, boolean asTitle){
+        private void addToSingleView(String text, FieldType type, ViewHolder holder, boolean asTitle, boolean addTopMargin){
             ListItemSingleView view = holder.getSingleView();
             if (asTitle){
                 view.initAsTitle(text);
             } else {
-                view.initAsEntry(imageResources.get(type), text);
+                view.initAsEntry(imageResources.get(type), text, addTopMargin);
             }
             holder.container.addView(view);
         }
@@ -193,6 +195,7 @@ public class SecondaryListsView extends RelativeLayout {
 
         private void drawDoubleViews(LinkedList<EntryField> entries1, LinkedList<EntryField> entries2, FieldType type1, FieldType type2, ViewHolder holder){
             if (entries1 != null && entries2 != null) {
+                boolean addTopMargin = true;
                 while (entries1.size() > 0 && entries2.size() > 0 && holder.doubleViews.size() > 0) {
                     EntryField entry1 = entries1.pop();
                     EntryField entry2 = entries2.pop();
@@ -202,21 +205,24 @@ public class SecondaryListsView extends RelativeLayout {
                         title1 = entry1.title;
                     if (entry2.showTitle)
                         title2 = entry2.title;
-                    if (title1.length() > 0 || title2.length() > 0)
-                        addToDoubleView(title1, title2, type1, type2, holder, true);
-                    addToDoubleView(entry1.entry, entry2.entry, type1, type2, holder, false);
+                    if (title1.length() > 0 || title2.length() > 0) {
+                        addToDoubleView(title1, title2, type1, type2, holder, true, false);
+                        addTopMargin = false;
+                    }
+                    addToDoubleView(entry1.entry, entry2.entry, type1, type2, holder, false, addTopMargin);
+                    addTopMargin = false;
                 }
             }
             drawSingleViews(entries1, type1, holder);
             drawSingleViews(entries2, type2, holder);
         }
 
-        private void addToDoubleView(String text1, String text2, FieldType type1, FieldType type2, ViewHolder holder, boolean asTitle){
+        private void addToDoubleView(String text1, String text2, FieldType type1, FieldType type2, ViewHolder holder, boolean asTitle, boolean addTopMargin){
             ListItemDoubleView view = holder.getDoubleView();
             if (asTitle){
                 view.initAsTitle(text1, text2);
             } else {
-                view.initAsEntry(imageResources.get(type1), imageResources.get(type2), text1, text2);
+                view.initAsEntry(imageResources.get(type1), imageResources.get(type2), text1, text2, addTopMargin);
             }
             holder.container.addView(view);
         }
