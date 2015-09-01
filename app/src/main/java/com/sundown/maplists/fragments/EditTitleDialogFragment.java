@@ -38,7 +38,7 @@ public class EditTitleDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = (EditTitleView) inflater.inflate(R.layout.dialog_edit_title, null);
         view.setTitle(field.title);
-        view.showCheckBox(enableDisplayTitle);
+        view.showCheckBox(enableDisplayTitle, field.showTitle);
 
         builder.setView(view);
         builder.setTitle(R.string.edit_title);

@@ -1,6 +1,7 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,9 +34,22 @@ public class ListItemDoubleView extends LinearLayout {
         contentsTwo = (TextView) findViewById(R.id.listItemContentsTwo);
     }
 
-    public void init(int resIdOne, int resIdTwo, String textOne, String textTwo){
+    public void initAsTitle(String textOne, String textTwo){
+        imageOne.setVisibility(GONE);
+        imageTwo.setVisibility(GONE);
+        contentsOne.setTypeface(null, Typeface.BOLD);
+        contentsTwo.setTypeface(null, Typeface.BOLD);
+        contentsOne.setText(textOne);
+        contentsTwo.setText(textTwo);
+    }
+
+    public void initAsEntry(int resIdOne, int resIdTwo, String textOne, String textTwo){
+        imageOne.setVisibility(VISIBLE);
+        imageTwo.setVisibility(VISIBLE);
         imageOne.setImageResource(resIdOne);
         imageTwo.setImageResource(resIdTwo);
+        contentsOne.setTypeface(null, Typeface.NORMAL);
+        contentsTwo.setTypeface(null, Typeface.NORMAL);
         contentsOne.setText(textOne);
         contentsTwo.setText(textTwo);
     }

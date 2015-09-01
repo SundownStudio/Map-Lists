@@ -39,12 +39,13 @@ public class EditTitleView extends LinearLayout {
 
     public boolean getChecked() { return checkBox.isChecked();}
 
-    public void showCheckBox(boolean enableDisplayTitle){
+    public void showCheckBox(boolean enableDisplayTitle, boolean isChecked){
         if (enableDisplayTitle){
             checkBox.setVisibility(VISIBLE);
         } else {
             checkBox.setVisibility(GONE);
         }
+        checkBox.setChecked(isChecked);
     }
 
 
