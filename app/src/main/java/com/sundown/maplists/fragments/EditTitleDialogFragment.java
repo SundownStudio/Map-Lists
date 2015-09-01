@@ -20,10 +20,12 @@ public class EditTitleDialogFragment extends DialogFragment {
 
     private EditTitleView view;
     private Field field;
+    private boolean enableDisplayTitle;
 
-    public static EditTitleDialogFragment newInstance(Field field) {
+    public static EditTitleDialogFragment newInstance(Field field, boolean enableDisplayTitle) {
         EditTitleDialogFragment frag = new EditTitleDialogFragment();
         frag.field = field;
+        frag.enableDisplayTitle = enableDisplayTitle;
         return frag;
     }
 
@@ -36,13 +38,15 @@ public class EditTitleDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = (EditTitleView) inflater.inflate(R.layout.dialog_edit_title, null);
         view.setTitle(field.title);
+        view.showCheckBox(enableDisplayTitle);
 
         builder.setView(view);
-        builder.setTitle("Change Field Title");
+        builder.setTitle(R.string.edit_title);
         builder.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 field.setTitle(view.getTitle());
+                field.setShowTitle(view.getChecked());
                 dialog.dismiss();
 
             }

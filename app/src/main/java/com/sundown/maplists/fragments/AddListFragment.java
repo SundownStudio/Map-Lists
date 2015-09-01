@@ -15,6 +15,7 @@ import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.PhotoField;
+import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.utils.PreferenceManager;
@@ -33,10 +34,9 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
 
 
-    public static final String FRAGMENT_EDIT_FIELD_TITLE = "EDIT_TITLE";
-    public static final double PROP_HEIGHT = .41;
-    public static final double PROP_WIDTH = .85;
-
+    private static final String FRAGMENT_EDIT_FIELD_TITLE = "EDIT_TITLE";
+    private static final double PROP_HEIGHT = .41;
+    private static final double PROP_WIDTH = .85;
     private FragmentManager fm;
 
 
@@ -49,7 +49,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     /** the view for this fragment */
     private AddListView view;
 
-    /** our model, can either be a MapList or a LocationList */
+    /** our model, can either be a MapList or a SecondaryList */
     private LocationList model;
 
     /** the form of fields used to populate our view */
@@ -192,7 +192,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     @Override
     public void editFieldTitle(int tag) {
         Field field = model.getField(tag);
-        editTitleDialogFragment = EditTitleDialogFragment.newInstance(field);
+        editTitleDialogFragment = EditTitleDialogFragment.newInstance(field, (model instanceof SecondaryList)? true : false);
         editTitleDialogFragment.show(fm, FRAGMENT_EDIT_FIELD_TITLE);
     }
 

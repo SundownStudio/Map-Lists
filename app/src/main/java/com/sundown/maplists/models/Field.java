@@ -23,6 +23,11 @@ public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
         this.title = title;
         observer.updateTitle(title);
     }
+    public boolean showTitle;
+    public void setShowTitle(boolean show){
+        this.showTitle = show;
+    }
+
     public Observer observer;
     public void setObserver(Observer observer){this.observer = observer;}
 
@@ -32,6 +37,7 @@ public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
         this.title = title;
         this.type = type;
         this.permanent = permanent;
+        this.showTitle = false;
     }
 
     public String getTitle(){
@@ -62,6 +68,7 @@ public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
         properties.put(JsonConstants.FIELD_TITLE, title);
         properties.put(JsonConstants.FIELD_TYPE, type.name());
         properties.put(JsonConstants.FIELD_PERMANENT, String.valueOf(permanent));
+        properties.put(JsonConstants.FIELD_TITLE_SHOW, String.valueOf(showTitle));
         return properties;
     }
 
@@ -70,6 +77,7 @@ public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
         title = String.valueOf(properties.get(JsonConstants.FIELD_TITLE));
         type = FieldType.valueOf(properties.get(JsonConstants.FIELD_TYPE).toString());
         permanent = Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_PERMANENT)));
+        showTitle = Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_TITLE_SHOW)));
         return this;
     }
 

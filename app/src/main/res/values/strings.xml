@@ -57,7 +57,7 @@
     <string name="no_image_loaded">No image loaded</string>
     <string name="couldnt_load_image">Could not load image</string>
     <string name="photo">Photo</string>
-    <string name="enter_a_new_title">Please enter a new title for this field:</string>
+
 
     <string-array name="add_field_names">
         <item>Name</item>
@@ -124,4 +124,6 @@
     <string name="add_schema_instruction">Enter a name for this schema and press Save to save it, or press Skip.</string>
     <string name="abandon_changes_text">Abandon all changes without saving?</string>
     <string name="abandon_changes">Abandon Changes?</string>
+    <string name="display_title">Display this title in the list view</string>
+    <string name="edit_title">Edit Title</string>
 </resources>
