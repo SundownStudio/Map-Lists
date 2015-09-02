@@ -199,8 +199,8 @@ public class SecondaryListsView extends RelativeLayout {
                 while (entries1.size() > 0 && entries2.size() > 0 && holder.doubleViews.size() > 0) {
                     EntryField entry1 = entries1.pop();
                     EntryField entry2 = entries2.pop();
-                    String title1 = "";
-                    String title2 = "";
+                    String title1 = "", title2 = "";
+
                     if (entry1.showTitle)
                         title1 = entry1.title;
                     if (entry2.showTitle)

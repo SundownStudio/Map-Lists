@@ -36,7 +36,7 @@ public class ListItemSingleView extends LinearLayout{
         image.setVisibility(GONE);
         contents.setTypeface(null, Typeface.BOLD);
         contents.setText(title);
-        layoutParams.setMargins(10,10,10,0);
+        layoutParams.setMargins(10,20,10,0);
         this.setLayoutParams(layoutParams);
     }
 
@@ -46,9 +46,9 @@ public class ListItemSingleView extends LinearLayout{
         contents.setTypeface(null, Typeface.NORMAL);
         contents.setText(text);
         if (addTopMargin)
-            layoutParams.setMargins(20, 10, 10, 0);
+            layoutParams.setMargins(20, 20, 20, 0);
         else
-            layoutParams.setMargins(20, 0, 10, 0);
+            layoutParams.setMargins(20, 0, 20, 0);
         this.setLayoutParams(layoutParams);
     }
 
@@ -56,7 +56,7 @@ public class ListItemSingleView extends LinearLayout{
         image.setVisibility(GONE);
         contents.setTypeface(null, Typeface.NORMAL);
         contents.setText(comment);
-        layoutParams.setMargins(10, 10, 10,0);
+        layoutParams.setMargins(10, 20, 10,0);
         this.setLayoutParams(layoutParams);
     }
 }

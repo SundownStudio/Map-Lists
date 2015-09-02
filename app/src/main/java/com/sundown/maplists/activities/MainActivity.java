@@ -292,6 +292,10 @@ public class MainActivity extends AppCompatActivity implements
                 Intent intent = new Intent(MainActivity.this, SecondaryListsActivity.class);
                 intent.putExtra(JsonConstants.DOCUMENT_ID, list.documentId);
                 intent.putExtra(JsonConstants.MAP_ID, list.mapId);
+                try {
+                    EntryField entryField = (EntryField) list.fields.get(0); //this will always work because it's a protected field
+                    intent.putExtra(JsonConstants.FIELD_ENTRY, entryField.entry);
+                } catch (Exception e){}
                 startActivity(intent);
                 break;
             }

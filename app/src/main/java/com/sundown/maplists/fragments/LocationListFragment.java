@@ -33,7 +33,7 @@ public class LocationListFragment extends Fragment {
     private LinearLayout layout;
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
+    private StringBuffer stringBuffer;
 
 
     public static LocationListFragment newInstance(SecondaryList model, ToolbarManager toolbarManager) {
@@ -47,6 +47,7 @@ public class LocationListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        stringBuffer = new StringBuffer();
         setRetainInstance(true);
     }
 
@@ -90,20 +91,18 @@ public class LocationListFragment extends Fragment {
 
     private void addToLayout(int id, Field field){
         field.setId(id);
-        addTitleView(field);
         addComponentView(field);
     }
 
 
-    public void addTitleView(Field field){
-        if (field.type != FieldType.PHOTO){
-            String title = field.title;
-            if (title != null && title.length() > 0) {
-                TextView titleView = new TextView(getActivity());
-                titleView.setText(field.title);
-                layout.addView(titleView);
-            }
+    private void addTitleView(Field field){
+        String title = field.title;
+        if (title != null && title.length() > 0) {
+            TextView titleView = new TextView(getActivity());
+            titleView.setText(field.title);
+            layout.addView(titleView);
         }
+
     }
 
 
@@ -146,8 +145,16 @@ public class LocationListFragment extends Fragment {
             default:{
                 EntryField entryField = (EntryField) field;
                 TextView v = new TextView(getActivity());
+                stringBuffer.setLength(0);
+
+                String title = field.title;
+                if (title != null && title.length() > 0) {
+                    stringBuffer.append(title + ": ");
+                }
+
                 if (entryField.entry != null){
-                    v.setText(entryField.entry);
+                    stringBuffer.append(entryField.entry);
+                    v.setText(stringBuffer.toString());
                 }
                 view = v;
                 break;

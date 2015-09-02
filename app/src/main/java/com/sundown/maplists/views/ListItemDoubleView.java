@@ -43,7 +43,7 @@ public class ListItemDoubleView extends LinearLayout {
         contentsTwo.setTypeface(null, Typeface.BOLD);
         contentsOne.setText(textOne);
         contentsTwo.setText(textTwo);
-        layoutParams.setMargins(10, 10, 10, 0);
+        layoutParams.setMargins(10, 20, 10, 0);
         this.setLayoutParams(layoutParams);
     }
 
@@ -57,9 +57,9 @@ public class ListItemDoubleView extends LinearLayout {
         contentsOne.setText(textOne);
         contentsTwo.setText(textTwo);
         if (addTopMargin)
-            layoutParams.setMargins(20, 10, 10, 0);
+            layoutParams.setMargins(20, 20, 20, 0);
         else
-            layoutParams.setMargins(20, 0, 10, 0);
+            layoutParams.setMargins(20, 0, 20, 0);
         this.setLayoutParams(layoutParams);
     }
 

@@ -33,6 +33,7 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
     private SecondaryListsFragment secondaryListsFragment;
     private String documentId;
     private int mapId;
+    private String locationName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,9 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
             Bundle bundle = getIntent().getExtras();
             mapId = bundle.getInt(JsonConstants.MAP_ID);
             documentId = bundle.getString(JsonConstants.DOCUMENT_ID);
+            locationName = bundle.getString(JsonConstants.FIELD_ENTRY);
+            if (locationName == null || locationName.length() == 0)
+                locationName = getString(R.string.secondary_lists_activity);
         }
 
         fm = getSupportFragmentManager();
@@ -70,7 +74,7 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 
-        toolbarTop.setTitle(R.string.secondary_lists_activity);
+        toolbarTop.setTitle(locationName);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);

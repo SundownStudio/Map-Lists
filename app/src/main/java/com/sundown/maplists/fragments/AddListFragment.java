@@ -189,10 +189,27 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         return model;
     }
 
+    private boolean isFieldValidForTitleDisplay(Field field){
+        if (model instanceof SecondaryList) {
+            switch (field.type) {
+                case NAME:
+                case PHONE:
+                case EMAIL:
+                case DATE:
+                case TIME:
+                case URL:
+                case PRICE: {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public void editFieldTitle(int tag) {
         Field field = model.getField(tag);
-        editTitleDialogFragment = EditTitleDialogFragment.newInstance(field, (model instanceof SecondaryList)? true : false);
+        editTitleDialogFragment = EditTitleDialogFragment.newInstance(field, isFieldValidForTitleDisplay(field));
         editTitleDialogFragment.show(fm, FRAGMENT_EDIT_FIELD_TITLE);
     }
 
