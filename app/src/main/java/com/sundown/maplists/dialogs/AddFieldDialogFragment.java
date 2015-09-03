@@ -1,4 +1,4 @@
-package com.sundown.maplists.fragments;
+package com.sundown.maplists.dialogs;
 
 import android.content.res.TypedArray;
 import android.support.v7.app.AlertDialog;

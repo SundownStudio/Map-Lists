@@ -18,6 +18,13 @@
         android:layout_toLeftOf="@+id/deleteFieldView"
         android:src="@drawable/ic_edit_black_24dp" />
 
+    <ImageButton
+        android:id="@+id/colorFieldView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/editFieldTitle"
+        android:src="@drawable/ic_color" />
+
     <TextView
         android:id="@+id/fieldTitle"
         android:layout_width="match_parent"

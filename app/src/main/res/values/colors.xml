@@ -9,7 +9,7 @@
     <color name="colorSecondaryText">#727272</color>
     <color name="titleColor">#ff00796b</color>
     <color name="dialogBackground">#FFFFFF</color>
-
+    <color name="picker_background">#ff7c7c7c</color>
     <!--
 <resources>
     #ff00796b

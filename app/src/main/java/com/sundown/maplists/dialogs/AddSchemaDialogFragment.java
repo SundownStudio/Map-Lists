@@ -1,5 +1,4 @@
-package com.sundown.maplists.fragments;
-
+package com.sundown.maplists.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -10,29 +9,29 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.views.ConfirmActionView;
+import com.sundown.maplists.views.AddSchemaView;
+
 
 /**
- * Created by Sundown on 8/25/2015.
+ * Created by Sundown on 8/21/2015.
  */
-public class ActionDialogFragment extends DialogFragment {
+public class AddSchemaDialogFragment extends DialogFragment {
 
-    public interface ConfirmActionListener {
-        void confirmAction(boolean confirmed);
+    public interface AddSchemaListener {
+        void schemaAdded(String schemaName);
     }
 
-    private final static String TEXT = "text";
-    private final static String TITLE = "title";
-    private ConfirmActionListener listener;
+    private final static String HINT = "hint";
+    private AddSchemaListener listener;
 
-    public static ActionDialogFragment newInstance(String confirmTitle, String confirmText) {
-        ActionDialogFragment fragment = new ActionDialogFragment();
+    public static AddSchemaDialogFragment getInstance(String hint){
+        AddSchemaDialogFragment fragment = new AddSchemaDialogFragment();
         Bundle args = new Bundle();
-        args.putString(TITLE, confirmTitle);
-        args.putString(TEXT, confirmText);
+        args.putString(HINT, hint);
         fragment.setArguments(args);
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,31 +43,27 @@ public class ActionDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        listener = (ConfirmActionListener) getActivity();
+        listener = (AddSchemaListener) getActivity();
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        ConfirmActionView view = (ConfirmActionView) inflater.inflate(R.layout.dialog_confirm_action, null);
-        view.setText(getArguments().getString(TEXT));
-
+        final AddSchemaView view = (AddSchemaView) inflater.inflate(R.layout.dialog_add_schema, null);
+        view.setHint(getArguments().getString(HINT));
 
         builder.setView(view);
-
-
-        builder.setTitle(getArguments().getString(TITLE));
-        builder.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener() {
+        builder.setTitle(getString(R.string.save_schema));
+        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                listener.confirmAction(true);
+                listener.schemaAdded(view.getEnteredText());
             }
         });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.skip, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                listener.confirmAction(false);
+                listener.schemaAdded(null);
             }
         });
 
@@ -83,6 +78,4 @@ public class ActionDialogFragment extends DialogFragment {
             getDialog().setDismissMessage(null);
         super.onDestroyView();
     }
-
-
 }

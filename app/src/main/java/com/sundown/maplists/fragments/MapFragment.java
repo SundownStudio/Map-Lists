@@ -26,6 +26,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.sundown.maplists.R;
+import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.MapList;
@@ -279,8 +280,8 @@ public class MapFragment extends Fragment implements
 
 
 
-    private Marker addMarker(LatLng latLng) {
-        Marker marker = view.addMarker(latLng);
+    private Marker addMarker(LatLng latLng, float color) {
+        Marker marker = view.addMarker(latLng, color);
         model.storeMarker(latLng, marker);
         return marker;
     }
@@ -500,8 +501,9 @@ public class MapFragment extends Fragment implements
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry) it.next(); //todo: could iterate over keyset but leaving this cuz we will merge model lists at some point..  pair.getValue()
                         LatLng latLng = (LatLng) pair.getKey();
+                        MapList list = (MapList) pair.getValue();
 
-                        marker = addMarker(latLng);
+                        marker = addMarker(latLng, list.color);
                         if (savedLatLng != null && savedLatLng.equals(marker.getPosition())) {
                             //this is the marker to select and focus on..
                             if (!drag) //dragging should glide, rotations should not

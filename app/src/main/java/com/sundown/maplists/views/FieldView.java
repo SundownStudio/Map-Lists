@@ -35,6 +35,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
     public interface FieldViewListener {
         void editFieldTitle(int tag);
         void deleteField(int tag);
+        void colorField(int tag);
         void entryTyped(int tag, String entry);
     }
 
@@ -57,7 +58,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
 
     private LinearLayout fieldEntryContainer;
-    private ImageButton editFieldTitle, deleteFieldView;
+    private ImageButton colorFieldView, editFieldTitle, deleteFieldView;
     private FieldType type;
     public FieldType getType(){ return type;}
 
@@ -72,11 +73,13 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
         editFieldTitle = (ImageButton) findViewById(R.id.editFieldTitle);
         deleteFieldView = (ImageButton) findViewById(R.id.deleteFieldView);
+        colorFieldView = (ImageButton) findViewById(R.id.colorFieldView);
         fieldTitle = (TextView) findViewById(R.id.fieldTitle);
         fieldEntryContainer = (LinearLayout) findViewById(R.id.fieldEntryContainer);
 
         deleteFieldView.setOnClickListener(this);
         editFieldTitle.setOnClickListener(this);
+        colorFieldView.setOnClickListener(this);
     }
 
 
@@ -92,6 +95,10 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
             case R.id.deleteFieldView:
                 listener.deleteField((int) getTag());
                 break;
+
+            case R.id.colorFieldView:
+                listener.colorField((int) getTag());
+                break;
         }
 
     }
@@ -105,6 +112,9 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
         if (field.permanent)
             setPermanentInterface();
+
+        if (field.id != 0) //only the first element may have the color picker button
+            disableColorButton();
 
     }
 
@@ -235,20 +245,25 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
     }
 
     private void disableTitleButtons(){
-        disableDeleteButton();
+        disableImpermanentButtons();
         editFieldTitle.setOnClickListener(null);
 
         editFieldTitle.setVisibility(GONE);
         fieldTitle.setVisibility(GONE);
     }
 
-    private void disableDeleteButton(){
+    private void disableImpermanentButtons(){
         deleteFieldView.setOnClickListener(null);
         deleteFieldView.setVisibility(GONE);
     }
 
+    private void disableColorButton(){
+        colorFieldView.setOnClickListener(null);
+        colorFieldView.setVisibility(GONE);
+    }
+
     private void setPermanentInterface(){
-        disableDeleteButton();
+        disableImpermanentButtons();
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) editFieldTitle.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         editFieldTitle.setLayoutParams(params);

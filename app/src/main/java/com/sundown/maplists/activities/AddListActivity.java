@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -17,10 +18,10 @@ import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.sundown.maplists.R;
-import com.sundown.maplists.fragments.ActionDialogFragment;
-import com.sundown.maplists.fragments.AddFieldDialogFragment;
+import com.sundown.maplists.dialogs.ActionDialogFragment;
+import com.sundown.maplists.dialogs.AddFieldDialogFragment;
+import com.sundown.maplists.dialogs.AddSchemaDialogFragment;
 import com.sundown.maplists.fragments.AddListFragment;
-import com.sundown.maplists.fragments.AddSchemaDialogFragment;
 import com.sundown.maplists.fragments.ManageSchemasFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
@@ -185,7 +186,17 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, list);
         dataAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.Toast(getApplicationContext(), "Alternating schemas not implemented yet", Log.TOAST_SHORT);
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         invalidateOptionsMenu();
 
 

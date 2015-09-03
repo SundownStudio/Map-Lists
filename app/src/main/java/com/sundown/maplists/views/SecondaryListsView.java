@@ -116,6 +116,7 @@ public class SecondaryListsView extends RelativeLayout {
                     case SUBJECT: { //reserved field only one per item
                         EntryField entryField = (EntryField) field;
                         holder.subjectText.setText(entryField.entry);
+                        holder.subjectText.setBackgroundColor(locationItem.color);
                         break;
                     }
                     case NAME:

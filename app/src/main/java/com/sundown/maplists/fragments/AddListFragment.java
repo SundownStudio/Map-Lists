@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
+import com.sundown.maplists.dialogs.ColorPickerDialogFragment;
+import com.sundown.maplists.dialogs.EditTitleDialogFragment;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.LocationList;
@@ -30,11 +32,12 @@ import static com.sundown.maplists.models.FieldType.PHOTO;
 /**
  * Created by Sundown on 8/18/2015.
  */
-public class AddListFragment extends Fragment implements FieldView.FieldViewListener, PhotoFragment.PhotoFragmentListener {
+public class AddListFragment extends Fragment implements FieldView.FieldViewListener, PhotoFragment.PhotoFragmentListener, ColorPickerDialogFragment.ColorPickerListener {
 
 
 
     private static final String FRAGMENT_EDIT_FIELD_TITLE = "EDIT_TITLE";
+    private static final String FRAGMENT_PICK_COLOR = "PICK_COLOR";
     private static final double PROP_HEIGHT = .41;
     private static final double PROP_WIDTH = .85;
     private FragmentManager fm;
@@ -42,6 +45,9 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
     /** Fragment for editing the title of a current field in this list */
     private EditTitleDialogFragment editTitleDialogFragment;
+
+    /** Pick a color for this item */
+    private ColorPickerDialogFragment colorPickerDialogFragment;
 
     /** serves as a container for our photo fragments */
     private HashMap<Integer, PhotoFragment> photoFragments = new HashMap<>();
@@ -222,6 +228,12 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     }
 
     @Override
+    public void colorField(int tag) {
+        colorPickerDialogFragment = ColorPickerDialogFragment.newInstance(this);
+        colorPickerDialogFragment.show(fm, FRAGMENT_PICK_COLOR);
+    }
+
+    @Override
     public void entryTyped(int tag, String entry) {
         EntryField entryField = (EntryField) model.getField(tag);
         entryField.entry = entry;
@@ -241,5 +253,10 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         PhotoFragment photoFragment = photoFragments.remove(id);
         fm.beginTransaction().remove(photoFragment).commit();
         model.removeField(id);
+    }
+
+    @Override
+    public void colorPicked(String color) {
+        model.setColor(color);
     }
 }

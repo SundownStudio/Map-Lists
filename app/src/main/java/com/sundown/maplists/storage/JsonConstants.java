@@ -23,6 +23,7 @@ public final class JsonConstants {
     public static final String FIELD_PERMANENT = "permanent";
     public static final String IMAGE = "image";
     public static final String THUMB = "thumb";
+    public static final String COLOR = "color";
 
     public static final String SCHEMA_ID = "schemaId";
     public static final String SCHEMA_NAME = "schemaName";

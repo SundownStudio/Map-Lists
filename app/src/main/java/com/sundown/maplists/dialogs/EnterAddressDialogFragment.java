@@ -1,37 +1,29 @@
-package com.sundown.maplists.fragments;
+package com.sundown.maplists.dialogs;
 
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.views.AddSchemaView;
-
+import com.sundown.maplists.views.EnterAddressView;
 
 /**
- * Created by Sundown on 8/21/2015.
+ * Created by Sundown on 7/23/2015.
  */
-public class AddSchemaDialogFragment extends DialogFragment {
+public class EnterAddressDialogFragment extends DialogFragment {
 
-    public interface AddSchemaListener {
-        void schemaAdded(String schemaName);
+
+    public interface EnterAddressListener{
+        void onAddressAdded(String address);
     }
 
-    private final static String HINT = "hint";
-    private AddSchemaListener listener;
-
-    public static AddSchemaDialogFragment getInstance(String hint){
-        AddSchemaDialogFragment fragment = new AddSchemaDialogFragment();
-        Bundle args = new Bundle();
-        args.putString(HINT, hint);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    private EnterAddressView view;
+    private EnterAddressListener listener;
+    public void setListener(EnterAddressListener listener){ this.listener = listener;}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,32 +36,30 @@ public class AddSchemaDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        listener = (AddSchemaListener) getActivity();
-
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final AddSchemaView view = (AddSchemaView) inflater.inflate(R.layout.dialog_add_schema, null);
-        view.setHint(getArguments().getString(HINT));
+        view = (EnterAddressView) inflater.inflate(R.layout.dialog_enter_address, null);
 
         builder.setView(view);
-        builder.setTitle(getString(R.string.save_schema));
-        builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+        builder.setTitle(getResources().getString(R.string.enter_address));
+        builder.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                listener.onAddressAdded(view.getEnteredText());
                 dialog.dismiss();
-                listener.schemaAdded(view.getEnteredText());
             }
         });
-        builder.setNegativeButton(R.string.skip, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                listener.schemaAdded(null);
+
             }
         });
 
         return builder.create();
 
     }
+
 
     @Override
     public void onDestroyView() {
@@ -78,4 +68,11 @@ public class AddSchemaDialogFragment extends DialogFragment {
             getDialog().setDismissMessage(null);
         super.onDestroyView();
     }
+
+
+
+
+
+
+
 }

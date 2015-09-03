@@ -28,7 +28,7 @@ public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
         this.showTitle = show;
     }
 
-    public Observer observer;
+    public Observer observer; //the corresponding fieldview object
     public void setObserver(Observer observer){this.observer = observer;}
 
 

@@ -13,15 +13,16 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.MapList;
+import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 
 /**
@@ -94,8 +95,8 @@ public class MapView extends FrameLayout {
         return mMap.getCameraPosition().target;
     }
 
-    public Marker addMarker(LatLng latLng){
-        return mMap.addMarker(new MarkerOptions().position(latLng));
+    public Marker addMarker(LatLng latLng, float color){
+        return mMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(color)));
     }
 
     private void setUpMap(){

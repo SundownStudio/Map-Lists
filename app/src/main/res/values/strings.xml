@@ -2,6 +2,8 @@
 <resources>
 
 
+
+
     <string name="google_maps_key">enter api key here</string>
     <string name="google_places_key">enter api key here</string>
 
@@ -126,4 +128,5 @@
     <string name="abandon_changes">Abandon Changes?</string>
     <string name="display_title">Display this title in the list view</string>
     <string name="edit_title">Edit Title</string>
+    <string name="pick_color">Pick Color</string>
 </resources>

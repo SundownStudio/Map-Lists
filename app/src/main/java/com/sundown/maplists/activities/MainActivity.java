@@ -16,8 +16,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.fragments.ActionDialogFragment;
-import com.sundown.maplists.fragments.EnterAddressDialogFragment;
+import com.sundown.maplists.dialogs.ActionDialogFragment;
+import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
 import com.sundown.maplists.fragments.MapFragment;
 import com.sundown.maplists.fragments.NavigationDrawerFragment;
 import com.sundown.maplists.logging.Log;

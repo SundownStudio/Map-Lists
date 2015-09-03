@@ -26,8 +26,10 @@ public abstract class List implements PropertiesHandler {
     private int getNextKey(){
         Object[] keys = getKeys();
         int size = keys.length;
-        int lastKey = 0;
-        if (size > 0) lastKey = (int) keys[size-1];
+        if (size == 0) //IMPORTANT: always start with first key 0 for any list
+            return 0;
+
+        int lastKey = (int) keys[size-1];
         return ++lastKey;
     }
 
@@ -96,7 +98,7 @@ public abstract class List implements PropertiesHandler {
 
         if (entries != null) {
             int size = entries.size();
-            for (int i = 0; i < size; ++i) {
+            for (int i = 0; i < size; ++i) { //IMPORTANT: always start with first key 0 for any list
                 Map<String, Object> props = (Map<String, Object>) entries.get(i);
                 FieldType type = FieldType.valueOf(props.get(FIELD_TYPE).toString());
                 boolean permanent = Boolean.parseBoolean(String.valueOf(props.get(FIELD_PERMANENT)));

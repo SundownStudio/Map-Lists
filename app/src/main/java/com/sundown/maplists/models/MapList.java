@@ -1,6 +1,9 @@
 package com.sundown.maplists.models;
 
+import android.graphics.Color;
+
 import com.google.android.gms.maps.model.LatLng;
+import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.storage.JsonConstants;
 
 import java.util.Map;
@@ -12,7 +15,7 @@ public class MapList extends LocationList {
 
     public boolean multipleListsEnabled;
     public LatLng latLng;
-
+    public float color;
 
     public MapList(){
         super(-1);
@@ -20,8 +23,17 @@ public class MapList extends LocationList {
         super.addField(new EntryField(-1, "Snippet", "Empty", FieldType.TEXT, true));
         super.addField(new PhotoField(-1, true));
         multipleListsEnabled = false;
+        color = 0.0F;
     }
 
+
+    @Override
+    public void setColor(String color) {
+        float[] hue = new float[3];
+        Color.colorToHSV(Color.parseColor(color), hue);
+        this.color = hue[0];
+        Log.m("MapList", "Color changed: " + this.color + " orig: " + color);
+    }
 
     @Override
     public Map<String, Object> getProperties() {
@@ -30,6 +42,7 @@ public class MapList extends LocationList {
         properties.put(JsonConstants.MAP_LATITUDE, latLng.latitude);
         properties.put(JsonConstants.MAP_LONGITUDE, latLng.longitude);
         properties.put(JsonConstants.MAP_MULTIPLE_LISTS_ENABLED, String.valueOf(multipleListsEnabled));
+        properties.put(JsonConstants.COLOR, String.valueOf(color));
         return properties;
     }
 
@@ -38,6 +51,7 @@ public class MapList extends LocationList {
         super.setProperties(properties);
         multipleListsEnabled = Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.MAP_MULTIPLE_LISTS_ENABLED)));
         latLng = new LatLng((Double) properties.get(JsonConstants.MAP_LATITUDE), (Double) properties.get(JsonConstants.MAP_LONGITUDE));
+        color = Float.parseFloat(String.valueOf(properties.get(JsonConstants.COLOR)));
         return this;
     }
 

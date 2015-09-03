@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sundown.maplists.views.ColorPickerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/colorText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:text="" />
+
+            <com.sundown.maplists.views.GradientView
+                android:id="@+id/top"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_margin="@dimen/gap_large"
+                android:background="@drawable/gradient_background"
+                android:padding="@dimen/gap_small"
+                app:lockPointerInBounds="true"
+                app:pointerDrawable="@drawable/pointer_simple"
+                app:radius="@dimen/radius" />
+
+            <com.sundown.maplists.views.GradientView
+                android:id="@+id/bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/gap_large"
+                android:background="@drawable/gradient_background"
+                android:padding="@dimen/gap_small"
+                app:lockPointerInBounds="false"
+                app:pointerDrawable="@drawable/pointer_arrows"
+                app:radius="@dimen/radius" />
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</com.sundown.maplists.views.ColorPickerView>

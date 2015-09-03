@@ -9,7 +9,11 @@ import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
  */
 public abstract class LocationList extends List implements PropertiesHandler {
 
+
     public int mapId;
+
+    abstract public void setColor(String color);
+
 
     public LocationList(int mapId){
         super();
