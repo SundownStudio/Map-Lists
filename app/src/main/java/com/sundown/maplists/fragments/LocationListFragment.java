@@ -17,7 +17,6 @@ import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.SecondaryList;
-import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.LocationListView;
 
@@ -62,8 +61,6 @@ public class LocationListFragment extends Fragment {
         super.onResume();
         setUserVisibleHint(true);
         initLayout();
-
-        toolbarManager.drawMenu(new MenuOption(MenuOption.GroupView.EDIT_DELETE, true));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -12,13 +13,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.SecondaryList;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -72,7 +72,11 @@ public class SecondaryListsView extends RelativeLayout {
 
     public void init(final List<SecondaryList> items, final AllListsListener listener){
 
-        if (items.size() == 0) emptyListText.setVisibility(View.VISIBLE);
+        if (items.size() == 0){
+            emptyListText.setVisibility(View.VISIBLE);
+        } else {
+            emptyListText.setVisibility(View.GONE);
+        }
         adapter.setList(items);
         this.listener = listener;
     }
@@ -81,10 +85,8 @@ public class SecondaryListsView extends RelativeLayout {
 
     private class AdapterLocationItems extends RecyclerView.Adapter<AdapterLocationItems.ViewHolder> {
 
-
         private LayoutInflater inflater;
-        private List<SecondaryList> locationItems = Collections.emptyList();
-
+        private ArrayList<SecondaryList> locationItems = new ArrayList<>();
 
 
         public AdapterLocationItems(Context context) {
@@ -94,15 +96,13 @@ public class SecondaryListsView extends RelativeLayout {
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new ViewHolder(inflater.inflate(R.layout.list_item_container_view, parent, false));
-
         }
-
 
 
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.container.removeAllViews();
+            holder.reset();
             LinkedHashMap<FieldType, LinkedList<EntryField>> map = new LinkedHashMap<>();
             String comment = ""; //if one exists, we will only ever show the first comment, at very bottom of view..
 
@@ -239,10 +239,10 @@ public class SecondaryListsView extends RelativeLayout {
             return locationItems.size();
         }
 
-
         public void setList(List<SecondaryList> locationItems) {
-            this.locationItems = locationItems;
-            notifyItemRangeChanged(0, locationItems.size());
+            this.locationItems.clear(); //*** ALWAYS DO THIS FIRST BECAUSE SOME PHONES WILL THROW OutOfBounds Exception Inconsistency detected. Invalid view holder adapter positionViewHolder
+            this.locationItems.addAll(locationItems);
+            notifyDataSetChanged();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -288,7 +288,6 @@ public class SecondaryListsView extends RelativeLayout {
             }
 
             private void generateViews(int viewType) {
-                Log.m("SecondaryListsView", "generating views: " + viewType);
 
                 switch (viewType){
                     case VIEW_TYPE_ALL:
@@ -310,6 +309,13 @@ public class SecondaryListsView extends RelativeLayout {
                 }
 
             }
+
+            private void reset(){
+                container.removeAllViews();
+                subjectText.setBackgroundColor(Color.argb(0, 0, 0, 0));
+                subjectText.setText("");
+            }
+
         }
     }
 

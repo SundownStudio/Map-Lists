@@ -119,6 +119,7 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
 
 
     private boolean topToolbarPressed(MenuItem item) {
+
         return true;
     }
 

@@ -15,6 +15,7 @@ import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.fragments.LocationListFragment;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.SecondaryList;
+import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.storage.Operation;
@@ -118,6 +119,9 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
                 return bottomToolbarPressed(item);
             }
         });
+
+        toolbarManager.drawMenu(new MenuOption(MenuOption.GroupView.EDIT_DELETE, true),
+                new MenuOption(MenuOption.GroupView.DEFAULT_TOP, false));
 
         return true;
     }
