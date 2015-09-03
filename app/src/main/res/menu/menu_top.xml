@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.sundown.maplists.activities.MainActivity">
 
+
     <group
-        android:id="@+id/group_map_components"
-        android:visible="false">
+        android:id="@+id/group_default_top"
+        android:visible="true">
 
         <item
             android:id="@+id/action_enter_address"
@@ -14,19 +15,13 @@
             android:title="@string/search_location"
             app:showAsAction="always" />
 
-    </group>
-
-    <group
-        android:id="@+id/group_default_top"
-        android:visible="true">
-
-    <item
-        android:background="?attr/selectableItemBackground"
-        android:id="@+id/action_add"
-        android:icon="@drawable/ic_add_black_24dp"
-        android:orderInCategory="200"
-        android:title="@string/add"
-        app:showAsAction="always" />
+        <item
+            android:id="@+id/action_add"
+            android:background="?attr/selectableItemBackground"
+            android:icon="@drawable/ic_place_black_24dp"
+            android:orderInCategory="200"
+            android:title="@string/add"
+            app:showAsAction="always" />
 
     </group>
 

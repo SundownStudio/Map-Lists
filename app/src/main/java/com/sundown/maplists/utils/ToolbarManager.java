@@ -45,10 +45,6 @@ public class ToolbarManager {
                     toolbarBottom.getMenu().setGroupVisible(R.id.group_marker_move, option.show);
                     break;
 
-                case MAP_COMPONENTS:
-                    toolbarTop.getMenu().setGroupVisible(R.id.group_map_components, option.show);
-                    break;
-
                 case DEFAULT_TOP:
                     toolbarTop.getMenu().setGroupVisible(R.id.group_default_top, option.show);
                     break;

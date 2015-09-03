@@ -24,7 +24,7 @@
 
         <item
             android:id="@+id/action_goto_location"
-            android:icon="@drawable/ic_place_black_24dp"
+            android:icon="@drawable/ic_binoculars"
             android:orderInCategory="200"
             android:title="@string/goto_location"
             app:showAsAction="always" />

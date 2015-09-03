@@ -54,8 +54,8 @@ import static com.sundown.maplists.network.GeocodeConstants.MAP_LONGITUDE;
 import static com.sundown.maplists.network.GeocodeConstants.RECEIVER;
 import static com.sundown.maplists.network.GeocodeConstants.RESULT_DATA_KEY;
 import static com.sundown.maplists.network.GeocodeConstants.SUCCESS_RESULT;
+import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_COMPONENTS;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_MOVE;
 
@@ -519,7 +519,7 @@ public class MapFragment extends Fragment implements
                     }
 
 
-                    toolbarManager.drawMenu(new MenuOption(MAP_COMPONENTS, true));
+                    toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, true));
                     listener.displayFloatingButtons((model.numLocations() > 1) ? true : false);
 
                 }

@@ -21,8 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
-import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
+import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 
 
 /**
@@ -66,15 +65,10 @@ public class SecondaryListsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         setUserVisibleHint(true);
+        getActivity().invalidateOptionsMenu();
 
-        loader = new Loader().start();
-
-        toolbarManager.drawMenu(
-                new MenuOption(MAP_COMPONENTS, false),
-                new MenuOption(EDIT_DELETE, false));
 
     }
-
 
     @Override
     public void onPause() {
@@ -83,6 +77,9 @@ public class SecondaryListsFragment extends Fragment {
         loader.stop();
     }
 
+    public void startLoader(){
+        loader = new Loader().start();
+    }
 
     private class Loader extends ContentLoader {
 
@@ -121,6 +118,7 @@ public class SecondaryListsFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, false));
                     view.init(model, listener);
                 }
             });

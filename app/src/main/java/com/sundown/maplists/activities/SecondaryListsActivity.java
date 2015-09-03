@@ -12,11 +12,15 @@ import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.fragments.SecondaryListsFragment;
+import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.SecondaryList;
+import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.SecondaryListsView;
+
+import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 
 /**
  * Created by Sundown on 8/19/2015.
@@ -90,7 +94,7 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
         bottomMenu.clear();
 
         getMenuInflater().inflate(R.menu.menu_top, topMenu);
-        getMenuInflater().inflate(R.menu.menu_bottom_map, bottomMenu);
+        getMenuInflater().inflate(R.menu.menu_bottom_secondarylists, bottomMenu);
 
 
         toolbarManager.toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -107,14 +111,21 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
             }
         });
 
+        toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, false));
+        secondaryListsFragment.startLoader();
+        Log.m("SecondaryListsActivity", "toolbar inflated");
         return true;
     }
 
 
     private boolean topToolbarPressed(MenuItem item) {
-        switch (item.getItemId()) {
+        return true;
+    }
 
-            case R.id.action_add: {
+
+    private boolean bottomToolbarPressed(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_list: {
                 if (secondaryListsFragment != null && secondaryListsFragment.getUserVisibleHint()) {
                     Intent intent = new Intent(SecondaryListsActivity.this, AddListActivity.class);
                     intent.putExtra(JsonConstants.TYPE, JsonConstants.TYPE_LOCATION_LIST);
@@ -127,14 +138,6 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
             }
         }
         return true;
-    }
-
-
-    private boolean bottomToolbarPressed(MenuItem item) {
-        switch (item.getItemId()) {
-            default:
-                return true;
-        }
     }
 
 

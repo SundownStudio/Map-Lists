@@ -44,7 +44,7 @@ import java.util.Map;
 
 import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MAP_COMPONENTS;
+
 import static com.sundown.maplists.pojo.MenuOption.GroupView.SCHEMA_ACTIONS;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
@@ -232,7 +232,6 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             showSchemaActions = true;
 
         toolbarManager.drawMenu(
-                new MenuOption(MAP_COMPONENTS, false),
                 new MenuOption(EDIT_DELETE, false),
                 new MenuOption(DEFAULT_TOP, false),
                 new MenuOption(SCHEMA_ACTIONS, showSchemaActions));

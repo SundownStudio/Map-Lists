@@ -72,7 +72,7 @@ public class SecondaryListsView extends RelativeLayout {
 
     public void init(final List<SecondaryList> items, final AllListsListener listener){
 
-        if (items.size() > 0) emptyListText.setVisibility(View.GONE);
+        if (items.size() == 0) emptyListText.setVisibility(View.VISIBLE);
         adapter.setList(items);
         this.listener = listener;
     }

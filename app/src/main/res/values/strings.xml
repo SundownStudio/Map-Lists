@@ -2,12 +2,8 @@
 <resources>
 
 
-
-
     <string name="google_maps_key">enter api key here</string>
     <string name="google_places_key">enter api key here</string>
-
-
 
     <string name="app_name">MapLists</string>
     <string name="title_activity_main">MainActivity</string>
@@ -129,4 +125,5 @@
     <string name="display_title">Display this title in the list view</string>
     <string name="edit_title">Edit Title</string>
     <string name="pick_color">Pick Color</string>
+    <string name="remove_list">Remove List</string>
 </resources>
