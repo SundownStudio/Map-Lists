@@ -12,7 +12,7 @@ import static com.sundown.maplists.storage.JsonConstants.TYPE_SCHEMA_LIST;
 /**
  * Created by Sundown on 8/25/2015.
  */
-public class SchemaList extends List implements PropertiesHandler {
+public class SchemaList extends AbstractList implements PropertiesHandler {
 
     public int schemaId;
     private String schemaName;

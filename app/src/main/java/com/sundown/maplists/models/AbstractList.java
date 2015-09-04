@@ -3,23 +3,24 @@ package com.sundown.maplists.models;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.sundown.maplists.storage.JsonConstants.DOCUMENT_ID;
-import static com.sundown.maplists.storage.JsonConstants.FIELD_ENTRIES;
+import static com.sundown.maplists.storage.JsonConstants.FIELDS;
 import static com.sundown.maplists.storage.JsonConstants.FIELD_PERMANENT;
 import static com.sundown.maplists.storage.JsonConstants.FIELD_TYPE;
 
 /**
  * Created by Sundown on 7/14/2015.
  */
-public abstract class List implements PropertiesHandler {
+public abstract class AbstractList implements PropertiesHandler {
 
     public String documentId;
     public Map<Integer, Field> fields;
 
 
-    public List(){
+    public AbstractList(){
         fields = new HashMap<>();
     }
 
@@ -69,14 +70,14 @@ public abstract class List implements PropertiesHandler {
         return photoFields;
     }
 
-    public java.util.List<Field> getFieldValues(){ return (java.util.List<Field>) getValues(); }
+    public List<Field> getFieldValues(){ return (List<Field>) getValues(); }
 
 
 
     @Override
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = new HashMap();
-        java.util.List list = new ArrayList();
+        List list = new ArrayList();
         Object[] keys = getKeys();
 
         int num = keys.length;
@@ -84,22 +85,22 @@ public abstract class List implements PropertiesHandler {
             list.add(fields.get(keys[i]).getProperties());
         }
 
-        properties.put(FIELD_ENTRIES, list);
+        properties.put(FIELDS, list);
         return properties;
     }
 
     @Override
-    public List setProperties(Map properties) {
+    public AbstractList setProperties(Map properties) {
         fields.clear();
 
         documentId = String.valueOf(properties.get(DOCUMENT_ID));
 
-        java.util.List entries = (java.util.List) properties.get(FIELD_ENTRIES);
+        List list = (List) properties.get(FIELDS);
 
-        if (entries != null) {
-            int size = entries.size();
+        if (list != null) {
+            int size = list.size();
             for (int i = 0; i < size; ++i) { //IMPORTANT: always start with first key 0 for any list
-                Map<String, Object> props = (Map<String, Object>) entries.get(i);
+                Map<String, Object> props = (Map<String, Object>) list.get(i);
                 FieldType type = FieldType.valueOf(props.get(FIELD_TYPE).toString());
                 boolean permanent = Boolean.parseBoolean(String.valueOf(props.get(FIELD_PERMANENT)));
 

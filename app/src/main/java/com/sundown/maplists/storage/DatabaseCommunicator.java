@@ -20,7 +20,7 @@ import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.List;
+import com.sundown.maplists.models.AbstractList;
 import com.sundown.maplists.models.PhotoField;
 
 import java.io.ByteArrayInputStream;
@@ -71,7 +71,7 @@ public class DatabaseCommunicator {
     }
 
 
-    public void insert(final List list, String countId, String idType) {
+    public void insert(final AbstractList list, String countId, String idType) {
         try {
             cbManager.insert(list, countId, idType);
         } catch (CouchbaseLiteException e) {
@@ -80,7 +80,7 @@ public class DatabaseCommunicator {
     }
 
 
-    public void update(final List list) {
+    public void update(final AbstractList list) {
         try {
             cbManager.update(list);
         } catch (CouchbaseLiteException e) {
@@ -235,7 +235,7 @@ public class DatabaseCommunicator {
         public Query getSchemaQuery(){ return database.getView(VIEW_BY_SCHEMA_ID).createQuery();}
 
 
-        public void insert(List list, String countId, String idName) throws CouchbaseLiteException {
+        public void insert(AbstractList list, String countId, String idName) throws CouchbaseLiteException {
             int count = increaseCount(countId);
 
             UUID uuid = UUID.randomUUID();
@@ -259,7 +259,7 @@ public class DatabaseCommunicator {
 
         }
 
-        public void update(final List list) throws CouchbaseLiteException {
+        public void update(final AbstractList list) throws CouchbaseLiteException {
             Document doc = database.getDocument(list.documentId);
             saveDocument(doc.createRevision(), list.getProperties(), list.getPhotos());
         }

@@ -59,10 +59,12 @@
 
     <string-array name="add_field_names">
         <item>Name</item>
+        <item>Names</item>
         <item>Phone Number</item>
         <item>Email</item>
         <item>Date</item>
         <item>Time</item>
+        <item>Date and Time</item>
         <item>URL</item>
         <item>Price</item>
         <item>Photo</item>
@@ -83,10 +85,12 @@
 
     <array name="primary_field_images">
         <item>@drawable/ic_name</item>
+        <item>@drawable/ic_contact_add</item>
         <item>@drawable/ic_phonenumber</item>
         <item>@drawable/ic_email</item>
         <item>@drawable/ic_date</item>
         <item>@drawable/ic_time</item>
+        <item>@drawable/ic_calendar_clock</item>
         <item>@drawable/ic_url</item>
         <item>@drawable/ic_price</item>
     </array>
