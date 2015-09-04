@@ -58,15 +58,15 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
 
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
-        setUpToolBars();
-
 
         Map<String, Object> properties = db.read(documentId);
         model = new SecondaryList(mapId).setProperties(properties);
 
 
+        setUpToolBars(getItemName());
+
         if (savedInstanceState == null){
-            locationListFragment = LocationListFragment.newInstance(model, toolbarManager);
+            locationListFragment = LocationListFragment.newInstance(model);
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, locationListFragment, FRAGMENT_LOCATION_LIST);
             transaction.commit();
@@ -74,21 +74,18 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
         } else {
 
             locationListFragment = (LocationListFragment) fm.findFragmentByTag(FRAGMENT_LOCATION_LIST);
-            if (locationListFragment != null){
-                locationListFragment.setToolbarManager(toolbarManager);
-            }
-
             actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
         }
 
     }
 
-    private void setUpToolBars(){
+
+    private void setUpToolBars(String itemName){
         LinearLayout toolbarTopLayout = (LinearLayout) findViewById(R.id.toolbar_top_layout);
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
 
-        toolbarTop.setTitle(R.string.location_list_activity);
+        toolbarTop.setTitle(itemName);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
@@ -190,5 +187,15 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
         intent.putExtra(JsonConstants.MAP_ID, mapId);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    private String getItemName(){
+        String itemName = getString(R.string.location_list_activity);
+        try {
+            EntryField entryField = (EntryField) model.getField(0);
+            if (itemName.length() > 0)
+                itemName = entryField.entry;
+        } catch (Exception e){}
+        return itemName;
     }
 }

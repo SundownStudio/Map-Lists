@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.fragments.SecondaryListsFragment;
-import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.JsonConstants;
@@ -37,7 +36,7 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
     private SecondaryListsFragment secondaryListsFragment;
     private String documentId;
     private int mapId;
-    private String locationName;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,13 +47,10 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
             Bundle bundle = getIntent().getExtras();
             mapId = bundle.getInt(JsonConstants.MAP_ID);
             documentId = bundle.getString(JsonConstants.DOCUMENT_ID);
-            locationName = bundle.getString(JsonConstants.FIELD_ENTRY);
-            if (locationName == null || locationName.length() == 0)
-                locationName = getString(R.string.secondary_lists_activity);
         }
 
         fm = getSupportFragmentManager();
-        setUpToolBars();
+        setUpToolBars(getLocationName(getIntent().getExtras()));
 
         if (savedInstanceState == null){
             secondaryListsFragment = SecondaryListsFragment.newInstance(mapId, this, toolbarManager);
@@ -70,10 +66,16 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
                 secondaryListsFragment.setListener(this);
             }
         }
-
     }
 
-    private void setUpToolBars(){
+    private String getLocationName(Bundle bundle){
+        String locationName = bundle.getString(JsonConstants.FIELD_ENTRY);
+        if (locationName != null && locationName.length() > 0)
+            return locationName;
+        return getString(R.string.secondary_lists_activity);
+    }
+
+    private void setUpToolBars(String locationName){
         LinearLayout toolbarTopLayout = (LinearLayout) findViewById(R.id.toolbar_top_layout);
         Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar_top);
         Toolbar toolbarBottom = (Toolbar) findViewById(R.id.toolbar_bottom);
@@ -113,13 +115,11 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
 
         toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, false));
         secondaryListsFragment.startLoader();
-        Log.m("SecondaryListsActivity", "toolbar inflated");
         return true;
     }
 
 
     private boolean topToolbarPressed(MenuItem item) {
-
         return true;
     }
 

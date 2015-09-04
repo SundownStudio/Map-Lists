@@ -15,30 +15,44 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
-import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.SecondaryList;
-import com.sundown.maplists.utils.ToolbarManager;
+import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Sundown on 7/21/2015.
  */
 public class LocationListFragment extends Fragment {
 
-    private ToolbarManager toolbarManager;
-    public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
+
+
     private LocationListView view;
-    private LocationList model;
+    private SecondaryList model;
     private LinearLayout layout;
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private StringBuffer stringBuffer;
+    private LayoutInflater inflater;
+    private static final Map<FieldType, Integer> imageResources;
+    static
+    {
+        imageResources = new HashMap<>();
+        imageResources.put(FieldType.NAME, R.drawable.ic_name);
+        imageResources.put(FieldType.PHONE, R.drawable.ic_phonenumber);
+        imageResources.put(FieldType.EMAIL, R.drawable.ic_email);
+        imageResources.put(FieldType.DATE, R.drawable.ic_date);
+        imageResources.put(FieldType.TIME, R.drawable.ic_time);
+        imageResources.put(FieldType.URL, R.drawable.ic_url);
+        imageResources.put(FieldType.PRICE, R.drawable.ic_price);
+    }
 
 
-    public static LocationListFragment newInstance(SecondaryList model, ToolbarManager toolbarManager) {
+    public static LocationListFragment newInstance(SecondaryList model) {
         LocationListFragment fragment = new LocationListFragment();
         fragment.model = model;
-        fragment.toolbarManager = toolbarManager;
         return fragment;
     }
 
@@ -52,6 +66,7 @@ public class LocationListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.inflater = inflater;
         view = (LocationListView) inflater.inflate(R.layout.location_list_view, container, false);
         return view;
     }
@@ -81,15 +96,47 @@ public class LocationListFragment extends Fragment {
         Integer[] keys = model.getKeys();
 
         for (Integer k: keys){
-            addToLayout(k, model.getField(k));
+            Field field = model.getField(k);
+            field.setId(k);
+            determineViewType(field);
         }
         view.updateView(layout);
     }
 
-    private void addToLayout(int id, Field field){
-        field.setId(id);
-        addComponentView(field);
+
+
+    private void determineViewType(Field field){
+        FieldType type = field.type;
+
+        switch (type) {
+            case SUBJECT: {
+                EntryField entryField = (EntryField) field;
+                view.setSubject(entryField.entry, model.color);
+                break;
+            }
+            case NAME:
+            case PHONE:
+            case EMAIL:
+            case DATE:
+            case TIME:
+            case URL:
+            case PRICE: {
+                EntryField entryField = (EntryField) field;
+                ListItemSingleView v1 = (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
+                ListItemSingleView v2 = (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
+                v1.initAsTitle(entryField.title);
+                v2.initAsEntry(imageResources.get(type), entryField.entry, false);
+                layout.addView(v1);
+                layout.addView(v2);
+                break;
+            }
+
+        }
     }
+
+
+
+
 
 
     private void addTitleView(Field field){
