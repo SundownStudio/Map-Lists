@@ -1,7 +1,6 @@
 package com.sundown.maplists.models;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static com.sundown.maplists.storage.JsonConstants.SCHEMA_ID;
@@ -23,15 +22,13 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
 
     public SchemaList(LocationList locationList){
         super();
-        Integer[] keys = locationList.getKeys();
-        for (Integer key : keys) {
-            SchemaField field = new SchemaField(locationList.getField(key));
-            this.putField(key, field);
+        for (Field field : locationList.fields) {
+            SchemaField schemaField = new SchemaField(field);
+            this.fields.add(schemaField);
         }
     }
 
     public String getTitles(StringBuffer buffer){            //todo: condense this crap
-        ArrayList<Field> fields = getValues();
         for (Field field: fields){
             buffer.append(field.getTitle());
             buffer.append("\n");
@@ -41,7 +38,6 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     }
 
     public String getTypes(StringBuffer buffer){
-        ArrayList<Field> fields = getValues();
         for (Field field: fields){
             buffer.append(field.getType());
             buffer.append("\n");
@@ -73,15 +69,9 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     public boolean equals(Object o) {
         if (o instanceof SchemaList){
             SchemaList a = (SchemaList)o;
-            Integer[] aKeys = a.getKeys();
-            Integer[] bKeys = getKeys(); //they come ordered
-
-            if (Arrays.equals(aKeys, bKeys)){
-                ArrayList<Field> aFields = a.getValues();
-                if (getValues().equals(aFields)){
-                    return true;
-                }
-            }
+            List<Field> listA = a.fields;
+            List<Field> listB = this.fields;
+            return listA.equals(listB);
         }
         return false;
     }

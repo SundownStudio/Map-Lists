@@ -11,7 +11,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.logging.Log;
 
 import static com.sundown.maplists.views.PhotoView.Option.CANT_LOAD_IMAGE;
 import static com.sundown.maplists.views.PhotoView.Option.CLEAR_CONTAINER;
@@ -30,9 +29,8 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
         void deletePicture(boolean clearFiles);
         void loadPicture();
         void rotatePicture();
-        void removeFragment();
+        void deleteFragment();
     }
-
 
     private PhotoViewListener listener;
     private ImageView locationImage;
@@ -46,22 +44,16 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
         CANT_LOAD_IMAGE, CLEAR_CONTAINER, NULL_BITMAP
     }
 
-    public PhotoView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        Log.m("PhotoView", " inside constructor ");
-    }
+    public PhotoView(Context context, AttributeSet attrs) {super(context, attrs);}
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        Log.m("PhotoView", " onFinishInflate");
         setup();
     }
 
     public void setup(){
-        Log.m("PhotoView", " setup");
 
-        //setTag(PHOTO_TAG);
         noImageLoadedText = (TextView) findViewById(R.id.noImageLoadedText);
         locationImage = (ImageView) findViewById(R.id.locationImage);
         locationImage.setLayerType(View.LAYER_TYPE_SOFTWARE, null); //TADA.. disable hardware acceleration bitmap views so they actually get cleared when you recycle.. if you cant retain instance which we cant in nested frag..
@@ -81,9 +73,6 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
     }
 
     public void setListener(PhotoViewListener listener) { this.listener = listener;}
-    public ImageView getLocationImageView(){
-        return locationImage;
-    }
 
     public void loadingImage(){
         drawContainer(SHOW_PROGRESS, CLEAR_CONTAINER);
@@ -124,7 +113,7 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
                 break;
 
             case R.id.removeFragment:
-                listener.removeFragment();
+                listener.deleteFragment();
                 break;
 
         }
@@ -178,7 +167,6 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
             drawContainer(CLEAR_PROGRESS, CLEAR_CONTAINER);
             locationImage.setImageBitmap(bitmap);
             imageContainer.bringToFront();
-            Log.m("PhotoView", " setBitmap Image size: W:" + bitmap.getWidth() + " H:" + bitmap.getHeight());
         }
     }
 
@@ -186,7 +174,6 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
 
 
     public void dispose(){
-        Log.m("PhotoView", " dispose");
         locationImage.setImageBitmap(null);
     }
 }

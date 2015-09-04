@@ -43,7 +43,7 @@ public class PhotoFragment extends Fragment implements
 
     public interface PhotoFragmentListener{
         void deleteImage(String imageName, String thumbName);
-        void removePhotoFragment(int id);
+        void deletePhotoFragment(int id);
     }
 
     public static final int ACTIVITY_CAMERA = 10;
@@ -173,9 +173,9 @@ public class PhotoFragment extends Fragment implements
     }
 
     @Override
-    public void removeFragment() {
+    public void deleteFragment() {
         deletePicture(true);
-        listener.removePhotoFragment(id);
+        listener.deletePhotoFragment(id);
     }
 
 

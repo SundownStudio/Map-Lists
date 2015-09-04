@@ -93,11 +93,9 @@ public class LocationListFragment extends Fragment {
         layout.setLayoutParams(layoutFillWidth);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        Integer[] keys = model.getKeys();
-
-        for (Integer k: keys){
-            Field field = model.getField(k);
-            field.setId(k);
+        int ids = 0;
+        for (Field field: model.fields){
+            field.setId(ids++);
             determineViewType(field);
         }
         view.updateView(layout);

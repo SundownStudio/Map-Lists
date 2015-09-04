@@ -82,7 +82,6 @@ public class SecondaryListsView extends RelativeLayout {
     }
 
 
-
     private class AdapterLocationItems extends RecyclerView.Adapter<AdapterLocationItems.ViewHolder> {
 
         private LayoutInflater inflater;
@@ -99,7 +98,6 @@ public class SecondaryListsView extends RelativeLayout {
         }
 
 
-
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.reset();
@@ -108,9 +106,9 @@ public class SecondaryListsView extends RelativeLayout {
 
 
             SecondaryList locationItem = locationItems.get(position);
-            List<Field> list = locationItem.getValues();
+            List<Field> fields = locationItem.fields;
 
-            for (Field field: list) {
+            for (Field field: fields) {
                 FieldType type = field.type;
                 switch (type) {
                     case SUBJECT: { //reserved field only one per item

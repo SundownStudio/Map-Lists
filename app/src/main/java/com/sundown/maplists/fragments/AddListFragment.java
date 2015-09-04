@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ColorPickerDialogFragment;
 import com.sundown.maplists.dialogs.EditTitleDialogFragment;
+import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.LocationList;
@@ -103,13 +104,10 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
     @Override //cant do transactions after this method is called.. leads to that wonderful crash.. but must remove fragments for them to display on reload and cant do it when putting together layout
     public void onSaveInstanceState(Bundle outState) {
-        Set<Integer> keys = photoFragments.keySet();
-        for (Integer key: keys){
-            fm.beginTransaction().remove(photoFragments.get(key)).commit();
-        }
-        photoFragments.clear();
+        clearForm();
         super.onSaveInstanceState(outState);
     }
+
 
     public void setActivityResult(ActivityResult result){ this.result = result;}
 
@@ -123,6 +121,15 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         }
     }
 
+    private void clearForm(){
+        Set<Integer> keys = photoFragments.keySet();
+        for (Integer key: keys){
+            fm.beginTransaction().remove(photoFragments.get(key)).commit();
+        }
+        photoFragments.clear();
+        form.removeAllViews();
+    }
+
 
     private void drawForm(){
         DisplayMetrics displaymetrics = new DisplayMetrics();
@@ -131,15 +138,14 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         width = (int) (displaymetrics.widthPixels * PROP_WIDTH);
 
         if (form != null)
-            form.removeAllViews();
+            clearForm();
         form = new LinearLayout(getActivity());
         form.setLayoutParams(layoutParams);
         form.setOrientation(LinearLayout.VERTICAL);
 
-        Integer[] keys = model.getKeys();
-
-        for (Integer k: keys){
-            addToForm(k, model.getField(k));
+        int ids = 0;
+        for (Field field: model.fields){
+            addToForm(ids++, field);
         }
         view.updateView(form);
         handleActivityResult();
@@ -154,7 +160,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     }
 
     public void addNewField(Field field){
-        int id = model.addField(field);
+        int id = model.addField(field)-1;
         addToForm(id, field);
         view.scrollToBottom();
     }
@@ -184,12 +190,16 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
     public LocationList refreshModel() {
 
-        Integer[] keys = model.getKeys();
-        for (Integer k : keys){
-            FieldView fieldView = (FieldView) form.findViewWithTag(k);
-            if (fieldView.getType() != PHOTO) {
-                EntryField entryField = (EntryField) model.getField(k);
-                entryField.entry = fieldView.getEntry();
+        int numFields = model.fields.size();
+        for (int i = 0; i < numFields; ++i){
+            FieldView fieldView = (FieldView) form.findViewWithTag(i);
+            try {
+                if (fieldView.getType() != PHOTO) {
+                    EntryField entryField = (EntryField) model.getField(i);
+                    entryField.entry = fieldView.getEntry();
+                }
+            } catch (NullPointerException e){
+                Log.e(e);
             }
         }
         return model;
@@ -222,9 +232,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     @Override
     public void deleteField(int tag) {
         model.removeField(tag); //remove from model
-        FieldView fieldView = (FieldView) form.findViewWithTag(tag); //and from view
-        int index = form.indexOfChild(fieldView);
-        form.removeViewAt(index);
+        drawForm(); //and redraw the form
     }
 
     @Override
@@ -235,8 +243,16 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
     @Override
     public void entryTyped(int tag, String entry) {
-        EntryField entryField = (EntryField) model.getField(tag);
-        entryField.entry = entry;
+        Field field = null;
+        try {
+            field = model.getField(tag);
+        } catch (IndexOutOfBoundsException e){
+            Log.e(e);
+        }
+        if (field != null && field instanceof EntryField) {
+            EntryField entryField = (EntryField) model.getField(tag);
+            entryField.entry = entry;
+        }
     }
 
     @Override
@@ -249,10 +265,10 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     }
 
     @Override
-    public void removePhotoFragment(int id) {
+    public void deletePhotoFragment(int id) {
         PhotoFragment photoFragment = photoFragments.remove(id);
         fm.beginTransaction().remove(photoFragment).commit();
-        model.removeField(id);
+        deleteField(id);
     }
 
     @Override
