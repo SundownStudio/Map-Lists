@@ -2,10 +2,10 @@ package com.sundown.maplists.models;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.ThumbnailUtils;
 
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.storage.JsonConstants;
+import com.sundown.maplists.utils.FileManager;
 import com.sundown.maplists.utils.PhotoUtils;
 import com.sundown.maplists.utils.PreferenceManager;
 
@@ -18,11 +18,14 @@ import java.util.Map;
  */
 public class PhotoField extends Field {
 
-
+    private static final String IMAGE_EXTENSION = ".jpg";
+    private static final String THUMBNAIL_PREFIX = "THM_";
+    private static final String IMAGE_PREFIX = "IMG_";
     private static final String IMAGE_FILE = "IMAGE_FILE";
     private static final String THUMB_FILE = "THUMB_FILE";
 
     private PhotoUtils photoUtils;
+    private FileManager fileManager;
     private PreferenceManager preferenceManager;
     public File imageTempFile, thumbTempFile;
     public String imageName, thumbName;
@@ -42,6 +45,7 @@ public class PhotoField extends Field {
     private void init(){
         preferenceManager = PreferenceManager.getInstance();
         photoUtils = PhotoUtils.getInstance();
+        fileManager = FileManager.getInstance();
     }
 
 
@@ -105,9 +109,9 @@ public class PhotoField extends Field {
 
     public void generateTemporaryFiles() throws IOException {
         if (imageTempFile == null)
-            imageTempFile = photoUtils.createImageFile(photoUtils.IMAGE_PREFIX, id);
+            imageTempFile = fileManager.createFile(IMAGE_PREFIX, IMAGE_EXTENSION, id);
         if (thumbTempFile == null)
-            thumbTempFile = photoUtils.createImageFile(photoUtils.THUMBNAIL_PREFIX, id);
+            thumbTempFile = fileManager.createFile(THUMBNAIL_PREFIX, IMAGE_EXTENSION, id);
     }
 
     public void loadExistingTempFiles(){
@@ -141,12 +145,12 @@ public class PhotoField extends Field {
     }
 
     public void extractThumb(){
-        thumb = ThumbnailUtils.extractThumbnail(image, photoUtils.thumbnailDimens, photoUtils.thumbnailDimens);
+        thumb = photoUtils.extractThumbnail(image);
     }
 
     public void saveContentsToFiles() throws IOException {
-        photoUtils.saveImage(imageTempFile, image);
-        photoUtils.saveImage(thumbTempFile, thumb);
+        fileManager.saveImageToFile(imageTempFile, image);
+        fileManager.saveImageToFile(thumbTempFile, thumb);
 
         if (imageTempFile != null){
             imageName = imageTempFile.getName();
@@ -158,8 +162,6 @@ public class PhotoField extends Field {
         }
         preferenceManager.commit();
     }
-
-
 
 }
 

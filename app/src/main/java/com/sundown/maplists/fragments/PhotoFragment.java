@@ -20,7 +20,7 @@ import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.tasks.TaskOptimizeImage;
 import com.sundown.maplists.tasks.TaskRotateImage;
-import com.sundown.maplists.utils.PhotoUtils;
+import com.sundown.maplists.utils.FileManager;
 import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.views.PhotoView;
 
@@ -202,7 +202,7 @@ public class PhotoFragment extends Fragment implements
 
                 case ACTIVITY_GALLERY:
                     Uri uri = data.getData();
-                    taskOptimizeImage.execute(PhotoUtils.getInstance().getPathFromGallery(uri));
+                    taskOptimizeImage.execute(FileManager.getInstance().getFilePathFromGallery(uri));
                     break;
             }
         }
