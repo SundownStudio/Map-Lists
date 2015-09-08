@@ -49,7 +49,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
     public static final String CHECKBOX = "C";
     public static final String RATING = "R";
     private static final int MAX_ENTRY_CHARS = 1000;
-    private static FieldViewListener listener;
+    private FieldViewListener listener;
 
 
     private Context context;
@@ -106,14 +106,14 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
     public void init(Context context, FieldViewListener listener, Field field){
         this.context = context;
         this.listener = listener;
-        this.type = field.type;
-        updateTitle(field.title);
+        this.type = field.getType();
+        updateTitle(field.getTitle());
         addComponentView(field);
 
-        if (field.permanent)
+        if (field.isPermanent())
             setPermanentInterface();
 
-        if (field.id != 0) //only the first element may have the color picker button
+        if (field.getId() != 0) //only the first element may have the color picker button
             disableColorButton();
 
     }
@@ -122,10 +122,10 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
         View view;
 
-        switch (field.type) {
+        switch (field.getType()) {
             case PHOTO: {
                 view = new RelativeLayout(context);
-                view.setId(field.id);
+                view.setId(field.getId());
                 view.setTag(PHOTO); //NOTE: this works! retains tag even though we add fragment here
                 disableTitleButtons(); //photofragment has its own buttons
                 break;
@@ -139,7 +139,9 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 if (entry.entry != null) {
                     try {
                         bar.setRating(Float.parseFloat(entry.entry));
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        Log.e(e);
+                    }
                 }
                 bar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
                     @Override
@@ -161,8 +163,8 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 checkBox.setTag(CHECKBOX);
                 if (entry.entry != null) {
                     try {
-                        checkBox.setChecked(entry.entry.equals("1")?true:false);
-                    } catch (Exception e) {}
+                        checkBox.setChecked(entry.entry.equals("1"));
+                    } catch (Exception e) {Log.e(e);}
                 }
                 view = checkBox;
                 break;
@@ -182,13 +184,13 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                         if (!hasFocus) {
                             EditText view = (EditText) v;
                             String text = view.getText().toString().trim();
-                            if (text != null && text.length() > 0)
+                            if (text.length() > 0)
                                 listener.entryTyped((int) getTag(), text);
                         }
                     }
                 });
 
-                switch (entry.type) {
+                switch (entry.getType()) {
                     case NUMBER:
                         v.setInputType(InputType.TYPE_CLASS_NUMBER);
                         break;
@@ -230,7 +232,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
         }
 
-        if (field.type == FieldType.RATING){
+        if (field.getType() == FieldType.RATING){
             view.setLayoutParams(layoutWrapWidth);
         } else {
             view.setLayoutParams(layoutFillWidth);
@@ -291,7 +293,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
             case EDIT:
                 EditText e = (EditText)child;
                 text = e.getText().toString().trim();
-                if (text == null || text.length() == 0) {
+                if (text.length() == 0) {
                     if (e.getHint() != null) {
                         text = e.getHint().toString().trim();
                     }

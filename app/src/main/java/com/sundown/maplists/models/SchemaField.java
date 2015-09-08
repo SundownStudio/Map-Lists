@@ -6,7 +6,7 @@ package com.sundown.maplists.models;
 public class SchemaField extends Field {
 
     public SchemaField(Field field) {
-        super(field.id, field.title, field.type, field.permanent);
+        super(field.getId(), field.getTitle(), field.getType(), field.isPermanent());
     }
 
 

@@ -109,7 +109,7 @@ public class SecondaryListsView extends RelativeLayout {
             List<Field> fields = locationItem.fields;
 
             for (Field field: fields) {
-                FieldType type = field.type;
+                FieldType type = field.getType();
                 switch (type) {
                     case SUBJECT: { //reserved field only one per item
                         EntryField entryField = (EntryField) field;
@@ -171,8 +171,8 @@ public class SecondaryListsView extends RelativeLayout {
                 boolean addTopMargin = true;
                 while (entries.size() > 0) {
                     EntryField entryField = entries.pop();
-                    if (entryField.showTitle){
-                        addToSingleView(entryField.title, type, holder, true, false);
+                    if (entryField.isTitleShown()){
+                        addToSingleView(entryField.getTitle(), type, holder, true, false);
                         addTopMargin = false;
                     }
                     addToSingleView(entryField.entry, type, holder, false, addTopMargin);
@@ -200,10 +200,10 @@ public class SecondaryListsView extends RelativeLayout {
                     EntryField entry2 = entries2.pop();
                     String title1 = "", title2 = "";
 
-                    if (entry1.showTitle)
-                        title1 = entry1.title;
-                    if (entry2.showTitle)
-                        title2 = entry2.title;
+                    if (entry1.isTitleShown())
+                        title1 = entry1.getTitle();
+                    if (entry2.isTitleShown())
+                        title2 = entry2.getTitle();
                     if (title1.length() > 0 || title2.length() > 0) {
                         addToDoubleView(title1, title2, type1, type2, holder, true, false);
                         addTopMargin = false;

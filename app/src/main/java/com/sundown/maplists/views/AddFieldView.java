@@ -105,7 +105,7 @@ public class AddFieldView extends LinearLayout {
         @Override
         public void onBindViewHolder(AdapterSelectField.ViewHolder holder, int position) {
             Field field = fields.get(position);
-            holder.title.setText(field.title);
+            holder.title.setText(field.getTitle());
             try {
                 holder.image.setImageResource(imageResources.get(position)); //we don't have images for all screensizes yet so will use default if fails
             } catch (Exception e){
@@ -139,7 +139,7 @@ public class AddFieldView extends LinearLayout {
             public void onClick(View v) {
                 if (listener != null){
                     Field field = fields.get(getAdapterPosition ());
-                    if (field.type == PHOTO){
+                    if (field.getType() == PHOTO){
                         field = new PhotoField(false);
                     }
                     listener.addNewField(field);

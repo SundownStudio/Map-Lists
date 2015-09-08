@@ -24,40 +24,60 @@ public class PhotoField extends Field {
     private static final String IMAGE_FILE = "IMAGE_FILE";
     private static final String THUMB_FILE = "THUMB_FILE";
     private static final String TITLE = "PHOTO";
+    private static final int ROTATE_90_DEGREES = 90;
 
     private PhotoUtils photoUtils;
     private FileManager fileManager;
     private PreferenceManager preferenceManager;
 
     private File imageTempFile, thumbTempFile;
-    public Uri getImageUri(){
+
+    public Uri getImageUri() {
         if (imageTempFile != null) return Uri.fromFile(imageTempFile);
         return null;
     }
 
     private Bitmap imageBitmap, thumbBitmap;
-    public Bitmap getImageBitmap(){return imageBitmap;}
-    public Bitmap getThumbBitmap(){return thumbBitmap;}
-    public void setImageBitmap(Bitmap imageBitmap){this.imageBitmap = imageBitmap;}
-    public void setThumbBitmap(Bitmap thumbBitmap){this.thumbBitmap = thumbBitmap;}
+
+    public Bitmap getImageBitmap() {
+        return imageBitmap;
+    }
+
+    public Bitmap getThumbBitmap() {
+        return thumbBitmap;
+    }
+
+    public void setImageBitmap(Bitmap imageBitmap) {
+        this.imageBitmap = imageBitmap;
+    }
+
+    public void setThumbBitmap(Bitmap thumbBitmap) {
+        this.thumbBitmap = thumbBitmap;
+    }
 
 
     private String imageName, thumbName;
-    public String getImageName(){return imageName;}
-    public String getThumbName(){return thumbName;}
 
-    public PhotoField(boolean permanent){
+    public String getImageName() {
+        return imageName;
+    }
+
+    public String getThumbName() {
+        return thumbName;
+    }
+
+    public PhotoField(boolean permanent) {
         super(0, TITLE, FieldType.PHOTO, permanent);
         init();
     }
 
 
-    public PhotoField(int id, boolean permanent){
+    public PhotoField(int id, boolean permanent) {
         super(id, TITLE, FieldType.PHOTO, permanent);
         init();
     }
 
-    private void init(){
+    private void init() {
         preferenceManager = PreferenceManager.getInstance();
         photoUtils = PhotoUtils.getInstance();
         fileManager = FileManager.getInstance();
@@ -85,7 +105,7 @@ public class PhotoField extends Field {
             imageBitmap.recycle();
             imageBitmap = null;
         }
-        if (thumbBitmap != null){
+        if (thumbBitmap != null) {
             thumbBitmap.recycle();
             thumbBitmap = null;
         }
@@ -95,44 +115,44 @@ public class PhotoField extends Field {
         }
     }
 
-    public void cleanupTemporaryFiles(){
+    public void cleanupTemporaryFiles() {
         if (imageTempFile != null && imageTempFile.exists())
             imageTempFile.delete();
         if (thumbTempFile != null && thumbTempFile.exists())
             thumbTempFile.delete();
         imageBitmap = null; //DO NOT RECYCLE THESE HERE.. WE MAY STILL NEED THEM TO COMPRESS TO DB.. IF RECYCLING USE recycle() INSTEAD..
         thumbBitmap = null;
-        preferenceManager.remove(IMAGE_FILE + id);
-        preferenceManager.remove(THUMB_FILE + id);
+        preferenceManager.remove(IMAGE_FILE + getId());
+        preferenceManager.remove(THUMB_FILE + getId());
         preferenceManager.commit();
     }
 
 
-    public void setImage(Bitmap defaultImage){
+    public void setImage(Bitmap defaultImage) {
         this.imageBitmap = defaultImage;
     }
 
 
-    public void loadImageFromFile(){
-        if (imageTempFile != null){ //load it from file if it exists..
+    public void loadImageFromFile() {
+        if (imageTempFile != null) { //load it from file if it exists..
             imageBitmap = BitmapFactory.decodeFile(imageTempFile.getAbsolutePath());
         }
-        if (thumbTempFile != null){
+        if (thumbTempFile != null) {
             thumbBitmap = BitmapFactory.decodeFile(thumbTempFile.getAbsolutePath());
         }
     }
 
     public void generateTemporaryFiles() throws IOException {
         if (imageTempFile == null)
-            imageTempFile = fileManager.createFile(IMAGE_PREFIX, IMAGE_EXTENSION, id);
+            imageTempFile = fileManager.createFile(IMAGE_PREFIX, IMAGE_EXTENSION, getId());
         if (thumbTempFile == null)
-            thumbTempFile = fileManager.createFile(THUMBNAIL_PREFIX, IMAGE_EXTENSION, id);
+            thumbTempFile = fileManager.createFile(THUMBNAIL_PREFIX, IMAGE_EXTENSION, getId());
     }
 
-    public void loadExistingTempFiles(){
+    public void loadExistingTempFiles() {
         //load temp files from prefs if they dont exist yet..
-        String imageFilepath = preferenceManager.getString(IMAGE_FILE + id);
-        String thumbFilepath = preferenceManager.getString(THUMB_FILE + id);
+        String imageFilepath = preferenceManager.getString(IMAGE_FILE + getId());
+        String thumbFilepath = preferenceManager.getString(THUMB_FILE + getId());
 
         if (imageTempFile == null && imageFilepath.length() > 0)
             imageTempFile = new File(imageFilepath);
@@ -153,12 +173,12 @@ public class PhotoField extends Field {
         imageBitmap = photoUtils.rotateImage(imageBitmap, rotate);
     }
 
-    public void rotateImages(){
-        imageBitmap = photoUtils.rotateImage(imageBitmap, 90);
-        thumbBitmap = photoUtils.rotateImage(thumbBitmap, 90);
+    public void rotateImages() {
+        imageBitmap = photoUtils.rotateImage(imageBitmap, ROTATE_90_DEGREES);
+        thumbBitmap = photoUtils.rotateImage(thumbBitmap, ROTATE_90_DEGREES);
     }
 
-    public void extractThumb(){
+    public void extractThumb() {
         thumbBitmap = photoUtils.extractThumbnail(imageBitmap);
     }
 
@@ -166,13 +186,13 @@ public class PhotoField extends Field {
         fileManager.saveImageToFile(imageTempFile, imageBitmap);
         fileManager.saveImageToFile(thumbTempFile, thumbBitmap);
 
-        if (imageTempFile != null){
+        if (imageTempFile != null) {
             imageName = imageTempFile.getName();
-            preferenceManager.putString(IMAGE_FILE + id, imageTempFile.getAbsolutePath());
+            preferenceManager.putString(IMAGE_FILE + getId(), imageTempFile.getAbsolutePath());
         }
-        if (thumbTempFile != null){
+        if (thumbTempFile != null) {
             thumbName = thumbTempFile.getName();
-            preferenceManager.putString(THUMB_FILE + id, thumbTempFile.getAbsolutePath());
+            preferenceManager.putString(THUMB_FILE + getId(), thumbTempFile.getAbsolutePath());
         }
         preferenceManager.commit();
     }

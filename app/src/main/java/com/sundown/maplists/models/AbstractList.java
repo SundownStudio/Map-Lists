@@ -37,7 +37,7 @@ public abstract class AbstractList implements PropertiesHandler {
         ArrayList<PhotoField> photoFields = new ArrayList<>();
 
         for (Field field: fields){
-            if (field.type == FieldType.PHOTO){
+            if (field.getType() == FieldType.PHOTO){
                 photoFields.add((PhotoField) field);
             }
         }

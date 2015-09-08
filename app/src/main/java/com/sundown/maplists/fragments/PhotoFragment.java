@@ -93,7 +93,7 @@ public class PhotoFragment extends Fragment implements
         try {
             model.loadExistingTempFiles();
             loadImage();
-            if (model.permanent)
+            if (model.isPermanent())
                 view.makePermanent();
         } catch (Exception e){
             Log.e(e);

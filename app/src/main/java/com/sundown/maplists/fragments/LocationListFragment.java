@@ -12,6 +12,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
+import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
@@ -104,7 +105,7 @@ public class LocationListFragment extends Fragment {
 
 
     private void determineViewType(Field field){
-        FieldType type = field.type;
+        FieldType type = field.getType();
 
         switch (type) {
             case SUBJECT: {
@@ -122,7 +123,7 @@ public class LocationListFragment extends Fragment {
                 EntryField entryField = (EntryField) field;
                 ListItemSingleView v1 = (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
                 ListItemSingleView v2 = (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
-                v1.initAsTitle(entryField.title);
+                v1.initAsTitle(entryField.getTitle());
                 v2.initAsEntry(imageResources.get(type), entryField.entry, false);
                 layout.addView(v1);
                 layout.addView(v2);
@@ -138,10 +139,10 @@ public class LocationListFragment extends Fragment {
 
 
     private void addTitleView(Field field){
-        String title = field.title;
+        String title = field.getTitle();
         if (title != null && title.length() > 0) {
             TextView titleView = new TextView(getActivity());
-            titleView.setText(field.title);
+            titleView.setText(field.getTitle());
             layout.addView(titleView);
         }
 
@@ -152,7 +153,7 @@ public class LocationListFragment extends Fragment {
 
         View view;
 
-        switch (field.type) {
+        switch (field.getType()) {
             case PHOTO:
                 view = new ImageView(getActivity());
                 break;
@@ -165,7 +166,9 @@ public class LocationListFragment extends Fragment {
                 if (entry.entry != null) {
                     try {
                         bar.setRating(Float.parseFloat(entry.entry));
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        Log.e(e);
+                    }
                 }
                 view = bar;
                 break;
@@ -178,7 +181,9 @@ public class LocationListFragment extends Fragment {
                 if (entryField.entry != null) {
                     try {
                         checkBox.setChecked(entryField.entry.equals("1"));
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        Log.e(e);
+                    }
                 }
                 view = checkBox;
                 break;
@@ -189,7 +194,7 @@ public class LocationListFragment extends Fragment {
                 TextView v = new TextView(getActivity());
                 stringBuffer.setLength(0);
 
-                String title = field.title;
+                String title = field.getTitle();
                 if (title != null && title.length() > 0) {
                     stringBuffer.append(title + ": ");
                 }
@@ -203,7 +208,7 @@ public class LocationListFragment extends Fragment {
             }
         }
 
-        if (field.type == FieldType.RATING){
+        if (field.getType() == FieldType.RATING){
             view.setLayoutParams(layoutWrapWidth);
         } else {
             view.setLayoutParams(layoutFillWidth);

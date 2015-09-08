@@ -8,31 +8,65 @@ import java.util.Map;
 /**
  * Created by Sundown on 6/22/2015.
  */
-public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
+public abstract class Field implements PropertiesHandler {
 
-    public interface Observer{
+    public interface Observer {
         void updateTitle(String title);
     }
 
-    public int id; //used for view tagging
-    public void setId(int id){ this.id = id;}
-    public FieldType type;
-    public boolean permanent;
-    public String title;
-    public void setTitle(String title){
+    /** used for view tagging */
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    private FieldType type;
+
+    public FieldType getType() {
+        return type;
+    }
+
+    private boolean permanent;
+
+    public boolean isPermanent() {
+        return permanent;
+    }
+
+    private String title;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
         this.title = title;
         observer.updateTitle(title);
     }
-    public boolean showTitle;
-    public void setShowTitle(boolean show){
+
+    private boolean showTitle;
+
+    public void setShowTitle(boolean show) {
         this.showTitle = show;
     }
 
-    public Observer observer; //the corresponding fieldview object
-    public void setObserver(Observer observer){this.observer = observer;}
+    public boolean isTitleShown(){
+        return showTitle;
+    }
+
+    /** the corresponding fieldview object */
+    private Observer observer;
+
+    public void setObserver(Observer observer) {
+        this.observer = observer;
+    }
 
 
-    public Field(int id, String title, FieldType type, boolean permanent){
+    public Field(int id, String title, FieldType type, boolean permanent) {
         this.id = id;
         this.title = title;
         this.type = type;
@@ -40,19 +74,11 @@ public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
         this.showTitle = false;
     }
 
-    public String getTitle(){
-        return title;
-    }
-
-    public String getType(){
-        return type.name();
-    }
-
-    @Override //NOTE does not override hashCode because we dont care about that for our purposes
+    @Override
     public boolean equals(Object o) {
-        if (o instanceof Field){
-            Field a = (Field)o;
-            if (a.type == this.type){
+        if (o instanceof Field) {
+            Field a = (Field) o;
+            if (a.type == this.type) {
                 if (a.title != null && this.title != null && a.title.equals(this.title))
                     if (a.permanent == this.permanent)
                         return true;
@@ -60,7 +86,6 @@ public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
         }
         return false;
     }
-
 
     @Override
     public Map<String, Object> getProperties() {
@@ -81,25 +106,4 @@ public abstract class Field implements PropertiesHandler/*, Cloneable*/ {
         return this;
     }
 
-    /*
-        @Override
-    protected Field clone() {
-        Field clone = null;
-        try{
-            clone = (Field) super.clone();
-            if (clone instanceof EntryField){
-                ((EntryField) clone).entry = null;
-                ((EntryField) clone).observer = null;
-
-            } else if (clone instanceof PhotoField){
-                ((PhotoField) clone).observer = null;
-            }
-
-        }catch(CloneNotSupportedException e){
-            Log.e(e);
-        }
-
-        return clone;
-    }
-     */
 }

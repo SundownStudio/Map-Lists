@@ -154,7 +154,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     public void addToForm(int id, Field field){
         field.setId(id);
         field.setObserver(addFieldView(field));
-        if (field.type == PHOTO) {
+        if (field.getType() == PHOTO) {
             addPhotoFragment(id, field);
         }
     }
@@ -170,7 +170,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
         FieldView fieldView = (FieldView) getActivity().getLayoutInflater().inflate(R.layout.fieldview, null, false);
         fieldView.init(getActivity(), this, field);
-        fieldView.setTag(field.id);
+        fieldView.setTag(field.getId());
 
         form.addView(fieldView);
         return fieldView;
@@ -207,7 +207,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
     private boolean isFieldValidForTitleDisplay(Field field){
         if (model instanceof SecondaryList) {
-            switch (field.type) {
+            switch (field.getType()) {
                 case NAME:
                 case PHONE:
                 case EMAIL:
