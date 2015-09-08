@@ -12,12 +12,8 @@ public class EntryField extends Field {
     public String entry;
 
 
-    public EntryField(boolean permanent){
-        super(0, null, FieldType.NAME, permanent);
-    }
-
-    public EntryField(int id, String title, String entry, FieldType type, boolean permanent){ //todo: remove
-        super(id, title, type, permanent);
+    protected EntryField(String title, String entry, FieldType type, boolean permanent){
+        super(title, type, permanent);
         this.entry = entry;
     }
 

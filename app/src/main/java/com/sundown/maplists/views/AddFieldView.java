@@ -15,16 +15,10 @@ import android.widget.TextView;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
-import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.utils.FileManager;
-import com.sundown.maplists.utils.PhotoUtils;
-import com.sundown.maplists.utils.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static com.sundown.maplists.models.FieldType.PHOTO;
 
 /**
  * Created by Sundown on 5/20/2015.
@@ -141,11 +135,7 @@ public class AddFieldView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (listener != null){
-                    Field field = fields.get(getAdapterPosition ());
-                    if (field.getType() == PHOTO){
-                        field = new PhotoField(-1, false, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance());
-                    }
-                    listener.addNewField(field);
+                    listener.addNewField(fields.get(getAdapterPosition()));
                 }
             }
         }

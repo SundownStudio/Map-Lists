@@ -2,10 +2,6 @@ package com.sundown.maplists.models;
 
 import android.graphics.Color;
 
-import com.sundown.maplists.utils.FileManager;
-import com.sundown.maplists.utils.PhotoUtils;
-import com.sundown.maplists.utils.PreferenceManager;
-
 /**
  * Created by Sundown on 9/8/2015.
  */
@@ -21,14 +17,14 @@ public class LocationListFactory {
         switch(type){
             case MAPLIST:
                 locationList = new MapList(mapId, 0.0F);
-                locationList.addField(new EntryField(mapId, "Name", "New Location", FieldType.TEXT, true));
-                locationList.addField(new EntryField(mapId, "Snippet", "Empty", FieldType.TEXT, true));
-                locationList.addField(new PhotoField(mapId, true, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance()));
+                locationList.addField(FieldFactory.createField("Name", "New Location", FieldType.TEXT, true));
+                locationList.addField(FieldFactory.createField("Snippet", "Empty", FieldType.TEXT, true));
+                locationList.addField(FieldFactory.createField("Photo", "", FieldType.PHOTO, true));
                 break;
 
             case SECONDARYLIST:
                 locationList = new SecondaryList(mapId, -1, Color.parseColor("#303F9F"));
-                locationList.addField(new EntryField(mapId, "Subject", "", FieldType.SUBJECT, true));
+                locationList.addField(FieldFactory.createField("Subject", "", FieldType.SUBJECT, true));
                 break;
         }
         return locationList;

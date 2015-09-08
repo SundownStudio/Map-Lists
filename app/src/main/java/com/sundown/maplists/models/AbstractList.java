@@ -1,9 +1,5 @@
 package com.sundown.maplists.models;
 
-import com.sundown.maplists.utils.FileManager;
-import com.sundown.maplists.utils.PhotoUtils;
-import com.sundown.maplists.utils.PreferenceManager;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +27,7 @@ public abstract class AbstractList implements PropertiesHandler {
         return fields;
     }
 
-    public AbstractList() {
+    protected AbstractList() {
         fields = new ArrayList<>();
     }
 
@@ -86,12 +82,7 @@ public abstract class AbstractList implements PropertiesHandler {
                 Map<String, Object> props = (Map<String, Object>) list.get(i);
                 FieldType type = FieldType.valueOf(props.get(FIELD_TYPE).toString());
                 boolean permanent = Boolean.parseBoolean(String.valueOf(props.get(FIELD_PERMANENT)));
-
-                if (type == FieldType.PHOTO) {
-                    fields.add(new PhotoField(-1, permanent, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance()).setProperties(props));
-                } else {
-                    fields.add(new EntryField(permanent).setProperties(props));
-                }
+                fields.add(FieldFactory.createField("", "", type, permanent).setProperties(props));
             }
         }
         return this;

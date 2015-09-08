@@ -66,8 +66,7 @@ public abstract class Field implements PropertiesHandler {
     }
 
 
-    public Field(int id, String title, FieldType type, boolean permanent) {
-        this.id = id;
+    protected Field(String title, FieldType type, boolean permanent) {
         this.title = title;
         this.type = type;
         this.permanent = permanent;

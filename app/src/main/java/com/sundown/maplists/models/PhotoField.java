@@ -24,7 +24,6 @@ public class PhotoField extends Field {
     private static final String IMAGE_PREFIX = "IMG_";
     private static final String IMAGE_FILE = "IMAGE_FILE";
     private static final String THUMB_FILE = "THUMB_FILE";
-    private static final String TITLE = "PHOTO";
     private static final int ROTATE_90_DEGREES = 90;
 
     private PhotoUtils photoUtils;
@@ -59,8 +58,8 @@ public class PhotoField extends Field {
     }
 
 
-    public PhotoField(int id, boolean permanent, PhotoUtils photoUtils, FileManager fileManager, PreferenceManager preferenceManager) {
-        super(id, TITLE, FieldType.PHOTO, permanent);
+    protected PhotoField(String title, boolean permanent, PhotoUtils photoUtils, FileManager fileManager, PreferenceManager preferenceManager) {
+        super(title, FieldType.PHOTO, permanent);
         this.photoUtils = photoUtils;
         this.fileManager = fileManager;
         this.preferenceManager = preferenceManager;
