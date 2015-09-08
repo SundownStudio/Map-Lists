@@ -150,7 +150,7 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
                     intent.putExtra(JsonConstants.TYPE, JsonConstants.TYPE_LOCATION_LIST);
                     intent.putExtra(JsonConstants.OPERATION, Operation.UPDATE.name());
                     intent.putExtra(JsonConstants.DOCUMENT_ID, model.getDocumentId());
-                    intent.putExtra(JsonConstants.MAP_ID, model.mapId);
+                    intent.putExtra(JsonConstants.MAP_ID, model.getMapId());
                     startActivity(intent);
                 }
                 break;
@@ -177,7 +177,7 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
 
     @Override
     public void confirmAction(boolean confirmed) {
-        db.delete(model.getDocumentId(), model.mapId, Operation.DELETE_LOCATION_LIST);
+        db.delete(model.getDocumentId(), model.getMapId(), Operation.DELETE_LOCATION_LIST);
         returnActivityResult();
     }
 

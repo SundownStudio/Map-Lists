@@ -209,7 +209,7 @@ public class MapFragment extends Fragment implements
         if (model.getMapList(latLng) == null){
             savedLatLng = latLng;
             MapList list = new MapList();
-            list.latLng = latLng;
+            list.setLatLng(latLng);
             db.insert(list, JsonConstants.COUNT_MAP_LISTS, JsonConstants.MAP_ID);
 
 
@@ -296,7 +296,7 @@ public class MapFragment extends Fragment implements
 
         toolbarManager.drawMenu(new MenuOption(EDIT_DELETE, true),
                 new MenuOption(MARKER_MOVE, true),
-                new MenuOption(MARKER_COMPONENTS, getSelectedMapList().multipleListsEnabled));
+                new MenuOption(MARKER_COMPONENTS, getSelectedMapList().isMultipleListsEnabled()));
 
     }
 
@@ -479,7 +479,7 @@ public class MapFragment extends Fragment implements
                 Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
 
                 MapList mapList = new MapList().setProperties(properties);
-                model.storeMapList(mapList.latLng, mapList);
+                model.storeMapList(mapList.getLatLng(), mapList);
 
             }
 
@@ -503,7 +503,7 @@ public class MapFragment extends Fragment implements
                         LatLng latLng = (LatLng) pair.getKey();
                         MapList list = (MapList) pair.getValue();
 
-                        marker = addMarker(latLng, list.color);
+                        marker = addMarker(latLng, list.getColor());
                         if (savedLatLng != null && savedLatLng.equals(marker.getPosition())) {
                             //this is the marker to select and focus on..
                             if (!drag) //dragging should glide, rotations should not
@@ -520,7 +520,7 @@ public class MapFragment extends Fragment implements
 
 
                     toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, true));
-                    listener.displayFloatingButtons((model.numLocations() > 1) ? true : false);
+                    listener.displayFloatingButtons((model.numLocations() > 1));
 
                 }
             });

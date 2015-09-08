@@ -15,11 +15,15 @@ import static com.sundown.maplists.storage.JsonConstants.TYPE_LOCATION_LIST;
 public class SecondaryList extends LocationList {
 
 
-    public int listId;
-    public int color;
+    private int listId;
+    private int color;
+
+    public int getColor() {
+        return color;
+    }
 
 
-    public SecondaryList(int mapId){
+    public SecondaryList(int mapId) {
         super(mapId);
         listId = -1;
         color = Color.parseColor("#303F9F");

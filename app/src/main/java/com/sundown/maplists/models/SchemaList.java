@@ -14,14 +14,20 @@ import static com.sundown.maplists.storage.JsonConstants.TYPE_SCHEMA_LIST;
  */
 public class SchemaList extends AbstractList implements PropertiesHandler {
 
-    public int schemaId;
+    private int schemaId;
     private String schemaName;
-    public void setSchemaName(String schemaName){ this.schemaName = schemaName;}
-    public String getSchemaName(){return schemaName;}
 
-    public SchemaList(){}
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
 
-    public SchemaList(LocationList locationList){
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    public SchemaList() {}
+
+    public SchemaList(LocationList locationList) {
         super();
         ArrayList<Field> fields = locationList.getFields();
         for (Field field : fields) {
@@ -29,10 +35,10 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
         }
     }
 
-    public String getTitles(StringBuffer buffer){
+    public String getTitles(StringBuffer buffer) {
         ArrayList<Field> fields = getFields();
 
-        for (Field field: fields){
+        for (Field field : fields) {
             buffer.append(field.getTitle());
             buffer.append("\n");
         }
@@ -40,10 +46,10 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
         return buffer.toString();
     }
 
-    public String getTypes(StringBuffer buffer){
+    public String getTypes(StringBuffer buffer) {
         ArrayList<Field> fields = getFields();
 
-        for (Field field: fields){
+        for (Field field : fields) {
             buffer.append(field.getType());
             buffer.append("\n");
         }
@@ -72,8 +78,8 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
 
     @Override //note does not care about hashcode
     public boolean equals(Object o) {
-        if (o instanceof SchemaList){
-            SchemaList a = (SchemaList)o;
+        if (o instanceof SchemaList) {
+            SchemaList a = (SchemaList) o;
             List<Field> listA = a.getFields();
             List<Field> listB = this.getFields();
             return listA.equals(listB);

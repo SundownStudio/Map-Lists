@@ -106,7 +106,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         if (type.equals(JsonConstants.TYPE_MAP_LIST)){
             Map<String, Object> properties = db.read(documentId);
             MapList list = new MapList().setProperties(properties);
-            list.multipleListsEnabled = true;
+            list.setMultipleListsEnabled(true);
             model = list;
 
         } else if (type.equals(JsonConstants.TYPE_LOCATION_LIST)){
@@ -146,7 +146,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
         if (saveUpdate) {
             if (operation == Operation.INSERT) {
-                db.insert(model, String.valueOf(model.mapId), LIST_ID);
+                db.insert(model, String.valueOf(model.getMapId()), LIST_ID);
             } else if (operation == Operation.UPDATE) {
                 db.update(model);
             }

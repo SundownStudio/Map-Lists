@@ -12,7 +12,7 @@ import java.util.TreeMap;
  */
 public class Locations {
 
-    private TreeMap<LatLng, MapList> locations = new TreeMap<LatLng, MapList>(new LatLngComparator()); //holding all data pertinent to locations
+    private TreeMap<LatLng, MapList> locations = new TreeMap<>(new LatLngComparator()); //holding all data pertinent to locations
     public TreeMap<LatLng, MapList> getLocations(){return locations;}
     private HashMap<LatLng, Marker> markers = new HashMap<>(); //holding all markers so we can slide skip to next on map - separate from locations cuz those are used elsewhere
     //todo: merge these
@@ -73,16 +73,12 @@ public class Locations {
         MapList list = removeMapList(oldLatLng);
         Marker marker = removeMarker(oldLatLng);
 
-        list.latLng = newLatLng;
+        list.setLatLng(newLatLng);
 
         storeMapList(newLatLng, list);
         storeMarker(newLatLng, marker);
     }
 
-    public MapList deleteMapList(LatLng latLng){
-        removeMarker(latLng);
-        return locations.remove(latLng);
-    }
 
     private MapList removeMapList(LatLng latLng){
         return locations.remove(latLng);

@@ -3,8 +3,10 @@ package com.sundown.maplists.models;
 import android.graphics.Color;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.storage.JsonConstants;
+import com.sundown.maplists.utils.FileManager;
+import com.sundown.maplists.utils.PhotoUtils;
+import com.sundown.maplists.utils.PreferenceManager;
 
 import java.util.Map;
 
@@ -13,15 +15,37 @@ import java.util.Map;
  */
 public class MapList extends LocationList {
 
-    public boolean multipleListsEnabled;
-    public LatLng latLng;
-    public float color;
+    private boolean multipleListsEnabled;
 
-    public MapList(){
+    public void setMultipleListsEnabled(boolean enabled) {
+        this.multipleListsEnabled = enabled;
+    }
+
+    public boolean isMultipleListsEnabled() {
+        return multipleListsEnabled;
+    }
+
+    private LatLng latLng;
+
+    public void setLatLng(LatLng latLng) {
+        this.latLng = latLng;
+    }
+
+    public LatLng getLatLng() {
+        return latLng;
+    }
+
+    private float color;
+
+    public float getColor() {
+        return color;
+    }
+
+    public MapList() {
         super(-1);
         super.addField(new EntryField(-1, "Name", "New Location", FieldType.TEXT, true));
         super.addField(new EntryField(-1, "Snippet", "Empty", FieldType.TEXT, true));
-        super.addField(new PhotoField(-1, true));
+        super.addField(new PhotoField(-1, true, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance()));
         multipleListsEnabled = false;
         color = 0.0F;
     }
@@ -32,7 +56,6 @@ public class MapList extends LocationList {
         float[] hue = new float[3];
         Color.colorToHSV(Color.parseColor(color), hue);
         this.color = hue[0];
-        Log.m("MapList", "Color changed: " + this.color + " orig: " + color);
     }
 
     @Override

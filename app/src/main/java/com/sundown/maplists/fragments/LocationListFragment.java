@@ -112,7 +112,7 @@ public class LocationListFragment extends Fragment {
         switch (type) {
             case SUBJECT: {
                 EntryField entryField = (EntryField) field;
-                view.setSubject(entryField.entry, model.color);
+                view.setSubject(entryField.entry, model.getColor());
                 break;
             }
             case NAME:

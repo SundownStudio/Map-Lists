@@ -291,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements
                 MapList list = mapFragment.getSelectedMapList();
                 Intent intent = new Intent(MainActivity.this, SecondaryListsActivity.class);
                 intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
-                intent.putExtra(JsonConstants.MAP_ID, list.mapId);
+                intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
                 try {
                     EntryField entryField = (EntryField) list.getFields().get(0); //this will always work because it's a protected field
                     intent.putExtra(JsonConstants.FIELD_ENTRY, entryField.entry);
@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements
                     intent.putExtra(JsonConstants.TYPE, JsonConstants.TYPE_MAP_LIST);
                     intent.putExtra(JsonConstants.OPERATION, Operation.UPDATE.name());
                     intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
-                    intent.putExtra(JsonConstants.MAP_ID, list.mapId);
+                    intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
                     startActivity(intent);
                 }
                 break;
@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements
     public void confirmAction (boolean confirmed){
         if (confirmed) {
             MapList list = mapFragment.getSelectedMapList();
-            db.delete(list.getDocumentId(), list.mapId, Operation.DELETE_LOCATION);
+            db.delete(list.getDocumentId(), list.getMapId(), Operation.DELETE_LOCATION);
         }
     }
 

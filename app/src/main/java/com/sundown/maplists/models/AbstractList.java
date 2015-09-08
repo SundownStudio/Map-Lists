@@ -1,5 +1,9 @@
 package com.sundown.maplists.models;
 
+import com.sundown.maplists.utils.FileManager;
+import com.sundown.maplists.utils.PhotoUtils;
+import com.sundown.maplists.utils.PreferenceManager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +88,7 @@ public abstract class AbstractList implements PropertiesHandler {
                 boolean permanent = Boolean.parseBoolean(String.valueOf(props.get(FIELD_PERMANENT)));
 
                 if (type == FieldType.PHOTO) {
-                    fields.add(new PhotoField(permanent).setProperties(props));
+                    fields.add(new PhotoField(-1, permanent, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance()).setProperties(props));
                 } else {
                     fields.add(new EntryField(permanent).setProperties(props));
                 }

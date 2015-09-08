@@ -16,6 +16,9 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.PhotoField;
+import com.sundown.maplists.utils.FileManager;
+import com.sundown.maplists.utils.PhotoUtils;
+import com.sundown.maplists.utils.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -140,7 +143,7 @@ public class AddFieldView extends LinearLayout {
                 if (listener != null){
                     Field field = fields.get(getAdapterPosition ());
                     if (field.getType() == PHOTO){
-                        field = new PhotoField(false);
+                        field = new PhotoField(-1, false, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance());
                     }
                     listener.addNewField(field);
                 }

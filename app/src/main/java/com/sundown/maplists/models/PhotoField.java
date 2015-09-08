@@ -48,15 +48,6 @@ public class PhotoField extends Field {
         return thumbBitmap;
     }
 
-    public void setImageBitmap(Bitmap imageBitmap) {
-        this.imageBitmap = imageBitmap;
-    }
-
-    public void setThumbBitmap(Bitmap thumbBitmap) {
-        this.thumbBitmap = thumbBitmap;
-    }
-
-
     private String imageName, thumbName;
 
     public String getImageName() {
@@ -67,29 +58,21 @@ public class PhotoField extends Field {
         return thumbName;
     }
 
-    public PhotoField(boolean permanent) {
-        super(0, TITLE, FieldType.PHOTO, permanent);
-        init();
-    }
 
-
-    public PhotoField(int id, boolean permanent) {
+    public PhotoField(int id, boolean permanent, PhotoUtils photoUtils, FileManager fileManager, PreferenceManager preferenceManager) {
         super(id, TITLE, FieldType.PHOTO, permanent);
-        init();
+        this.photoUtils = photoUtils;
+        this.fileManager = fileManager;
+        this.preferenceManager = preferenceManager;
     }
 
-    private void init() {
-        preferenceManager = PreferenceManager.getInstance();
-        photoUtils = PhotoUtils.getInstance();
-        fileManager = FileManager.getInstance();
-    }
 
-    public void loadBitmaps(String documentId){
+    public void loadBitmaps(String documentId) {
 
-        if (imageName != null && imageName.length() > 0 && imageBitmap == null){
+        if (imageName != null && imageName.length() > 0 && imageBitmap == null) {
             imageBitmap = DatabaseCommunicator.getInstance().loadBitmap(documentId, imageName);
         }
-        if (thumbName != null && thumbName.length() > 0 && thumbBitmap == null){
+        if (thumbName != null && thumbName.length() > 0 && thumbBitmap == null) {
             thumbBitmap = DatabaseCommunicator.getInstance().loadBitmap(documentId, thumbName);
         }
     }
