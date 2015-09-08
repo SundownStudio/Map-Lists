@@ -182,7 +182,7 @@ public class MapView extends FrameLayout {
             infoTitle.setText(titleEntry.entry);
             infoSnippet.setText(snippetEntry.entry);
 
-            Bitmap thumb = db.loadBitmap(list.documentId, photoField.getThumbName());
+            Bitmap thumb = db.loadBitmap(list.getDocumentId(), photoField.getThumbName());
 
             if (thumb != null){
                 infoImage.setImageBitmap(thumb);

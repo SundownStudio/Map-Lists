@@ -262,7 +262,7 @@ public class DatabaseCommunicator {
         }
 
         public void update(final AbstractList list) throws CouchbaseLiteException {
-            Document doc = database.getDocument(list.documentId);
+            Document doc = database.getDocument(list.getDocumentId());
             saveDocument(doc.createRevision(), list.getProperties(), list.getPhotos());
         }
 

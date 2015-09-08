@@ -1,5 +1,6 @@
 package com.sundown.maplists.models;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,13 +23,15 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
 
     public SchemaList(LocationList locationList){
         super();
-        for (Field field : locationList.fields) {
-            SchemaField schemaField = new SchemaField(field);
-            this.fields.add(schemaField);
+        ArrayList<Field> fields = locationList.getFields();
+        for (Field field : fields) {
+            addField(new SchemaField(field));
         }
     }
 
-    public String getTitles(StringBuffer buffer){            //todo: condense this crap
+    public String getTitles(StringBuffer buffer){
+        ArrayList<Field> fields = getFields();
+
         for (Field field: fields){
             buffer.append(field.getTitle());
             buffer.append("\n");
@@ -38,6 +41,8 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     }
 
     public String getTypes(StringBuffer buffer){
+        ArrayList<Field> fields = getFields();
+
         for (Field field: fields){
             buffer.append(field.getType());
             buffer.append("\n");
@@ -69,8 +74,8 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     public boolean equals(Object o) {
         if (o instanceof SchemaList){
             SchemaList a = (SchemaList)o;
-            List<Field> listA = a.fields;
-            List<Field> listB = this.fields;
+            List<Field> listA = a.getFields();
+            List<Field> listB = this.getFields();
             return listA.equals(listB);
         }
         return false;

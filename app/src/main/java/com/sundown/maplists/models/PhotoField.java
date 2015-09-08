@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 
+import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.utils.FileManager;
 import com.sundown.maplists.utils.PhotoUtils;
@@ -83,6 +84,15 @@ public class PhotoField extends Field {
         fileManager = FileManager.getInstance();
     }
 
+    public void loadBitmaps(String documentId){
+
+        if (imageName != null && imageName.length() > 0 && imageBitmap == null){
+            imageBitmap = DatabaseCommunicator.getInstance().loadBitmap(documentId, imageName);
+        }
+        if (thumbName != null && thumbName.length() > 0 && thumbBitmap == null){
+            thumbBitmap = DatabaseCommunicator.getInstance().loadBitmap(documentId, thumbName);
+        }
+    }
 
     @Override
     public Map<String, Object> getProperties() {

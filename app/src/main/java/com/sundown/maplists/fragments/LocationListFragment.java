@@ -20,6 +20,7 @@ import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,7 +96,8 @@ public class LocationListFragment extends Fragment {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         int ids = 0;
-        for (Field field: model.fields){
+        ArrayList<Field> fields = model.getFields();
+        for (Field field: fields){
             field.setId(ids++);
             determineViewType(field);
         }
@@ -196,7 +198,8 @@ public class LocationListFragment extends Fragment {
 
                 String title = field.getTitle();
                 if (title != null && title.length() > 0) {
-                    stringBuffer.append(title + ": ");
+                    stringBuffer.append(title);
+                    stringBuffer.append(": ");
                 }
 
                 if (entryField.entry != null){

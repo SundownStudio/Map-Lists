@@ -25,6 +25,7 @@ import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.views.AddListView;
 import com.sundown.maplists.views.FieldView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -144,7 +145,8 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         form.setOrientation(LinearLayout.VERTICAL);
 
         int ids = 0;
-        for (Field field: model.fields){
+        ArrayList<Field> fields = model.getFields();
+        for (Field field: fields){
             addToForm(ids++, field);
         }
         view.updateView(form);
@@ -155,7 +157,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         field.setId(id);
         field.setObserver(addFieldView(field));
         if (field.getType() == PHOTO) {
-            addPhotoFragment(id, field);
+            addPhotoFragment(id, (PhotoField) field);
         }
     }
 
@@ -171,26 +173,25 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         FieldView fieldView = (FieldView) getActivity().getLayoutInflater().inflate(R.layout.fieldview, null, false);
         fieldView.init(getActivity(), this, field);
         fieldView.setTag(field.getId());
-
         form.addView(fieldView);
         return fieldView;
-
     }
 
-    private void addPhotoFragment(int containerViewId, Field field) {
+    private void addPhotoFragment(int containerViewId, PhotoField field) {
         PhotoFragment photoFragment = photoFragments.get(containerViewId);
         if (photoFragment == null) {
             photoFragment = PhotoFragment.newInstance();
         }
 
-        photoFragment.setListenerAndImageData(containerViewId, this, (PhotoField) field, width, height, model.documentId);
+        field.loadBitmaps(model.getDocumentId());
+        photoFragment.setListenerAndImageData(containerViewId, this, field, width, height);
         photoFragments.put(containerViewId, photoFragment);
         fm.beginTransaction().replace(containerViewId, photoFragment).commit();
     }
 
     public LocationList refreshModel() {
 
-        int numFields = model.fields.size();
+        int numFields = model.getFields().size();
         for (int i = 0; i < numFields; ++i){
             FieldView fieldView = (FieldView) form.findViewWithTag(i);
             try {
@@ -259,8 +260,8 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     public void deleteImage(String imageName, String thumbName) {
         if (imageName != null && imageName.length() > 0) {
             DatabaseCommunicator db = DatabaseCommunicator.getInstance();
-            db.deleteAttachment(model.documentId, imageName);
-            db.deleteAttachment(model.documentId, thumbName);
+            db.deleteAttachment(model.getDocumentId(), imageName);
+            db.deleteAttachment(model.getDocumentId(), thumbName);
         }
     }
 

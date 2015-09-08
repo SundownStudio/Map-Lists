@@ -17,7 +17,6 @@ import com.couchbase.lite.CouchbaseLiteException;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.tasks.TaskOptimizeImage;
 import com.sundown.maplists.tasks.TaskRotateImage;
 import com.sundown.maplists.utils.FileManager;
@@ -60,21 +59,12 @@ public class PhotoFragment extends Fragment implements
         return new PhotoFragment();
     }
 
-    public void setListenerAndImageData(int id, PhotoFragmentListener listener, PhotoField photoField, int width, int height, String documentId){
+    public void setListenerAndImageData(int id, PhotoFragmentListener listener, PhotoField photoField, int width, int height){
         this.id = id;
         this.listener = listener;
-        model = (photoField != null) ? photoField : new PhotoField(id, false);
+        model = photoField;
         this.width = width;
         this.height = height;
-
-        String name = model.getImageName();
-        if (name != null && name.length() > 0 && model.getImageBitmap() == null){
-            model.setImageBitmap(DatabaseCommunicator.getInstance().loadBitmap(documentId, name));
-        }
-        name = model.getThumbName();
-        if (name != null && name.length() > 0 && model.getThumbBitmap() == null){
-            model.setThumbBitmap(DatabaseCommunicator.getInstance().loadBitmap(documentId, name));
-        }
     }
 
 

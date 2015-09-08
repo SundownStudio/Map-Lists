@@ -106,7 +106,7 @@ public class SecondaryListsView extends RelativeLayout {
 
 
             SecondaryList locationItem = locationItems.get(position);
-            List<Field> fields = locationItem.fields;
+            List<Field> fields = locationItem.getFields();
 
             for (Field field: fields) {
                 FieldType type = field.getType();

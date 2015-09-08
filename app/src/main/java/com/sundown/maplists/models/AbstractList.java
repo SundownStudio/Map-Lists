@@ -15,29 +15,41 @@ import static com.sundown.maplists.storage.JsonConstants.FIELD_TYPE;
  */
 public abstract class AbstractList implements PropertiesHandler {
 
-    public String documentId;
-    public ArrayList<Field> fields;
+    private String documentId;
 
+    public String getDocumentId() {
+        return documentId;
+    }
 
-    public AbstractList(){
+    private ArrayList<Field> fields;
+
+    public ArrayList<Field> getFields() {
+        return fields;
+    }
+
+    public AbstractList() {
         fields = new ArrayList<>();
     }
 
 
-    public void removeField(int id){fields.remove(id);}
+    public void removeField(int id) {
+        fields.remove(id);
+    }
 
-    public Field getField(Integer id){ return fields.get(id);}
+    public Field getField(Integer id) {
+        return fields.get(id);
+    }
 
-    public int addField(Field field){
+    public int addField(Field field) {
         fields.add(field);
         return fields.size();
     }
 
-    public ArrayList<PhotoField> getPhotos(){
+    public ArrayList<PhotoField> getPhotos() {
         ArrayList<PhotoField> photoFields = new ArrayList<>();
 
-        for (Field field: fields){
-            if (field.getType() == FieldType.PHOTO){
+        for (Field field : fields) {
+            if (field.getType() == FieldType.PHOTO) {
                 photoFields.add((PhotoField) field);
             }
         }
@@ -50,7 +62,7 @@ public abstract class AbstractList implements PropertiesHandler {
         Map<String, Object> properties = new HashMap();
         List list = new ArrayList();
 
-        for (Field field: fields){
+        for (Field field : fields) {
             list.add(field.getProperties());
         }
 
@@ -71,7 +83,7 @@ public abstract class AbstractList implements PropertiesHandler {
                 FieldType type = FieldType.valueOf(props.get(FIELD_TYPE).toString());
                 boolean permanent = Boolean.parseBoolean(String.valueOf(props.get(FIELD_PERMANENT)));
 
-                if (type == FieldType.PHOTO){
+                if (type == FieldType.PHOTO) {
                     fields.add(new PhotoField(permanent).setProperties(props));
                 } else {
                     fields.add(new EntryField(permanent).setProperties(props));

@@ -146,7 +146,7 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
     public void LocationListSelected(SecondaryList list) {
         Intent intent = new Intent(SecondaryListsActivity.this, LocationListActivity.class);
         intent.putExtra(JsonConstants.PARENT_DOC_ID, documentId);
-        intent.putExtra(JsonConstants.DOCUMENT_ID, list.documentId);
+        intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
         intent.putExtra(JsonConstants.MAP_ID, list.mapId);
         startActivityForResult(intent, REQUEST_CODE);
     }
