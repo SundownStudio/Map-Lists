@@ -17,7 +17,6 @@ import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
-import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
 
@@ -113,7 +112,7 @@ public class LocationListFragment extends Fragment {
         switch (type) {
             case SUBJECT: {
                 EntryField entryField = (EntryField) field;
-                view.setSubject(entryField.entry, ((SecondaryList) model).getColor());
+                view.setSubject(entryField.entry, model.getColor());
                 break;
             }
             case NAME:

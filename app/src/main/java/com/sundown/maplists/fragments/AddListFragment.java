@@ -1,5 +1,6 @@
 package com.sundown.maplists.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -274,6 +275,6 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
     @Override
     public void colorPicked(String color) {
-        model.setColor(color);
+        model.setColor(Color.parseColor(color));
     }
 }

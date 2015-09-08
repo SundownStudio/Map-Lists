@@ -24,6 +24,7 @@ import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.storage.DatabaseCommunicator;
+import com.sundown.maplists.utils.ColorUtils;
 
 /**
  * Created by Sundown on 5/21/2015.
@@ -95,8 +96,9 @@ public class MapView extends FrameLayout {
         return mMap.getCameraPosition().target;
     }
 
-    public Marker addMarker(LatLng latLng, float color){
-        return mMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(color)));
+
+    public Marker addMarker(LatLng latLng, int color){
+        return mMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(ColorUtils.getColorHue(color))));
     }
 
     private void setUpMap(){

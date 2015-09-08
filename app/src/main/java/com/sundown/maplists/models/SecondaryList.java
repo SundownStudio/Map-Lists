@@ -1,10 +1,7 @@
 package com.sundown.maplists.models;
 
-import android.graphics.Color;
-
 import java.util.Map;
 
-import static com.sundown.maplists.storage.JsonConstants.COLOR;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 import static com.sundown.maplists.storage.JsonConstants.TYPE;
 import static com.sundown.maplists.storage.JsonConstants.TYPE_LOCATION_LIST;
@@ -16,22 +13,11 @@ public class SecondaryList extends LocationList {
 
 
     private int listId;
-    private int color;
-
-    public int getColor() {
-        return color;
-    }
 
 
     protected SecondaryList(int mapId, int listId, int color) {
-        super(mapId);
+        super(mapId, color);
         this.listId = listId;
-        this.color = color;
-    }
-
-    @Override
-    public void setColor(String color) {
-        this.color = Color.parseColor(color);
     }
 
 
@@ -40,7 +26,6 @@ public class SecondaryList extends LocationList {
         Map<String, Object> properties = super.getProperties();
         properties.put(TYPE, TYPE_LOCATION_LIST);
         properties.put(LIST_ID, listId);
-        properties.put(COLOR, color);
         return properties;
     }
 
@@ -49,7 +34,6 @@ public class SecondaryList extends LocationList {
     public SecondaryList setProperties(Map properties) {
         super.setProperties(properties);
         listId = (Integer) properties.get(LIST_ID);
-        color = (Integer) properties.get(COLOR);
         return this;
     }
 }

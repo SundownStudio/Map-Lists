@@ -281,7 +281,7 @@ public class MapFragment extends Fragment implements
 
 
 
-    private Marker addMarker(LatLng latLng, float color) {
+    private Marker addMarker(LatLng latLng, int color) {
         Marker marker = view.addMarker(latLng, color);
         model.storeMarker(latLng, marker);
         return marker;
