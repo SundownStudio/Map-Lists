@@ -28,6 +28,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
 import com.sundown.maplists.logging.Log;
+import com.sundown.maplists.models.LocationListFactory;
 import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.network.FetchAddressIntentService;
@@ -208,7 +209,7 @@ public class MapFragment extends Fragment implements
 
         if (model.getMapList(latLng) == null){
             savedLatLng = latLng;
-            MapList list = new MapList();
+            MapList list = (MapList) LocationListFactory.createLocationList(LocationListFactory.MAPLIST, -1);
             list.setLatLng(latLng);
             db.insert(list, JsonConstants.COUNT_MAP_LISTS, JsonConstants.MAP_ID);
 
@@ -296,7 +297,7 @@ public class MapFragment extends Fragment implements
 
         toolbarManager.drawMenu(new MenuOption(EDIT_DELETE, true),
                 new MenuOption(MARKER_MOVE, true),
-                new MenuOption(MARKER_COMPONENTS, getSelectedMapList().isMultipleListsEnabled()));
+                new MenuOption(MARKER_COMPONENTS, true));
 
     }
 
@@ -478,7 +479,7 @@ public class MapFragment extends Fragment implements
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
 
-                MapList mapList = new MapList().setProperties(properties);
+                MapList mapList = (MapList) LocationListFactory.createLocationList(LocationListFactory.MAPLIST, -1).setProperties(properties);
                 model.storeMapList(mapList.getLatLng(), mapList);
 
             }

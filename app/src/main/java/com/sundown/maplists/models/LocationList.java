@@ -16,7 +16,7 @@ public abstract class LocationList extends AbstractList implements PropertiesHan
     abstract public void setColor(String color);
 
 
-    public LocationList(int mapId){
+    protected LocationList(int mapId){
         super();
         this.mapId = mapId;
     }

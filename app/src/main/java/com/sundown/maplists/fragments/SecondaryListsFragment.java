@@ -11,6 +11,7 @@ import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.sundown.maplists.R;
+import com.sundown.maplists.models.LocationListFactory;
 import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.ContentLoader;
@@ -107,7 +108,7 @@ public class SecondaryListsFragment extends Fragment {
             for (Iterator<QueryRow> it = result; it.hasNext(); ) {
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId());
-                model.add(new SecondaryList(mapId).setProperties(properties));
+                model.add((SecondaryList) LocationListFactory.createLocationList(LocationListFactory.SECONDARYLIST, mapId).setProperties(properties));
             }
 
             drawModel();

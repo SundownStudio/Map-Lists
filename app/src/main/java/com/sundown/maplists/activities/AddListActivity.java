@@ -26,9 +26,8 @@ import com.sundown.maplists.fragments.ManageSchemasFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.LocationList;
-import com.sundown.maplists.models.MapList;
+import com.sundown.maplists.models.LocationListFactory;
 import com.sundown.maplists.models.SchemaList;
-import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.ContentLoader;
@@ -44,7 +43,6 @@ import java.util.Map;
 
 import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
-
 import static com.sundown.maplists.pojo.MenuOption.GroupView.SCHEMA_ACTIONS;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
@@ -105,17 +103,15 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
         if (type.equals(JsonConstants.TYPE_MAP_LIST)){
             Map<String, Object> properties = db.read(documentId);
-            MapList list = new MapList().setProperties(properties);
-            list.setMultipleListsEnabled(true);
-            model = list;
+            model = LocationListFactory.createLocationList(LocationListFactory.MAPLIST, mapId).setProperties(properties);
 
         } else if (type.equals(JsonConstants.TYPE_LOCATION_LIST)){
             if (operation == Operation.INSERT) {
-                model = new SecondaryList(mapId);
+                model = LocationListFactory.createLocationList(LocationListFactory.SECONDARYLIST, mapId);
 
             } else if (operation == Operation.UPDATE){
                 Map<String, Object> properties = db.read(documentId);
-                model = new SecondaryList(mapId).setProperties(properties);
+                model =  LocationListFactory.createLocationList(LocationListFactory.SECONDARYLIST, mapId).setProperties(properties);
             }
         }
 

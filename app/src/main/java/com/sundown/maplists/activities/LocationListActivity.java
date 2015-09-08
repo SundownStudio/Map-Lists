@@ -14,7 +14,8 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.fragments.LocationListFragment;
 import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.SecondaryList;
+import com.sundown.maplists.models.LocationList;
+import com.sundown.maplists.models.LocationListFactory;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
@@ -35,7 +36,7 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
     private FragmentManager fm;
     private DatabaseCommunicator db;
     private ToolbarManager toolbarManager;
-    private SecondaryList model;
+    private LocationList model;
     private int mapId;
     private String documentId;
     private String parentDocumentId;
@@ -60,7 +61,7 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
         db = DatabaseCommunicator.getInstance();
 
         Map<String, Object> properties = db.read(documentId);
-        model = new SecondaryList(mapId).setProperties(properties);
+        model =  LocationListFactory.createLocationList(LocationListFactory.SECONDARYLIST, mapId).setProperties(properties);
 
 
         setUpToolBars(getItemName());

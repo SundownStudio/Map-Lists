@@ -23,11 +23,10 @@ public class SecondaryList extends LocationList {
     }
 
 
-    public SecondaryList(int mapId) {
+    protected SecondaryList(int mapId, int listId, int color) {
         super(mapId);
-        listId = -1;
-        color = Color.parseColor("#303F9F");
-        super.addField(new EntryField(listId, "Subject", "", FieldType.SUBJECT, true));
+        this.listId = listId;
+        this.color = color;
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
+import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
@@ -32,7 +33,7 @@ public class LocationListFragment extends Fragment {
 
 
     private LocationListView view;
-    private SecondaryList model;
+    private LocationList model;
     private LinearLayout layout;
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -52,7 +53,7 @@ public class LocationListFragment extends Fragment {
     }
 
 
-    public static LocationListFragment newInstance(SecondaryList model) {
+    public static LocationListFragment newInstance(LocationList model) {
         LocationListFragment fragment = new LocationListFragment();
         fragment.model = model;
         return fragment;
@@ -112,7 +113,7 @@ public class LocationListFragment extends Fragment {
         switch (type) {
             case SUBJECT: {
                 EntryField entryField = (EntryField) field;
-                view.setSubject(entryField.entry, model.getColor());
+                view.setSubject(entryField.entry, ((SecondaryList) model).getColor());
                 break;
             }
             case NAME:
