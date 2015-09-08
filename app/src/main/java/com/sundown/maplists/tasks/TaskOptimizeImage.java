@@ -28,7 +28,6 @@ public class TaskOptimizeImage extends AsyncTask<String, Void, Boolean> {
         this.width = width;
         this.height = height;
         this.listener = listener;
-        Log.m("TaskLoadResizeImage: W: " + width + " H: " + height);
     }
 
 
@@ -59,22 +58,10 @@ public class TaskOptimizeImage extends AsyncTask<String, Void, Boolean> {
     protected void onPostExecute(Boolean success) {
         super.onPostExecute(success);
 
-        //todo optimize the logic here at some point..
-        if (isCancelled()) {
-            success = false;
-        }
+        Bitmap imageBitmap = model.getImageBitmap();
+        listener.onImageOptimized(imageBitmap);
 
-        if (model.image != null) {
-            listener.onImageOptimized(model.image);
-
-        } else {
-            Log.m("TaskLoadBitmap","Task broke, null bitmap");
-            listener.onImageOptimized(null);
-            success = false;
-        }
-
-        if (!success){
-            Log.m("TaskLoadBitmap","Task cancelled");
+        if (isCancelled() || imageBitmap == null || !success) {
             model.cleanupTemporaryFiles();
         }
     }

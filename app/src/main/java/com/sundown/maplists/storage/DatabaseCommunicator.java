@@ -52,6 +52,7 @@ public class DatabaseCommunicator {
     public static final int QUERY_LOCATION = 2;
     public static final int QUERY_SCHEMA = 3;
     public static final int MAX_ITEMS_PER_LIST = 9999;
+    private static final String IMAGE_TYPE = "image/jpg";
 
     private static CBManager cbManager;
 
@@ -106,17 +107,19 @@ public class DatabaseCommunicator {
     }
 
 
-    public Bitmap loadBitmap(String documentId, String pictureName){
-        try {
-            Revision currentRevision = cbManager.getCurrentRevision(documentId);
-            Attachment att = currentRevision.getAttachment(pictureName);
-            if (att != null) {
-                InputStream is;
-                is = att.getContent();
-                return BitmapFactory.decodeStream(is);
+    public Bitmap loadBitmap(String documentId, String bitmapName){
+        if (bitmapName != null && bitmapName.length() > 0) {
+            try {
+                Revision currentRevision = cbManager.getCurrentRevision(documentId);
+                Attachment att = currentRevision.getAttachment(bitmapName);
+                if (att != null) {
+                    InputStream is;
+                    is = att.getContent();
+                    return BitmapFactory.decodeStream(is);
+                }
+            } catch (CouchbaseLiteException e) {
+                Log.e(e); //TODO: something went wrong dialog
             }
-        } catch (CouchbaseLiteException e) {
-            Log.e(e); //TODO: something went wrong dialog
         }
         return null;
     }
@@ -169,11 +172,10 @@ public class DatabaseCommunicator {
                 database = manager.getDatabase(DATABASE_NAME);
 
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(e);
             } catch (CouchbaseLiteException e) {
-                e.printStackTrace();
+                Log.e(e);
             }
-
 
             initViews();
             createDefaultDocs();
@@ -251,7 +253,7 @@ public class DatabaseCommunicator {
             properties.put("created_at", currentTimeString);
             properties.put(idName, count); //mapID = count, listID = count, schemaID = count.. all increasing
 
-            if (idName == JsonConstants.SCHEMA_ID){
+            if (idName.equals(JsonConstants.SCHEMA_ID)){
                 saveDocument(document.createRevision(), properties, null);
             } else {
                 saveDocument(document.createRevision(), properties, list.getPhotos());
@@ -270,13 +272,8 @@ public class DatabaseCommunicator {
 
             if (photoFields != null){
                 for (PhotoField photoField : photoFields){
-                    if (photoField.image != null) {
-                        newRevision = setImageAttachment(newRevision, photoField.imageName, photoField.image);
-                    }
-                    if (photoField.thumb != null) {
-                        newRevision = setImageAttachment(newRevision, photoField.thumbName, photoField.thumb);
-                    }
-
+                    newRevision = setImageAttachment(newRevision, photoField.getImageName(), photoField.getImageBitmap());
+                    newRevision = setImageAttachment(newRevision, photoField.getThumbName(), photoField.getThumbBitmap());
                     photoField.recycle(true);
                 }
             }
@@ -284,10 +281,12 @@ public class DatabaseCommunicator {
         }
 
         private UnsavedRevision setImageAttachment(UnsavedRevision newRevision, String fileName, Bitmap image){
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.JPEG, 50, out);
-            ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-            newRevision.setAttachment(fileName, "image/jpg", in);
+            if (image != null) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                image.compress(Bitmap.CompressFormat.JPEG, 50, out);
+                ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+                newRevision.setAttachment(fileName, IMAGE_TYPE, in);
+            }
             return newRevision;
         }
 

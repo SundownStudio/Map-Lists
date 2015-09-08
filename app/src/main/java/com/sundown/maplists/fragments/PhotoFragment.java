@@ -67,13 +67,13 @@ public class PhotoFragment extends Fragment implements
         this.width = width;
         this.height = height;
 
-        String name = model.imageName;
-        if (name != null && name.length() > 0 && model.image == null){
-            model.image = DatabaseCommunicator.getInstance().loadBitmap(documentId, name);
+        String name = model.getImageName();
+        if (name != null && name.length() > 0 && model.getImageBitmap() == null){
+            model.setImageBitmap(DatabaseCommunicator.getInstance().loadBitmap(documentId, name));
         }
-        name = model.thumbName;
-        if (name != null && name.length() > 0 && model.thumb == null){
-            model.thumb = DatabaseCommunicator.getInstance().loadBitmap(documentId, name);
+        name = model.getThumbName();
+        if (name != null && name.length() > 0 && model.getThumbBitmap() == null){
+            model.setThumbBitmap(DatabaseCommunicator.getInstance().loadBitmap(documentId, name));
         }
     }
 
@@ -126,9 +126,10 @@ public class PhotoFragment extends Fragment implements
         if (deviceHasCameraFlag && intent.resolveActivity(pm) != null) {
             try {
                 model.generateTemporaryFiles();
+                Uri uri = model.getImageUri();
 
-                if (model.imageTempFile != null)
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(model.imageTempFile));
+                if (uri != null)
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 
                 saveFragmentIdForActivityResult();
                 getActivity().startActivityForResult(intent, ACTIVITY_CAMERA);
@@ -145,7 +146,7 @@ public class PhotoFragment extends Fragment implements
     @Override
     public void deletePicture(boolean clearFiles) {
         model.recycle(clearFiles);
-        listener.deleteImage(model.imageName, model.thumbName);
+        listener.deleteImage(model.getImageName(), model.getThumbName());
     }
 
     @Override
@@ -162,14 +163,14 @@ public class PhotoFragment extends Fragment implements
 
     @Override
     public void rotatePicture() {
-        if (model.image != null){
+        if (model.getImageBitmap() != null){
             new TaskRotateImage(model, this).execute();
         }
     }
 
     @Override
     public void onImageRotated(boolean success) {
-        view.setBitmap(model.image);
+        view.setBitmap(model.getImageBitmap());
     }
 
     @Override
@@ -211,7 +212,6 @@ public class PhotoFragment extends Fragment implements
 
     @Override
     public void onImageOptimized(Bitmap image) {
-        Log.m("PhotoFragment", "onImageOptimized");
         view.setBitmap(image);
     }
 
@@ -219,17 +219,16 @@ public class PhotoFragment extends Fragment implements
     //todo move this to asynctask..
     private void loadImage() throws CouchbaseLiteException {
 
-        Log.m("PhotoFragment", "loadImage");
         view.loadingImage();
 
-        if (model.image == null){
+        if (model.getImageBitmap() == null){
             model.loadImageFromFile();
         }
 
-        if (model.image != null) {
-            view.setBitmap(model.image);
+        Bitmap imageBitmap = model.getImageBitmap();
+        if (imageBitmap != null) {
+            view.setBitmap(imageBitmap);
         } else {
-            Log.m("PhotoFragment", "reset");
             view.reset();
         }
 

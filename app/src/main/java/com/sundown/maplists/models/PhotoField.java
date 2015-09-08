@@ -2,8 +2,8 @@ package com.sundown.maplists.models;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 
-import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.utils.FileManager;
 import com.sundown.maplists.utils.PhotoUtils;
@@ -23,22 +23,37 @@ public class PhotoField extends Field {
     private static final String IMAGE_PREFIX = "IMG_";
     private static final String IMAGE_FILE = "IMAGE_FILE";
     private static final String THUMB_FILE = "THUMB_FILE";
+    private static final String TITLE = "PHOTO";
 
     private PhotoUtils photoUtils;
     private FileManager fileManager;
     private PreferenceManager preferenceManager;
-    public File imageTempFile, thumbTempFile;
-    public String imageName, thumbName;
-    public Bitmap image, thumb;
+
+    private File imageTempFile, thumbTempFile;
+    public Uri getImageUri(){
+        if (imageTempFile != null) return Uri.fromFile(imageTempFile);
+        return null;
+    }
+
+    private Bitmap imageBitmap, thumbBitmap;
+    public Bitmap getImageBitmap(){return imageBitmap;}
+    public Bitmap getThumbBitmap(){return thumbBitmap;}
+    public void setImageBitmap(Bitmap imageBitmap){this.imageBitmap = imageBitmap;}
+    public void setThumbBitmap(Bitmap thumbBitmap){this.thumbBitmap = thumbBitmap;}
+
+
+    private String imageName, thumbName;
+    public String getImageName(){return imageName;}
+    public String getThumbName(){return thumbName;}
 
     public PhotoField(boolean permanent){
-        super(0, "Photo", FieldType.PHOTO, permanent);
+        super(0, TITLE, FieldType.PHOTO, permanent);
         init();
     }
 
 
     public PhotoField(int id, boolean permanent){
-        super(id, "Photo", FieldType.PHOTO, permanent);
+        super(id, TITLE, FieldType.PHOTO, permanent);
         init();
     }
 
@@ -66,13 +81,13 @@ public class PhotoField extends Field {
     }
 
     public void recycle(boolean clearFiles) {
-        if (image != null) {
-            image.recycle();
-            image = null;
+        if (imageBitmap != null) {
+            imageBitmap.recycle();
+            imageBitmap = null;
         }
-        if (thumb != null){
-            thumb.recycle();
-            thumb = null;
+        if (thumbBitmap != null){
+            thumbBitmap.recycle();
+            thumbBitmap = null;
         }
 
         if (clearFiles) {
@@ -85,8 +100,8 @@ public class PhotoField extends Field {
             imageTempFile.delete();
         if (thumbTempFile != null && thumbTempFile.exists())
             thumbTempFile.delete();
-        image = null; //DO NOT RECYCLE THESE HERE.. WE MAY STILL NEED THEM TO COMPRESS TO DB.. IF RECYCLING USE recycle() INSTEAD..
-        thumb = null;
+        imageBitmap = null; //DO NOT RECYCLE THESE HERE.. WE MAY STILL NEED THEM TO COMPRESS TO DB.. IF RECYCLING USE recycle() INSTEAD..
+        thumbBitmap = null;
         preferenceManager.remove(IMAGE_FILE + id);
         preferenceManager.remove(THUMB_FILE + id);
         preferenceManager.commit();
@@ -94,16 +109,16 @@ public class PhotoField extends Field {
 
 
     public void setImage(Bitmap defaultImage){
-        this.image = defaultImage;
+        this.imageBitmap = defaultImage;
     }
 
 
     public void loadImageFromFile(){
         if (imageTempFile != null){ //load it from file if it exists..
-            image = BitmapFactory.decodeFile(imageTempFile.getAbsolutePath());
+            imageBitmap = BitmapFactory.decodeFile(imageTempFile.getAbsolutePath());
         }
         if (thumbTempFile != null){
-            thumb = BitmapFactory.decodeFile(thumbTempFile.getAbsolutePath());
+            thumbBitmap = BitmapFactory.decodeFile(thumbTempFile.getAbsolutePath());
         }
     }
 
@@ -134,23 +149,22 @@ public class PhotoField extends Field {
         int rotate = photoUtils.imageOrientationValidator(selectedImagePath);
 
         //now resize image to fit container because we dont need all that extra memory for big image
-        image = photoUtils.resizeImage(selectedImagePath, width, height);
-        image = photoUtils.rotateImage(image, rotate);
-        Log.m("Photo: bitmap resized! W: " + width + " H: " + height);
+        imageBitmap = photoUtils.resizeImage(selectedImagePath, width, height);
+        imageBitmap = photoUtils.rotateImage(imageBitmap, rotate);
     }
 
     public void rotateImages(){
-        image = photoUtils.rotateImage(image, 90);
-        thumb = photoUtils.rotateImage(thumb, 90);
+        imageBitmap = photoUtils.rotateImage(imageBitmap, 90);
+        thumbBitmap = photoUtils.rotateImage(thumbBitmap, 90);
     }
 
     public void extractThumb(){
-        thumb = photoUtils.extractThumbnail(image);
+        thumbBitmap = photoUtils.extractThumbnail(imageBitmap);
     }
 
     public void saveContentsToFiles() throws IOException {
-        fileManager.saveImageToFile(imageTempFile, image);
-        fileManager.saveImageToFile(thumbTempFile, thumb);
+        fileManager.saveImageToFile(imageTempFile, imageBitmap);
+        fileManager.saveImageToFile(thumbTempFile, thumbBitmap);
 
         if (imageTempFile != null){
             imageName = imageTempFile.getName();
