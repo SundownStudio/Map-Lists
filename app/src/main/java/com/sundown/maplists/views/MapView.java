@@ -3,6 +3,8 @@ package com.sundown.maplists.views;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,7 +100,9 @@ public class MapView extends FrameLayout {
 
 
     public Marker addMarker(LatLng latLng, int color){
-        return mMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(ColorUtils.getColorHue(color))));
+        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.marker);
+        Bitmap markerBitmap = ColorUtils.changeImageColor(ColorUtils.convertDrawableToBitmap(drawable), color);
+        return mMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromBitmap(markerBitmap)));
     }
 
     private void setUpMap(){
