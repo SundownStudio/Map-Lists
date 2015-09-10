@@ -1,8 +1,6 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
-import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.AttributeSet;
@@ -36,7 +34,6 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
         void editFieldTitle(int tag);
         void deleteField(int tag);
         void colorField(int tag);
-        void entryTyped(int tag, String entry);
     }
 
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -118,132 +115,101 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
     }
 
-    public void addComponentView(Field field) {
-
-        View view;
-
+    private void addComponentView(Field field) {
         switch (field.getType()) {
-            case PHOTO: {
-                view = new RelativeLayout(context);
-                view.setId(field.getId());
-                view.setTag(PHOTO); //NOTE: this works! retains tag even though we add fragment here
-                disableTitleButtons(); //photofragment has its own buttons
+            case PHOTO:
+                addPhotoFragmentView(field);
                 break;
-            }
-
-            case RATING: {
-                EntryField entry = (EntryField) field;
-                final RatingBar bar = new RatingBar(context);
-                bar.setNumStars(5);
-                bar.setTag(RATING);
-                if (entry.entry != null) {
-                    try {
-                        bar.setRating(Float.parseFloat(entry.entry));
-                    } catch (Exception e) {
-                        Log.e(e);
-                    }
-                }
-                bar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-                    @Override
-                    public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                        listener.entryTyped((int) getTag(), String.valueOf(bar.getRating()));
-                    }
-                });
-                view = bar;
+            case RATING:
+                addRatingBar(field);
                 break;
-            }
-
-            /*case FIELD_DROPDOWN:
-                //todo
-                break;*/
-
-            case CHECKBOX: {
-                EntryField entry = (EntryField) field;
-                CheckBox checkBox = new CheckBox(context);
-                checkBox.setTag(CHECKBOX);
-                if (entry.entry != null) {
-                    try {
-                        checkBox.setChecked(entry.entry.equals("1"));
-                    } catch (Exception e) {Log.e(e);}
-                }
-                view = checkBox;
+            case CHECKBOX:
+                addCheckBox(field);
                 break;
-            }
-
-            default:{
-                EntryField entry = (EntryField) field;
-                EditText v = new EditText(context);
-                v.setTag(EDIT);
-                v.setFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_ENTRY_CHARS)});
-                if (entry.entry != null){
-                    v.setHint(entry.entry);
-                }
-                v.setOnFocusChangeListener(new OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        if (!hasFocus) {
-                            EditText view = (EditText) v;
-                            String text = view.getText().toString().trim();
-                            if (text.length() > 0)
-                                listener.entryTyped((int) getTag(), text);
-                        }
-                    }
-                });
-
-                switch (entry.getType()) {
-                    case NUMBER:
-                        v.setInputType(InputType.TYPE_CLASS_NUMBER);
-                        break;
-                    case DECIMAL:
-                        v.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                        break;
-                    case DATE:
-                        v.setHint(dateFormat.format(new Date()));
-                        break;
-                    case TIME:
-                        v.setHint(timeFormat.format(new Date()));
-                        break;
-                    case PHONE:
-                        v.setInputType(InputType.TYPE_CLASS_PHONE);
-                        v.addTextChangedListener(new PhoneNumberFormattingTextWatcher() {
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                            }
-
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable s) {
-                                //PhoneNumberUtils.formatNumber(s, PhoneNumberUtils.getFormatTypeForLocale(Locale.getDefault()));
-                                //listener.entryTyped((int) getTag(), s.toString());
-                                Log.m("FieldView", "afterTextChanged fire: " + s);
-                            }
-                        });
-                        break;
-                }
-
-                view = v;
+            default:
+                addEntryViews(field);
                 break;
-            }
-
         }
-
-        if (field.getType() == FieldType.RATING){
-            view.setLayoutParams(layoutWrapWidth);
-        } else {
-            view.setLayoutParams(layoutFillWidth);
-        }
-
-        fieldEntryContainer.addView(view);
-
     }
 
-    public View getChild(){
-        return fieldEntryContainer.getChildAt(0);
+    private void addPhotoFragmentView(Field field){
+        View view = new RelativeLayout(context);
+        view.setId(field.getId());
+        view.setTag(PHOTO); //NOTE: this works! retains tag even though we add fragment here
+        disableTitleButtons(); //photofragment has its own buttons
+        view.setLayoutParams(layoutFillWidth);
+        fieldEntryContainer.addView(view);
+    }
+
+
+    private void addRatingBar(Field field){
+        EntryField entry = (EntryField) field;
+        final RatingBar bar = new RatingBar(context);
+        bar.setNumStars(5);
+        bar.setTag(RATING);
+        try {
+            bar.setRating(Float.parseFloat(entry.getEntry(0)));
+        } catch (Exception e) {
+            Log.e(e);
+        }
+        bar.setLayoutParams(layoutWrapWidth);
+        fieldEntryContainer.addView(bar);
+    }
+
+
+    private void addCheckBox(Field field){
+        EntryField entry = (EntryField) field;
+        CheckBox checkBox = new CheckBox(context);
+        checkBox.setTag(CHECKBOX);
+        try {
+            checkBox.setChecked(entry.getEntry(0).equals("1"));
+        } catch (Exception e) {Log.e(e);}
+
+        checkBox.setLayoutParams(layoutFillWidth);
+        fieldEntryContainer.addView(checkBox);
+    }
+
+
+    private void addEntryViews(Field field){
+        EntryField entry = (EntryField) field;
+        int size = entry.getNumEntries();
+
+        for (int i = 0; i < size; ++i){
+            EditText v = createEditText(entry.getType());
+            String hint = entry.getEntry(i);
+            if (hint != null && hint.length() > 0)
+                v.setHint(hint);
+            v.setLayoutParams(layoutFillWidth);
+            fieldEntryContainer.addView(v);
+        }
+    }
+
+    private EditText createEditText(FieldType type){
+        EditText v = new EditText(context);
+        v.setTag(EDIT);
+        v.setFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_ENTRY_CHARS)});
+        switch (type) {
+            case NUMBER:
+                v.setInputType(InputType.TYPE_CLASS_NUMBER);
+                break;
+            case DECIMAL:
+                v.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                break;
+            case DATE:
+                v.setHint(dateFormat.format(new Date()));
+                break;
+            case TIME:
+                v.setHint(timeFormat.format(new Date()));
+                break;
+            case PHONE:
+                v.setInputType(InputType.TYPE_CLASS_PHONE);
+                break;
+        }
+        return v;
+    }
+
+    private View getChild(int element){
+        return fieldEntryContainer.getChildAt(element);
     }
 
     private void disableTitleButtons(){
@@ -277,8 +243,8 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
             fieldTitle.setText(title);
     }
 
-    public String getEntry(){
-        View child = getChild();
+    public String getEntry(int element){
+        View child = getChild(element);
         String tag = String.valueOf(child.getTag());
         String text = "";
 
@@ -292,19 +258,14 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
             case EDIT:
                 EditText e = (EditText)child;
-                text = e.getText().toString().trim();
-                if (text.length() == 0) {
+                text = e.getText().toString();
+                if (text.length() == 0){
+                    //nothing was entered..
                     if (e.getHint() != null) {
-                        text = e.getHint().toString().trim();
+                        text = e.getHint().toString();
                     }
                 }
-                return text;
-
-
-            /*case SPINNER: //todo
-                    Spinner s = (Spinner) container.getChildAt(i);
-                    model.fieldEntries.get(counter++).entry = s.getSelectedItem().toString().trim();
-                break;*/
+                return text.trim();
 
             case CHECKBOX:
                 CheckBox box = (CheckBox)child;

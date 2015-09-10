@@ -18,6 +18,7 @@ public final class JsonConstants {
     public static final String FIELDS = "fields";
     public static final String FIELD_TITLE = "title";
     public static final String FIELD_TITLE_SHOW = "showTitle";
+    public static final String FIELD_ENTRIES = "entries";
     public static final String FIELD_ENTRY = "entry";
     public static final String FIELD_TYPE = "type";
     public static final String FIELD_PERMANENT = "permanent";

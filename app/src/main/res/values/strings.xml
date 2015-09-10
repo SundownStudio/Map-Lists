@@ -59,7 +59,6 @@
 
     <string-array name="add_field_names">
         <item>Name</item>
-        <item>Names</item>
         <item>Phone Number</item>
         <item>Email</item>
         <item>Date</item>
@@ -75,6 +74,7 @@
         <item>Dropdown</item>
         <item>Checkbox</item>
         <item>Rating</item>
+        <item>Collection</item>
     </string-array>
 
     <string-array name="all_field_images">
@@ -85,7 +85,6 @@
 
     <array name="primary_field_images">
         <item>@drawable/ic_name</item>
-        <item>@drawable/ic_contact_add</item>
         <item>@drawable/ic_phonenumber</item>
         <item>@drawable/ic_email</item>
         <item>@drawable/ic_date</item>
@@ -104,6 +103,7 @@
         <item>@drawable/ic_dropdown</item>
         <item>@drawable/ic_checkbox</item>
         <item>@drawable/ic_rating</item>
+        <item>@drawable/ic_thread</item>
     </array>
 
 

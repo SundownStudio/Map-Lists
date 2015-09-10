@@ -139,6 +139,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     protected void onPause() {
         super.onPause();
         schemaLoader.stop();
+        model = addListFragment.refreshModel();
 
         if (saveUpdate) {
             if (operation == Operation.INSERT) {
@@ -304,7 +305,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (manageSchemasFragment.isVisible()){
+                if (manageSchemasFragment != null && manageSchemasFragment.isVisible()){
                     setUpToolbarSpinner();
                     FragmentTransaction transaction = fm.beginTransaction();
                     transaction.replace(R.id.fragment_container, addListFragment, FRAGMENT_ADD_LIST);

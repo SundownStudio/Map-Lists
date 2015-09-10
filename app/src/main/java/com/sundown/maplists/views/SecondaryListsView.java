@@ -113,7 +113,7 @@ public class SecondaryListsView extends RelativeLayout {
                 switch (type) {
                     case SUBJECT: { //reserved field only one per item
                         EntryField entryField = (EntryField) field;
-                        holder.subjectText.setText(entryField.entry);
+                        holder.subjectText.setText(entryField.getEntry(0));
                         holder.subjectText.setBackgroundColor(locationItem.getColor());
                         break;
                     }
@@ -135,7 +135,7 @@ public class SecondaryListsView extends RelativeLayout {
                     case COMMENT:{
                         if (comment.length() == 0){ //only take first comment for display
                             EntryField entryField = (EntryField) field;
-                            comment = entryField.entry;
+                            comment = entryField.getEntry(0);
                         }
                     }
                 }
@@ -175,7 +175,7 @@ public class SecondaryListsView extends RelativeLayout {
                         addToSingleView(entryField.getTitle(), type, holder, true, false);
                         addTopMargin = false;
                     }
-                    addToSingleView(entryField.entry, type, holder, false, addTopMargin);
+                    addToSingleView(entryField.getEntry(0), type, holder, false, addTopMargin);
                     addTopMargin = false;
                 }
             }
@@ -208,7 +208,7 @@ public class SecondaryListsView extends RelativeLayout {
                         addToDoubleView(title1, title2, type1, type2, holder, true, false);
                         addTopMargin = false;
                     }
-                    addToDoubleView(entry1.entry, entry2.entry, type1, type2, holder, false, addTopMargin);
+                    addToDoubleView(entry1.getEntry(0), entry2.getEntry(0), type1, type2, holder, false, addTopMargin);
                     addTopMargin = false;
                 }
             }

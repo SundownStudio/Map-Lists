@@ -5,14 +5,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
@@ -20,8 +16,8 @@ import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -96,7 +92,7 @@ public class LocationListFragment extends Fragment {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         int ids = 0;
-        ArrayList<Field> fields = model.getFields();
+        List<Field> fields = model.getFields();
         for (Field field: fields){
             field.setId(ids++);
             determineViewType(field);
@@ -112,7 +108,7 @@ public class LocationListFragment extends Fragment {
         switch (type) {
             case SUBJECT: {
                 EntryField entryField = (EntryField) field;
-                view.setSubject(entryField.entry, model.getColor());
+                view.setSubject(entryField.getEntry(0), model.getColor());
                 break;
             }
             case NAME:
@@ -126,7 +122,7 @@ public class LocationListFragment extends Fragment {
                 ListItemSingleView v1 = (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
                 ListItemSingleView v2 = (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
                 v1.initAsTitle(entryField.getTitle());
-                v2.initAsEntry(imageResources.get(type), entryField.entry, false);
+                v2.initAsEntry(imageResources.get(type), entryField.getEntry(0), false); //just showing first for now.. change when we redo this..
                 layout.addView(v1);
                 layout.addView(v2);
                 break;
@@ -150,7 +146,7 @@ public class LocationListFragment extends Fragment {
 
     }
 
-
+/*
     public void addComponentView(Field field) {
 
         View view;
@@ -219,6 +215,6 @@ public class LocationListFragment extends Fragment {
 
         layout.addView(view);
 
-    }
+    }*/
 
 }

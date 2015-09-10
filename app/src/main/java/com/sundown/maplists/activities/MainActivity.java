@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements
                 intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
                 try {
                     EntryField entryField = (EntryField) list.getFields().get(0); //this will always work because it's a protected field
-                    intent.putExtra(JsonConstants.FIELD_ENTRY, entryField.entry);
+                    intent.putExtra(JsonConstants.FIELD_ENTRY, entryField.getEntry(0)); //location entry (for titling SecondaryListActivity)
                 } catch (Exception e){}
                 startActivity(intent);
                 break;
@@ -309,7 +309,10 @@ public class MainActivity extends AppCompatActivity implements
             }
             case R.id.action_delete: {
                 EntryField entry = (EntryField) mapFragment.getSelectedMapList().getField(0);
-                String confirmText = entry.entry + " " + getResources().getString(R.string.delete_confirm);
+                String location = entry.getEntry(0);
+                if (location.length() == 0)
+                    location = "This location";
+                String confirmText = location + " " + getResources().getString(R.string.delete_confirm);
 
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
                     mapFragment.gotoLocation();

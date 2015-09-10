@@ -1,6 +1,5 @@
 package com.sundown.maplists.models;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +28,14 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
 
     public SchemaList(LocationList locationList) {
         super();
-        ArrayList<Field> fields = locationList.getFields();
+        List<Field> fields = locationList.getFields();
         for (Field field : fields) {
             addField(new SchemaField(field));
         }
     }
 
     public String getTitles(StringBuffer buffer) {
-        ArrayList<Field> fields = getFields();
+        List<Field> fields = getFields();
 
         for (Field field : fields) {
             buffer.append(field.getTitle());
@@ -47,7 +46,7 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     }
 
     public String getTypes(StringBuffer buffer) {
-        ArrayList<Field> fields = getFields();
+        List<Field> fields = getFields();
 
         for (Field field : fields) {
             buffer.append(field.getType());

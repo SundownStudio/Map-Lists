@@ -137,7 +137,7 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
 
                 if (locationListFragment != null && locationListFragment.getUserVisibleHint()) {
                     EntryField entryField = (EntryField) model.getField(0);
-                    actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.delete_location), entryField.entry + " " + getResources().getString(R.string.delete_confirm));
+                    actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.delete_location), entryField.getEntry(0) + " " + getResources().getString(R.string.delete_confirm));
                 }
                 if (actionDialogFragment != null)
                     actionDialogFragment.show(fm, FRAGMENT_ACTION);
@@ -191,12 +191,12 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
     }
 
     private String getItemName(){
-        String itemName = getString(R.string.location_list_activity);
         try {
-            EntryField entryField = (EntryField) model.getField(0);
-            if (itemName.length() > 0)
-                itemName = entryField.entry;
+            EntryField entryField = (EntryField) model.getField(0); //subject
+            String entry = entryField.getEntry(0); //subject entry
+            if (entry.length() > 0)
+                return entry;
         } catch (Exception e){}
-        return itemName;
+        return getString(R.string.location_list_activity); //else return default
     }
 }

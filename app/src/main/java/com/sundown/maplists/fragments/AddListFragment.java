@@ -26,8 +26,8 @@ import com.sundown.maplists.utils.PreferenceManager;
 import com.sundown.maplists.views.AddListView;
 import com.sundown.maplists.views.FieldView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import static com.sundown.maplists.models.FieldType.PHOTO;
@@ -102,6 +102,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     public void onPause() {
         super.onPause();
         setUserVisibleHint(false);
+
     }
 
     @Override //cant do transactions after this method is called.. leads to that wonderful crash.. but must remove fragments for them to display on reload and cant do it when putting together layout
@@ -146,7 +147,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         form.setOrientation(LinearLayout.VERTICAL);
 
         int ids = 0;
-        ArrayList<Field> fields = model.getFields();
+        List<Field> fields = model.getFields();
         for (Field field: fields){
             addToForm(ids++, field);
         }
@@ -154,7 +155,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         handleActivityResult();
     }
 
-    public void addToForm(int id, Field field){
+    public void addToForm(int id, Field field) {
         field.setId(id);
         field.setObserver(addFieldView(field));
         if (field.getType() == PHOTO) {
@@ -170,7 +171,6 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
 
     private FieldView addFieldView(Field field) {
-
         FieldView fieldView = (FieldView) getActivity().getLayoutInflater().inflate(R.layout.fieldview, null, false);
         fieldView.init(getActivity(), this, field);
         fieldView.setTag(field.getId());
@@ -198,7 +198,10 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
             try {
                 if (fieldView.getType() != PHOTO) {
                     EntryField entryField = (EntryField) model.getField(i);
-                    entryField.entry = fieldView.getEntry();
+                    int numEntries = entryField.getNumEntries();
+                    entryField.clearEntries();
+                    for (int j = 0; j < numEntries; ++j)
+                        entryField.addEntry(fieldView.getEntry(j));
                 }
             } catch (NullPointerException e){
                 Log.e(e);
@@ -243,19 +246,6 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         colorPickerDialogFragment.show(fm, FRAGMENT_PICK_COLOR);
     }
 
-    @Override
-    public void entryTyped(int tag, String entry) {
-        Field field = null;
-        try {
-            field = model.getField(tag);
-        } catch (IndexOutOfBoundsException e){
-            Log.e(e);
-        }
-        if (field != null && field instanceof EntryField) {
-            EntryField entryField = (EntryField) model.getField(tag);
-            entryField.entry = entry;
-        }
-    }
 
     @Override
     public void deleteImage(String imageName, String thumbName) {

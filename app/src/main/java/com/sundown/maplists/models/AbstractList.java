@@ -21,9 +21,9 @@ public abstract class AbstractList implements PropertiesHandler {
         return documentId;
     }
 
-    private ArrayList<Field> fields;
+    private List<Field> fields;
 
-    public ArrayList<Field> getFields() {
+    public List<Field>getFields() {
         return fields;
     }
 
