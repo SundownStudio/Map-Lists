@@ -21,6 +21,7 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.dialogs.AddFieldDialogFragment;
 import com.sundown.maplists.dialogs.AddSchemaDialogFragment;
+import com.sundown.maplists.dialogs.SelectNumberDialogFragment;
 import com.sundown.maplists.fragments.AddListFragment;
 import com.sundown.maplists.fragments.ManageSchemasFragment;
 import com.sundown.maplists.logging.Log;
@@ -66,6 +67,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
     /** Fragment for select a new field to add onto this list */
     private AddFieldDialogFragment addFieldDialogFragment;
+
+    /** Select number of entries for this field.. option reserved for primary fields only */
+    private SelectNumberDialogFragment selectNumberDialogFragment;
 
     /** Fragment for adding a new schema */
     private AddSchemaDialogFragment addSchemaFragment;

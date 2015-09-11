@@ -57,7 +57,7 @@
     <string name="photo">Photo</string>
 
 
-    <string-array name="add_field_names">
+    <string-array name="primary_field_names">
         <item>Name</item>
         <item>Phone Number</item>
         <item>Email</item>
@@ -66,6 +66,9 @@
         <item>Date and Time</item>
         <item>URL</item>
         <item>Price</item>
+    </string-array>
+
+    <string-array name="secondary_field_names">
         <item>Photo</item>
         <item>Text</item>
         <item>Comment</item>
@@ -74,7 +77,6 @@
         <item>Dropdown</item>
         <item>Checkbox</item>
         <item>Rating</item>
-        <item>Collection</item>
     </string-array>
 
     <string-array name="all_field_images">
@@ -103,7 +105,6 @@
         <item>@drawable/ic_dropdown</item>
         <item>@drawable/ic_checkbox</item>
         <item>@drawable/ic_rating</item>
-        <item>@drawable/ic_thread</item>
     </array>
 
 

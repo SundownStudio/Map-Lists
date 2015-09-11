@@ -23,20 +23,25 @@ import java.util.List;
  */
 public class AddFieldDialogFragment extends DialogFragment {
 
-    /** the list of current fields */
+    /**
+     * the list of current fields
+     */
     private List<Field> list;
 
-    /** the view listener */
+    /**
+     * the view listener
+     */
     private AddFieldView.FieldSelector listener;
 
 
-    public static AddFieldDialogFragment newInstance(AddFieldView.FieldSelector listener){
+    public static AddFieldDialogFragment newInstance(AddFieldView.FieldSelector listener) {
         AddFieldDialogFragment fragment = new AddFieldDialogFragment();
         fragment.listener = listener;
         return fragment;
     }
 
-    public AddFieldDialogFragment(){}
+    public AddFieldDialogFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,22 +90,30 @@ public class AddFieldDialogFragment extends DialogFragment {
     /**
      * Generate the list of potential fields for this view
      */
-    private void generateList(){
+    private void generateList() {
         list = new ArrayList<>();
-        String[] fieldNames = getResources().getStringArray(R.array.add_field_names);
+        String[] fieldNames = concatStringArrays(getResources().getStringArray(R.array.primary_field_names), getResources().getStringArray(R.array.secondary_field_names));
         int len = fieldNames.length;
         FieldType[] types = FieldType.values();
-        for (int i = 0; i < len; ++i){
+        for (int i = 0; i < len; ++i) {
             list.add(FieldFactory.createField(fieldNames[i], "", types[i], false));
         }
     }
 
-    private void addTypedArrayToArrayList(TypedArray typedArray, ArrayList arrayList){
+    private void addTypedArrayToArrayList(TypedArray typedArray, ArrayList arrayList) {
         int len = typedArray.length();
-        for (int i = 0; i < len; ++i){
+        for (int i = 0; i < len; ++i) {
             arrayList.add(typedArray.getResourceId(i, -1));
         }
         typedArray.recycle();
     }
+
+    private String[] concatStringArrays(String[] a, String[] b) {
+        final String[] result = new String[a.length + b.length];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+
 
 }
