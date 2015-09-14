@@ -56,7 +56,7 @@
     <string name="couldnt_load_image">Could not load image</string>
     <string name="photo">Photo</string>
 
-
+    <!-- see AddListActivity isPrimaryField() if altering this list -->
     <string-array name="primary_field_names">
         <item>Name</item>
         <item>Phone Number</item>
@@ -131,4 +131,10 @@
     <string name="edit_title">Edit Title</string>
     <string name="pick_color">Pick Color</string>
     <string name="remove_list">Remove List</string>
+
+    <string name="seekbar_min">1</string>
+    <string name="seekbar_max">5</string>
+    <string name="how_many">How many?</string>
+    <string name="select_number_instr_1">Please select how many</string>
+    <string name="select_number_instr_2">you want to add under this title.</string>
 </resources>

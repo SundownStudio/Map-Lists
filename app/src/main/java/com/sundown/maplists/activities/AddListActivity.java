@@ -25,7 +25,9 @@ import com.sundown.maplists.dialogs.SelectNumberDialogFragment;
 import com.sundown.maplists.fragments.AddListFragment;
 import com.sundown.maplists.fragments.ManageSchemasFragment;
 import com.sundown.maplists.logging.Log;
+import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
+import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.LocationListFactory;
 import com.sundown.maplists.models.SchemaList;
@@ -51,10 +53,11 @@ import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
  * Created by Sundown on 8/18/2015.
  */
 public class AddListActivity extends AppCompatActivity implements AddFieldView.FieldSelector, AddSchemaDialogFragment.AddSchemaListener,
-        ActionDialogFragment.ConfirmActionListener{
+        ActionDialogFragment.ConfirmActionListener, SelectNumberDialogFragment.SelectNumberListener {
 
     private static final String FRAGMENT_ADD_LIST = "ADD_LIST";
     private static final String FRAGMENT_ADD_FIELD = "ADD_FIELD";
+    private static final String FRAGMENT_SELECT_NUMBER = "SELECT_NUMBER";
     private static final String FRAGMENT_ADD_SCHEMA = "ADD_SCHEMA";
     private static final String FRAGMENT_ACTION= "ACTION";
     private static final String FRAGMENT_MANAGE_SCHEMAS = "MANAGE_SCHEMAS";
@@ -82,7 +85,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
     private Operation operation;
     private LocationList model;
+    private Field newField;
     private boolean saveUpdate;
+
 
     /** our list of saved schemas */
     private ArrayList<SchemaList> savedSchemaLists;
@@ -128,6 +133,10 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         } else {
             addListFragment = (AddListFragment) fm.findFragmentByTag(FRAGMENT_ADD_LIST);
             addFieldDialogFragment = (AddFieldDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_FIELD);
+            if (addFieldDialogFragment != null){
+                addFieldDialogFragment.setListener(this);
+            }
+            selectNumberDialogFragment = (SelectNumberDialogFragment) fm.findFragmentByTag(FRAGMENT_SELECT_NUMBER);
             addSchemaFragment = (AddSchemaDialogFragment) fm.findFragmentByTag(FRAGMENT_ADD_SCHEMA);
             actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
             manageSchemasFragment = (ManageSchemasFragment) fm.findFragmentByTag(FRAGMENT_MANAGE_SCHEMAS);
@@ -199,7 +208,6 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             }
         });
         invalidateOptionsMenu();
-
 
     }
 
@@ -330,7 +338,34 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     @Override
     public void addNewField(Field field) {
         addFieldDialogFragment.dismiss();
-        addListFragment.addNewField(field);
+        newField = field;
+
+        String fieldTypeName = getPrimaryFieldTypeString(field.getType());
+        if (fieldTypeName != null){
+            selectNumberDialogFragment = SelectNumberDialogFragment.newInstance(fieldTypeName, this);
+            selectNumberDialogFragment.show(fm, FRAGMENT_SELECT_NUMBER);
+
+        } else {
+            addListFragment.addNewField(field);
+        }
+    }
+
+
+    private String getPrimaryFieldTypeString(FieldType type){
+        String[] fieldNames = getResources().getStringArray(R.array.primary_field_names);
+        switch (type){
+            case NAME:
+                return fieldNames[0];
+            case PHONE:
+                return fieldNames[1];
+            case EMAIL:
+                return fieldNames[2];
+            case URL:
+                return fieldNames[6];
+            case PRICE:
+                return fieldNames[7];
+        }
+        return null;
     }
 
     @Override
@@ -350,6 +385,15 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             saveUpdate = false;
             finish();
         }
+    }
+
+    @Override
+    public void numberSelected(int number) {
+        EntryField field = (EntryField) newField;
+        for (int i = 0; i < number; ++i)
+            field.addEntry("");
+
+        addListFragment.addNewField(field);
     }
 
     private class Loader extends ContentLoader {

@@ -32,7 +32,7 @@ public class AddFieldDialogFragment extends DialogFragment {
      * the view listener
      */
     private AddFieldView.FieldSelector listener;
-
+    public void setListener(AddFieldView.FieldSelector listener){ this.listener = listener; }
 
     public static AddFieldDialogFragment newInstance(AddFieldView.FieldSelector listener) {
         AddFieldDialogFragment fragment = new AddFieldDialogFragment();

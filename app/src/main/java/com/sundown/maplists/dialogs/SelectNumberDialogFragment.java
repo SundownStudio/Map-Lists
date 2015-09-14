@@ -16,10 +16,22 @@ import com.sundown.maplists.views.SelectNumberView;
  */
 public class SelectNumberDialogFragment extends DialogFragment {
 
-    private SelectNumberView view;
+    private final static String FIELD_TYPE = "fieldtype";
 
-    public static SelectNumberDialogFragment newInstance(){
-        return new SelectNumberDialogFragment();
+    public interface SelectNumberListener {
+        void numberSelected(int number);
+    }
+
+    private SelectNumberView view;
+    private SelectNumberListener listener;
+
+    public static SelectNumberDialogFragment newInstance(String fieldTypeName, SelectNumberListener listener){
+        SelectNumberDialogFragment fragment = new SelectNumberDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(FIELD_TYPE, fieldTypeName);
+        fragment.setArguments(args);
+        fragment.listener = listener;
+        return fragment;
     }
 
 
@@ -30,13 +42,15 @@ public class SelectNumberDialogFragment extends DialogFragment {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = (SelectNumberView) inflater.inflate(R.layout.dialog_select_number, null);
+        view.init(getArguments().getString(FIELD_TYPE));
 
         builder.setView(view);
-        builder.setTitle("How many?");
+        builder.setTitle(getResources().getString(R.string.how_many));
 
         builder.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                listener.numberSelected(view.getProgress());
                 dialog.dismiss();
 
             }
