@@ -20,12 +20,8 @@ import com.sundown.maplists.models.SecondaryList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 
@@ -101,7 +97,6 @@ public class SecondaryListsView extends RelativeLayout {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.reset();
-            LinkedHashMap<FieldType, LinkedList<EntryField>> map = new LinkedHashMap<>();
             String comment = ""; //if one exists, we will only ever show the first comment, at very bottom of view..
 
 
@@ -122,14 +117,10 @@ public class SecondaryListsView extends RelativeLayout {
                     case EMAIL:
                     case DATE:
                     case TIME:
+                    case DATE_TIME:
                     case URL:
                     case PRICE:{
-                        EntryField entryField = (EntryField) field;
-                        LinkedList<EntryField> entries = map.get(type);
-                        if (entries == null)
-                            entries = new LinkedList<>();
-                        entries.add(entryField);
-                        map.put(type, entries);
+                        drawViews((EntryField) field, holder);
                         break;
                     }
                     case COMMENT:{
@@ -141,94 +132,53 @@ public class SecondaryListsView extends RelativeLayout {
                 }
             }
 
-            Set set = map.entrySet();
-            Iterator i = set.iterator();
-            while(i.hasNext()) {
-                Map.Entry me = (Map.Entry)i.next();
-                FieldType type = (FieldType) me.getKey();
-                LinkedList<EntryField> entryFields = (LinkedList<EntryField>) me.getValue();
-
-                if (type == FieldType.DATE){
-                    LinkedList<EntryField> entryFields2 = map.get(FieldType.TIME);
-                    drawDoubleViews(entryFields, entryFields2, FieldType.DATE, FieldType.TIME, holder);
-
-                } else if (type == FieldType.TIME){
-                    LinkedList<EntryField> entryFields2 = map.get(FieldType.DATE);
-                    drawDoubleViews(entryFields2, entryFields, FieldType.DATE, FieldType.TIME, holder);
-
-                } else {
-                    drawSingleViews(entryFields, type, holder);
-                }
-            }
-
             if (comment.length() > 0) { //lastly draw the comment if one exists
                 drawComment(comment, holder);
             }
         }
 
-        private void drawSingleViews(LinkedList<EntryField> entries, FieldType type, ViewHolder holder){
-            if (entries != null) {
-                boolean addTopMargin = true;
-                while (entries.size() > 0) {
-                    EntryField entryField = entries.pop();
-                    if (entryField.isTitleShown()){
-                        addToSingleView(entryField.getTitle(), type, holder, true, false);
-                        addTopMargin = false;
-                    }
-                    addToSingleView(entryField.getEntry(0), type, holder, false, addTopMargin);
-                    addTopMargin = false;
+        private void drawViews(EntryField entryField, ViewHolder holder){
+            int size = entryField.getNumEntries();
+            if (entryField.isTitleShown()){
+                drawTitleView(entryField.getTitle(), holder);
+            }
+
+            for (int i = 0; i < size; ++i){
+                if (size > i+1) {
+                    drawDoubleView(entryField.getEntry(i), entryField.getEntry(i + 1), entryField.getType(), holder);
+                    i++;
+                } else {
+                    drawSingleView(entryField.getEntry(i), entryField.getType(), holder);
                 }
             }
         }
 
-        private void addToSingleView(String text, FieldType type, ViewHolder holder, boolean asTitle, boolean addTopMargin){
+        private void drawTitleView(String title, ViewHolder holder){
             ListItemSingleView view = holder.getSingleView();
-            if (asTitle){
-                view.initAsTitle(text);
+            view.initAsTitle(title);
+            holder.container.addView(view);
+        }
+
+        private void drawDoubleView(String entry1, String entry2, FieldType type, ViewHolder holder){
+            ListItemDoubleView view = holder.getDoubleView();
+            if (type == FieldType.DATE_TIME){
+                view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2, false);
             } else {
-                view.initAsEntry(imageResources.get(type), text, addTopMargin);
+                view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2, false);
             }
             holder.container.addView(view);
         }
 
 
-        private void drawDoubleViews(LinkedList<EntryField> entries1, LinkedList<EntryField> entries2, FieldType type1, FieldType type2, ViewHolder holder){
-            if (entries1 != null && entries2 != null) {
-                boolean addTopMargin = true;
-                while (entries1.size() > 0 && entries2.size() > 0 && holder.doubleViews.size() > 0) {
-                    EntryField entry1 = entries1.pop();
-                    EntryField entry2 = entries2.pop();
-                    String title1 = "", title2 = "";
-
-                    if (entry1.isTitleShown())
-                        title1 = entry1.getTitle();
-                    if (entry2.isTitleShown())
-                        title2 = entry2.getTitle();
-                    if (title1.length() > 0 || title2.length() > 0) {
-                        addToDoubleView(title1, title2, type1, type2, holder, true, false);
-                        addTopMargin = false;
-                    }
-                    addToDoubleView(entry1.getEntry(0), entry2.getEntry(0), type1, type2, holder, false, addTopMargin);
-                    addTopMargin = false;
-                }
-            }
-            drawSingleViews(entries1, type1, holder);
-            drawSingleViews(entries2, type2, holder);
-        }
-
-        private void addToDoubleView(String text1, String text2, FieldType type1, FieldType type2, ViewHolder holder, boolean asTitle, boolean addTopMargin){
-            ListItemDoubleView view = holder.getDoubleView();
-            if (asTitle){
-                view.initAsTitle(text1, text2);
-            } else {
-                view.initAsEntry(imageResources.get(type1), imageResources.get(type2), text1, text2, addTopMargin);
-            }
+        private void drawSingleView(String entry1, FieldType type, ViewHolder holder){
+            ListItemSingleView view = holder.getSingleView();
+            view.initWithIcon(imageResources.get(type), entry1, false);
             holder.container.addView(view);
         }
 
         private void drawComment(String comment, ViewHolder holder){
             ListItemSingleView view = holder.getSingleView();
-            view.initAsComment(comment);
+            view.initWithoutIcon(comment);
             holder.container.addView(view);
         }
 

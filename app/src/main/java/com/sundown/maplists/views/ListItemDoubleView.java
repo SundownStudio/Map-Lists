@@ -36,18 +36,7 @@ public class ListItemDoubleView extends LinearLayout {
         contentsTwo = (TextView) findViewById(R.id.listItemContentsTwo);
     }
 
-    public void initAsTitle(String textOne, String textTwo){
-        imageOne.setVisibility(GONE);
-        imageTwo.setVisibility(GONE);
-        contentsOne.setTypeface(null, Typeface.BOLD);
-        contentsTwo.setTypeface(null, Typeface.BOLD);
-        contentsOne.setText(textOne);
-        contentsTwo.setText(textTwo);
-        layoutParams.setMargins(10, 20, 10, 0);
-        this.setLayoutParams(layoutParams);
-    }
-
-    public void initAsEntry(int resIdOne, int resIdTwo, String textOne, String textTwo, boolean addTopMargin){
+    public void initWithIcon(int resIdOne, int resIdTwo, String textOne, String textTwo, boolean addTopMargin){
         imageOne.setVisibility(VISIBLE);
         imageTwo.setVisibility(VISIBLE);
         imageOne.setImageResource(resIdOne);

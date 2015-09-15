@@ -56,7 +56,7 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
 
         noImageLoadedText = (TextView) findViewById(R.id.noImageLoadedText);
         locationImage = (ImageView) findViewById(R.id.locationImage);
-        locationImage.setLayerType(View.LAYER_TYPE_SOFTWARE, null); //TADA.. disable hardware acceleration bitmap views so they actually get cleared when you recycle.. if you cant retain instance which we cant in nested frag..
+        locationImage.setLayerType(LAYER_TYPE_SOFTWARE, null); //TADA.. disable hardware acceleration bitmap views so they actually get cleared when you recycle.. if you cant retain instance which we cant in nested frag..
         //this affects SDKs after 3.0 all differently.. unbelievable how there is no documentation on clearing bitmaps in nested fragments on configuration changes..
         progressBar = (ProgressBar) findViewById(R.id.imgProgress);
         imageContainer = (RelativeLayout) findViewById(R.id.imageContainer);
@@ -125,11 +125,11 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
         for (Option x : options) {
             switch (x) {
                 case SHOW_PROGRESS:{
-                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(VISIBLE);
                     break;}
 
                 case CLEAR_PROGRESS:{
-                    progressBar.setVisibility(View.GONE);
+                    progressBar.setVisibility(GONE);
                     break;}
 
                 case NO_IMAGE_LOADED:{
@@ -142,7 +142,7 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
 
                 case CLEAR_CONTAINER:{
                     imageContainer.setBackgroundColor(getResources().getColor(R.color.dialogBackground));
-                    noImageLoadedText.setVisibility(View.GONE);
+                    noImageLoadedText.setVisibility(GONE);
                     break;}
 
                 case NULL_BITMAP:{
@@ -155,7 +155,7 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
 
     private void resetContainer(String text){
         noImageLoadedText.setText(text);
-        noImageLoadedText.setVisibility(View.VISIBLE);
+        noImageLoadedText.setVisibility(VISIBLE);
         imageContainer.setBackgroundColor(getResources().getColor(R.color.colorAccent));
     }
 
@@ -170,10 +170,20 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
         }
     }
 
-
-
-
     public void dispose(){
         locationImage.setImageBitmap(null);
+    }
+
+    public void disableAllButtons(){
+        takePicture.setOnClickListener(null);
+        deletePicture.setOnClickListener(null);
+        loadPicture.setOnClickListener(null);
+        rotatePicture.setOnClickListener(null);
+        removeFragment.setOnClickListener(null);
+        takePicture.setVisibility(GONE);
+        deletePicture.setVisibility(GONE);
+        loadPicture.setVisibility(GONE);
+        rotatePicture.setVisibility(GONE);
+        removeFragment.setVisibility(GONE);
     }
 }

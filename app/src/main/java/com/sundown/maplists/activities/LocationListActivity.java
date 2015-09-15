@@ -59,15 +59,10 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
 
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
-
-        Map<String, Object> properties = db.read(documentId);
-        model =  LocationListFactory.createLocationList(LocationListFactory.SECONDARYLIST, mapId).setProperties(properties);
-
-
         setUpToolBars(getItemName());
 
         if (savedInstanceState == null){
-            locationListFragment = LocationListFragment.newInstance(model);
+            locationListFragment = LocationListFragment.newInstance();
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, locationListFragment, FRAGMENT_LOCATION_LIST);
             transaction.commit();
@@ -80,6 +75,17 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadModel();
+        locationListFragment.setModel(model);
+    }
+
+    private void loadModel(){
+        Map<String, Object> properties = db.read(documentId);
+        model =  LocationListFactory.createLocationList(LocationListFactory.SECONDARYLIST, mapId).setProperties(properties);
+    }
 
     private void setUpToolBars(String itemName){
         LinearLayout toolbarTopLayout = (LinearLayout) findViewById(R.id.toolbar_top_layout);

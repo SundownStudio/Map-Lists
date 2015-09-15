@@ -5,16 +5,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.RatingBar;
 
 import com.sundown.maplists.R;
+import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
+import com.sundown.maplists.models.PhotoField;
+import com.sundown.maplists.views.ListItemDoubleView;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
+import com.sundown.maplists.views.PhotoView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +35,8 @@ public class LocationListFragment extends Fragment {
     private LocationListView view;
     private LocationList model;
     private LinearLayout layout;
-    private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-    private StringBuffer stringBuffer;
+    private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private LayoutInflater inflater;
     private static final Map<FieldType, Integer> imageResources;
     static
@@ -48,17 +52,14 @@ public class LocationListFragment extends Fragment {
     }
 
 
-    public static LocationListFragment newInstance(LocationList model) {
-        LocationListFragment fragment = new LocationListFragment();
-        fragment.model = model;
-        return fragment;
+    public static LocationListFragment newInstance() {
+        return new LocationListFragment();
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        stringBuffer = new StringBuffer();
         setRetainInstance(true);
     }
 
@@ -73,7 +74,6 @@ public class LocationListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         setUserVisibleHint(true);
-        initLayout();
     }
 
     @Override
@@ -82,6 +82,10 @@ public class LocationListFragment extends Fragment {
         setUserVisibleHint(false);
     }
 
+    public void setModel(LocationList model){
+        this.model = model;
+        initLayout();
+    }
 
     private void initLayout(){
 
@@ -116,59 +120,29 @@ public class LocationListFragment extends Fragment {
             case EMAIL:
             case DATE:
             case TIME:
+            case DATE_TIME:
             case URL:
             case PRICE: {
-                EntryField entryField = (EntryField) field;
-                ListItemSingleView v1 = (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
-                ListItemSingleView v2 = (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
-                v1.initAsTitle(entryField.getTitle());
-                v2.initAsEntry(imageResources.get(type), entryField.getEntry(0), false); //just showing first for now.. change when we redo this..
-                layout.addView(v1);
-                layout.addView(v2);
+                drawViewsWithIcons((EntryField) field);
                 break;
             }
 
-        }
-    }
-
-
-
-
-
-
-    private void addTitleView(Field field){
-        String title = field.getTitle();
-        if (title != null && title.length() > 0) {
-            TextView titleView = new TextView(getActivity());
-            titleView.setText(field.getTitle());
-            layout.addView(titleView);
-        }
-
-    }
-
-/*
-    public void addComponentView(Field field) {
-
-        View view;
-
-        switch (field.getType()) {
-            case PHOTO:
-                view = new ImageView(getActivity());
-                break;
-
             case RATING: {
-                EntryField entry = (EntryField) field;
+                EntryField entryField = (EntryField) field;
                 RatingBar bar = new RatingBar(getActivity());
                 bar.setNumStars(5);
                 bar.setEnabled(false);
-                if (entry.entry != null) {
+                drawTitleView(entryField.getTitle());
+                String entry = entryField.getEntry(0);
+                if (entry != null) {
                     try {
-                        bar.setRating(Float.parseFloat(entry.entry));
+                        bar.setRating(Float.parseFloat(entry));
                     } catch (Exception e) {
                         Log.e(e);
                     }
                 }
-                view = bar;
+                bar.setLayoutParams(layoutWrapWidth);
+                layout.addView(bar);
                 break;
             }
 
@@ -176,45 +150,81 @@ public class LocationListFragment extends Fragment {
                 EntryField entryField = (EntryField) field;
                 CheckBox checkBox = new CheckBox(getActivity());
                 checkBox.setEnabled(false);
-                if (entryField.entry != null) {
+                drawTitleView(entryField.getTitle());
+                String entry = entryField.getEntry(0);
+                if (entry != null) {
                     try {
-                        checkBox.setChecked(entryField.entry.equals("1"));
+                        checkBox.setChecked(entry.equals("1"));
                     } catch (Exception e) {
                         Log.e(e);
                     }
                 }
-                view = checkBox;
+                checkBox.setLayoutParams(layoutFillWidth);
+                layout.addView(checkBox);
                 break;
             }
 
-            default:{
+            case PHOTO: {
+                PhotoField photoField = (PhotoField) field;
+                photoField.loadBitmaps(model.getDocumentId());
+                PhotoView photoView = (PhotoView)inflater.inflate(R.layout.photo_container, layout, false);
+                photoView.setBitmap(photoField.getImageBitmap());
+                photoView.disableAllButtons();
+                layout.addView(photoView);
+                break;
+            }
+
+            default: {
                 EntryField entryField = (EntryField) field;
-                TextView v = new TextView(getActivity());
-                stringBuffer.setLength(0);
-
-                String title = field.getTitle();
-                if (title != null && title.length() > 0) {
-                    stringBuffer.append(title);
-                    stringBuffer.append(": ");
-                }
-
-                if (entryField.entry != null){
-                    stringBuffer.append(entryField.entry);
-                    v.setText(stringBuffer.toString());
-                }
-                view = v;
-                break;
+                drawTitleView(entryField.getTitle());
+                drawSingleView(entryField.getEntry(0), type, false);
             }
         }
+    }
 
-        if (field.getType() == FieldType.RATING){
-            view.setLayoutParams(layoutWrapWidth);
-        } else {
-            view.setLayoutParams(layoutFillWidth);
+    private void drawViewsWithIcons(EntryField entryField){
+        int size = entryField.getNumEntries();
+        drawTitleView(entryField.getTitle());
+        for (int i = 0; i < size; ++i){
+            if (size > i+1) {
+                drawDoubleView(entryField.getEntry(i), entryField.getEntry(i + 1), entryField.getType());
+                i++;
+            } else {
+                drawSingleView(entryField.getEntry(i), entryField.getType(), true);
+            }
         }
+    }
 
+    private void drawTitleView(String title){
+        ListItemSingleView view = getSingleView();
+        view.initAsTitle(title);
         layout.addView(view);
+    }
 
-    }*/
+
+    private void drawDoubleView(String entry1, String entry2, FieldType type){
+        ListItemDoubleView view = (ListItemDoubleView)inflater.inflate(R.layout.list_item_double_view, layout, false);
+        if (type == FieldType.DATE_TIME){
+            view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2, false);
+        } else {
+            view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2, false);
+        }
+        layout.addView(view);
+    }
+
+
+    private void drawSingleView(String entry1, FieldType type, boolean drawWithIcon){
+        ListItemSingleView view = getSingleView();
+        if (drawWithIcon) {
+            view.initWithIcon(imageResources.get(type), entry1, false);
+        } else {
+            view.initWithoutIcon(entry1);
+        }
+        layout.addView(view);
+    }
+
+    private ListItemSingleView getSingleView(){
+        return  (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
+    }
 
 }

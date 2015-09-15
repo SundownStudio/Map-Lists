@@ -218,6 +218,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
                 case EMAIL:
                 case DATE:
                 case TIME:
+                case DATE_TIME:
                 case URL:
                 case PRICE: {
                     return true;

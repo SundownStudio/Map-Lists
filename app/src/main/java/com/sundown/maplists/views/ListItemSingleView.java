@@ -40,7 +40,7 @@ public class ListItemSingleView extends LinearLayout{
         this.setLayoutParams(layoutParams);
     }
 
-    public void initAsEntry(int resId, String text, boolean addTopMargin){
+    public void initWithIcon(int resId, String text, boolean addTopMargin){
         image.setVisibility(VISIBLE);
         image.setImageResource(resId);
         contents.setTypeface(null, Typeface.NORMAL);
@@ -52,11 +52,11 @@ public class ListItemSingleView extends LinearLayout{
         this.setLayoutParams(layoutParams);
     }
 
-    public void initAsComment(String comment){
+    public void initWithoutIcon(String text){
         image.setVisibility(GONE);
         contents.setTypeface(null, Typeface.NORMAL);
-        contents.setText(comment);
-        layoutParams.setMargins(10, 20, 10,0);
+        contents.setText(text);
+        layoutParams.setMargins(10, 0, 10,0);
         this.setLayoutParams(layoutParams);
     }
 }
