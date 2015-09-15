@@ -175,7 +175,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
         int size = entry.getNumEntries();
 
         for (int i = 0; i < size; ++i){
-            EditText v = createEditText(entry.getType());
+            EditText v = createEditText(entry.getType(), i);
             String hint = entry.getEntry(i);
             if (hint != null && hint.length() > 0)
                 v.setHint(hint);
@@ -184,7 +184,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
         }
     }
 
-    private EditText createEditText(FieldType type){
+    private EditText createEditText(FieldType type, int iteration){
         EditText v = new EditText(context);
         v.setTag(EDIT);
         v.setFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_ENTRY_CHARS)});
@@ -200,6 +200,13 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 break;
             case TIME:
                 v.setHint(timeFormat.format(new Date()));
+                break;
+            case DATE_TIME:
+                if (iteration == 0){
+                    v.setHint(dateFormat.format(new Date()));
+                } else {
+                    v.setHint(timeFormat.format(new Date()));
+                }
                 break;
             case PHONE:
                 v.setInputType(InputType.TYPE_CLASS_PHONE);

@@ -16,6 +16,10 @@ public class FieldFactory {
                 field = new PhotoField(title, permanent, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance());
                 break;
 
+            case DATE_TIME:
+                field = new EntryField(title, entry, type, permanent).addEntry("");
+                break;
+
             default:
                 field = new EntryField(title, entry, type, permanent);
                 break;

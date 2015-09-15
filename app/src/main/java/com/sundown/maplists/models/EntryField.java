@@ -30,8 +30,9 @@ public class EntryField extends Field {
         return entries.get(element);
     }
 
-    public void addEntry(String entry){
+    public EntryField addEntry(String entry){
         entries.add(entry);
+        return this;
     }
 
     public void clearEntries(){ entries.clear(); }
