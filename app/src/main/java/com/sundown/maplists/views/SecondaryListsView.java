@@ -17,6 +17,7 @@ import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.SecondaryList;
+import com.sundown.maplists.utils.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -162,9 +163,14 @@ public class SecondaryListsView extends RelativeLayout {
         private void drawDoubleView(String entry1, String entry2, FieldType type, ViewHolder holder){
             ListItemDoubleView view = holder.getDoubleView();
             if (type == FieldType.DATE_TIME){
-                view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2, false);
+                view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2);
+            } else if (type == FieldType.PRICE){
+                entry1 = ColorUtils.determineColorText(entry1);
+                entry2 = ColorUtils.determineColorText(entry2);
+                view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
+
             } else {
-                view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2, false);
+                view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
             }
             holder.container.addView(view);
         }
@@ -172,7 +178,7 @@ public class SecondaryListsView extends RelativeLayout {
 
         private void drawSingleView(String entry1, FieldType type, ViewHolder holder){
             ListItemSingleView view = holder.getSingleView();
-            view.initWithIcon(imageResources.get(type), entry1, false);
+            view.initWithIcon(imageResources.get(type), entry1);
             holder.container.addView(view);
         }
 

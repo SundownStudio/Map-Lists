@@ -16,6 +16,7 @@ import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.PhotoField;
+import com.sundown.maplists.utils.ColorUtils;
 import com.sundown.maplists.views.ListItemDoubleView;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
@@ -204,10 +205,15 @@ public class LocationListFragment extends Fragment {
 
     private void drawDoubleView(String entry1, String entry2, FieldType type){
         ListItemDoubleView view = (ListItemDoubleView)inflater.inflate(R.layout.list_item_double_view, layout, false);
-        if (type == FieldType.DATE_TIME){
-            view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2, false);
+        if (type == FieldType.DATE_TIME) {
+            view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2);
+        } else if (type == FieldType.PRICE){
+            entry1 = ColorUtils.determineColorText(entry1);
+            entry2 = ColorUtils.determineColorText(entry2);
+            view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
+
         } else {
-            view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2, false);
+            view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
         }
         layout.addView(view);
     }
@@ -216,7 +222,7 @@ public class LocationListFragment extends Fragment {
     private void drawSingleView(String entry1, FieldType type, boolean drawWithIcon){
         ListItemSingleView view = getSingleView();
         if (drawWithIcon) {
-            view.initWithIcon(imageResources.get(type), entry1, false);
+            view.initWithIcon(imageResources.get(type), entry1);
         } else {
             view.initWithoutIcon(entry1);
         }

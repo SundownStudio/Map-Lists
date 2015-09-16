@@ -2,6 +2,7 @@ package com.sundown.maplists.views;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -36,19 +37,16 @@ public class ListItemDoubleView extends LinearLayout {
         contentsTwo = (TextView) findViewById(R.id.listItemContentsTwo);
     }
 
-    public void initWithIcon(int resIdOne, int resIdTwo, String textOne, String textTwo, boolean addTopMargin){
+    public void initWithIcon(int resIdOne, int resIdTwo, String textOne, String textTwo){
         imageOne.setVisibility(VISIBLE);
         imageTwo.setVisibility(VISIBLE);
         imageOne.setImageResource(resIdOne);
         imageTwo.setImageResource(resIdTwo);
         contentsOne.setTypeface(null, Typeface.NORMAL);
         contentsTwo.setTypeface(null, Typeface.NORMAL);
-        contentsOne.setText(textOne);
-        contentsTwo.setText(textTwo);
-        if (addTopMargin)
-            layoutParams.setMargins(20, 20, 20, 0);
-        else
-            layoutParams.setMargins(20, 0, 20, 0);
+        contentsOne.setText(Html.fromHtml(textOne));
+        contentsTwo.setText(Html.fromHtml(textTwo));
+        layoutParams.setMargins(20, 0, 20, 0);
         this.setLayoutParams(layoutParams);
     }
 

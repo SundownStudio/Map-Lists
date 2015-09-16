@@ -67,8 +67,6 @@ public class SecondaryListsFragment extends Fragment {
         super.onResume();
         setUserVisibleHint(true);
         getActivity().invalidateOptionsMenu();
-
-
     }
 
     @Override
