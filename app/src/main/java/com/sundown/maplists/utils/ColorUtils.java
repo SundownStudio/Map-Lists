@@ -35,15 +35,4 @@ public class ColorUtils {
         drawable.draw(canvas);
         return bitmap;
     }
-
-    public static String determineColorText(String entry){
-        if (entry.length() > 0){
-            if (entry.substring(0, 1).equals("+")){
-                entry = "<font color='#14CD05'>" + entry + "</font>";
-            } else if (entry.substring(0, 1).equals("-")){
-                entry = "<font color='#CC0000'>" + entry + "</font>";
-            }
-        }
-        return entry;
-    }
 }

@@ -17,7 +17,7 @@ import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.SecondaryList;
-import com.sundown.maplists.utils.ColorUtils;
+import com.sundown.maplists.utils.HtmlUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,8 +98,6 @@ public class SecondaryListsView extends RelativeLayout {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.reset();
-            String comment = ""; //if one exists, we will only ever show the first comment, at very bottom of view..
-
 
             SecondaryList locationItem = locationItems.get(position);
             List<Field> fields = locationItem.getFields();
@@ -120,21 +118,13 @@ public class SecondaryListsView extends RelativeLayout {
                     case TIME:
                     case DATE_TIME:
                     case URL:
-                    case PRICE:{
+                    case PRICE:
+                    case MESSAGE:
+                    case LIST_ITEMS:{
                         drawViews((EntryField) field, holder);
                         break;
                     }
-                    case COMMENT:{
-                        if (comment.length() == 0){ //only take first comment for display
-                            EntryField entryField = (EntryField) field;
-                            comment = entryField.getEntry(0);
-                        }
-                    }
                 }
-            }
-
-            if (comment.length() > 0) { //lastly draw the comment if one exists
-                drawComment(comment, holder);
             }
         }
 
@@ -144,12 +134,22 @@ public class SecondaryListsView extends RelativeLayout {
                 drawTitleView(entryField.getTitle(), holder);
             }
 
-            for (int i = 0; i < size; ++i){
-                if (size > i+1) {
-                    drawDoubleView(entryField.getEntry(i), entryField.getEntry(i + 1), entryField.getType(), holder);
-                    i++;
-                } else {
+            if (entryField.getType() == FieldType.MESSAGE) {
+                for (int i = 0; i < size; ++i) {
                     drawSingleView(entryField.getEntry(i), entryField.getType(), holder);
+                }
+            } else if (entryField.getType() == FieldType.LIST_ITEMS){
+                for (int i = 0; i < size; ++i) {
+                    drawSingleView(HtmlUtils.getListItemHtml(entryField.getEntry(i)), entryField.getType(), holder);
+                }
+            } else {
+                for (int i = 0; i < size; ++i) {
+                    if (size > i + 1) {
+                        drawDoubleView(entryField.getEntry(i), entryField.getEntry(i + 1), entryField.getType(), holder);
+                        i++;
+                    } else {
+                        drawSingleView(entryField.getEntry(i), entryField.getType(), holder);
+                    }
                 }
             }
         }
@@ -160,13 +160,13 @@ public class SecondaryListsView extends RelativeLayout {
             holder.container.addView(view);
         }
 
-        private void drawDoubleView(String entry1, String entry2, FieldType type, ViewHolder holder){
+        private void drawDoubleView(String entry1, String entry2, FieldType type, ViewHolder holder) {
             ListItemDoubleView view = holder.getDoubleView();
             if (type == FieldType.DATE_TIME){
                 view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2);
             } else if (type == FieldType.PRICE){
-                entry1 = ColorUtils.determineColorText(entry1);
-                entry2 = ColorUtils.determineColorText(entry2);
+                entry1 = HtmlUtils.determineColorHtml(entry1);
+                entry2 = HtmlUtils.determineColorHtml(entry2);
                 view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
 
             } else {
@@ -178,15 +178,15 @@ public class SecondaryListsView extends RelativeLayout {
 
         private void drawSingleView(String entry1, FieldType type, ViewHolder holder){
             ListItemSingleView view = holder.getSingleView();
-            view.initWithIcon(imageResources.get(type), entry1);
+            if (type == FieldType.MESSAGE || type == FieldType.LIST_ITEMS){
+                view.initWithoutIcon(entry1);
+            } else {
+                view.initWithIcon(imageResources.get(type), entry1);
+            }
             holder.container.addView(view);
         }
 
-        private void drawComment(String comment, ViewHolder holder){
-            ListItemSingleView view = holder.getSingleView();
-            view.initWithoutIcon(comment);
-            holder.container.addView(view);
-        }
+
 
         @Override
         public int getItemCount() {

@@ -56,8 +56,8 @@
     <string name="couldnt_load_image">Could not load image</string>
     <string name="photo">Photo</string>
 
-    <!-- see AddListActivity isPrimaryField() if altering this list -->
-    <string-array name="primary_field_names">
+    <!-- see AddListActivity getPrimaryFieldTypeString() if altering this list -->
+    <string-array name="all_field_names">
         <item>Name</item>
         <item>Phone Number</item>
         <item>Email</item>
@@ -66,12 +66,10 @@
         <item>Date and Time</item>
         <item>URL</item>
         <item>Price</item>
-    </string-array>
-
-    <string-array name="secondary_field_names">
         <item>Photo</item>
+        <item>List-Item</item>
         <item>Text</item>
-        <item>Comment</item>
+        <item>Message</item>
         <item>Number</item>
         <item>Decimal</item>
         <item>Dropdown</item>
@@ -98,6 +96,7 @@
 
     <array name="secondary_field_images">
         <item>@drawable/ic_photo</item>
+        <item>@drawable/ic_list_black_24dp</item>
         <item>@drawable/ic_text</item>
         <item>@drawable/ic_comment</item>
         <item>@drawable/ic_number</item>
@@ -133,7 +132,8 @@
     <string name="remove_list">Remove List</string>
 
     <string name="seekbar_min">1</string>
-    <string name="seekbar_max">5</string>
+    <string name="seekbar_max_regular">5</string>
+    <string name="seekbar_max_list_items">10</string>
     <string name="how_many">How many?</string>
     <string name="select_number_instr_1">Please select how many</string>
     <string name="select_number_instr_2">you want to add under this title.</string>

@@ -342,7 +342,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
         String fieldTypeName = getPrimaryFieldTypeString(field.getType());
         if (fieldTypeName != null){
-            selectNumberDialogFragment = SelectNumberDialogFragment.newInstance(fieldTypeName, this);
+            selectNumberDialogFragment = SelectNumberDialogFragment.newInstance(fieldTypeName, field.getType(), this);
             selectNumberDialogFragment.show(fm, FRAGMENT_SELECT_NUMBER);
 
         } else {
@@ -352,7 +352,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
 
     private String getPrimaryFieldTypeString(FieldType type){
-        String[] fieldNames = getResources().getStringArray(R.array.primary_field_names);
+        String[] fieldNames = getResources().getStringArray(R.array.all_field_names);
         switch (type){
             case NAME:
                 return fieldNames[0];
@@ -364,6 +364,8 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
                 return fieldNames[6];
             case PRICE:
                 return fieldNames[7];
+            case LIST_ITEMS:
+                return fieldNames[9];
         }
         return null;
     }

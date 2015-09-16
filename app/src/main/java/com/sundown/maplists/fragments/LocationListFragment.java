@@ -16,7 +16,7 @@ import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.utils.ColorUtils;
+import com.sundown.maplists.utils.HtmlUtils;
 import com.sundown.maplists.views.ListItemDoubleView;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
@@ -176,22 +176,35 @@ public class LocationListFragment extends Fragment {
             }
 
             default: {
-                EntryField entryField = (EntryField) field;
-                drawTitleView(entryField.getTitle());
-                drawSingleView(entryField.getEntry(0), type, false);
+                drawViewsWithoutIcons((EntryField) field);
             }
         }
     }
 
     private void drawViewsWithIcons(EntryField entryField){
-        int size = entryField.getNumEntries();
         drawTitleView(entryField.getTitle());
+        int size = entryField.getNumEntries();
         for (int i = 0; i < size; ++i){
             if (size > i+1) {
                 drawDoubleView(entryField.getEntry(i), entryField.getEntry(i + 1), entryField.getType());
                 i++;
             } else {
                 drawSingleView(entryField.getEntry(i), entryField.getType(), true);
+            }
+        }
+    }
+
+    private void drawViewsWithoutIcons(EntryField entryField){
+        drawTitleView(entryField.getTitle());
+        int size = entryField.getNumEntries();
+        FieldType type = entryField.getType();
+        if (type == FieldType.LIST_ITEMS){
+            for (int i = 0; i < size; ++i){
+                drawSingleView(HtmlUtils.getListItemHtml(entryField.getEntry(i)), type, false);
+            }
+        } else {
+            for (int i = 0; i < size; ++i){
+                drawSingleView(entryField.getEntry(i), type, false);
             }
         }
     }
@@ -208,8 +221,8 @@ public class LocationListFragment extends Fragment {
         if (type == FieldType.DATE_TIME) {
             view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2);
         } else if (type == FieldType.PRICE){
-            entry1 = ColorUtils.determineColorText(entry1);
-            entry2 = ColorUtils.determineColorText(entry2);
+            entry1 = HtmlUtils.determineColorHtml(entry1);
+            entry2 = HtmlUtils.determineColorHtml(entry2);
             view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
 
         } else {

@@ -75,7 +75,6 @@ public class AddFieldDialogFragment extends DialogFragment {
         });
 
         return builder.create();
-
     }
 
 
@@ -92,7 +91,7 @@ public class AddFieldDialogFragment extends DialogFragment {
      */
     private void generateList() {
         list = new ArrayList<>();
-        String[] fieldNames = concatStringArrays(getResources().getStringArray(R.array.primary_field_names), getResources().getStringArray(R.array.secondary_field_names));
+        String[] fieldNames = getResources().getStringArray(R.array.all_field_names);
         int len = fieldNames.length;
         FieldType[] types = FieldType.values();
         for (int i = 0; i < len; ++i) {
@@ -107,13 +106,4 @@ public class AddFieldDialogFragment extends DialogFragment {
         }
         typedArray.recycle();
     }
-
-    private String[] concatStringArrays(String[] a, String[] b) {
-        final String[] result = new String[a.length + b.length];
-        System.arraycopy(a, 0, result, 0, a.length);
-        System.arraycopy(b, 0, result, a.length, b.length);
-        return result;
-    }
-
-
 }

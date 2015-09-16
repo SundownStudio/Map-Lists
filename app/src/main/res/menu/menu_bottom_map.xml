@@ -10,12 +10,10 @@
 
         <item
             android:id="@+id/action_secondary_lists"
-            android:icon="@drawable/ic_list_black_24dp"
+            android:icon="@drawable/ic_clipboard"
             android:orderInCategory="200"
             android:title="@string/secondary_lists"
             app:showAsAction="always" />
-
-
     </group>
 
     <group

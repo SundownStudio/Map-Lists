@@ -1,7 +1,6 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -71,13 +70,12 @@ public class SelectNumberView extends RelativeLayout {
 
     }
 
-    public void init(String type){
+    public void init(String type, int myMax){
         this.type = type;
-        Resources resources = getResources();
-        seekBarIntroText.setText(resources.getString(R.string.select_number_instr_1) + " " + type + "s " + resources.getString(R.string.select_number_instr_2));
-        max = Integer.parseInt(resources.getString(R.string.seekbar_max)) - 1;
-        seekBarMinText.setText(resources.getString(R.string.seekbar_min));
-        seekBarMaxText.setText(resources.getString(R.string.seekbar_max));
+        seekBarIntroText.setText(getResources().getString(R.string.select_number_instr_1) + " " + type + "s " + getResources().getString(R.string.select_number_instr_2));
+        seekBarMinText.setText(getResources().getString(R.string.seekbar_min));
+        seekBarMaxText.setText(myMax +"");
+        this.max = myMax - 1;
         seekBar.setMax(max);
         setSeekBarNumberText(0);
 

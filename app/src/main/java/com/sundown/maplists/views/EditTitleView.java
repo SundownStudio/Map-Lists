@@ -35,7 +35,16 @@ public class EditTitleView extends LinearLayout {
         editTitleText.setHint(title);
     }
 
-    public String getTitle(){ return String.valueOf(editTitleText.getText()); }
+    public String getTitle(){
+        String text = editTitleText.getText().toString();
+        if (text.length() == 0){
+            //nothing was entered..
+            if (editTitleText.getHint() != null) {
+                text = editTitleText.getHint().toString();
+            }
+        }
+        return text.trim();
+    }
 
     public boolean getChecked() { return checkBox.isChecked();}
 
