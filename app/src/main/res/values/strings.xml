@@ -67,7 +67,8 @@
         <item>URL</item>
         <item>Price</item>
         <item>Photo</item>
-        <item>List-Item</item>
+        <item>Item-List</item>
+        <item>Price-List</item>
         <item>Text</item>
         <item>Message</item>
         <item>Number</item>
@@ -97,6 +98,7 @@
     <array name="secondary_field_images">
         <item>@drawable/ic_photo</item>
         <item>@drawable/ic_list_black_24dp</item>
+        <item>@drawable/ic_debt_add</item>
         <item>@drawable/ic_text</item>
         <item>@drawable/ic_comment</item>
         <item>@drawable/ic_number</item>

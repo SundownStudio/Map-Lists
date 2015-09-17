@@ -201,7 +201,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
                     int numEntries = entryField.getNumEntries();
                     entryField.clearEntries();
                     for (int j = 0; j < numEntries; ++j)
-                        entryField.addEntry(fieldView.getEntry(j));
+                        entryField.addEntry(fieldView.getEntryFromChildView(j));
                 }
             } catch (NullPointerException e){
                 Log.e(e);
@@ -222,7 +222,8 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
                 case URL:
                 case PRICE:
                 case MESSAGE:
-                case LIST_ITEMS:{
+                case ITEM_LIST:
+                case PRICE_LIST:{
                     return true;
                 }
             }

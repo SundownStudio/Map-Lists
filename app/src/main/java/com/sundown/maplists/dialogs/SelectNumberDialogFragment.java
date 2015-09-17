@@ -46,7 +46,7 @@ public class SelectNumberDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         int max = Integer.parseInt(getResources().getString(R.string.seekbar_max_regular));
-        if (type == FieldType.LIST_ITEMS)
+        if (type == FieldType.ITEM_LIST || type == FieldType.PRICE_LIST)
             max = Integer.parseInt(getResources().getString(R.string.seekbar_max_list_items));
 
         view = (SelectNumberView) inflater.inflate(R.layout.dialog_select_number, null);

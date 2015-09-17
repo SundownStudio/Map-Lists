@@ -364,8 +364,14 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
                 return fieldNames[6];
             case PRICE:
                 return fieldNames[7];
-            case LIST_ITEMS:
-                return fieldNames[9];
+            case ITEM_LIST: {
+                String name = fieldNames[9];
+                return name.substring(0, name.lastIndexOf("-"));
+            }
+            case PRICE_LIST:{
+                String name = fieldNames[10];
+                return name.substring(0, name.lastIndexOf("-"));
+            }
         }
         return null;
     }
@@ -392,9 +398,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     @Override
     public void numberSelected(int number) {
         EntryField field = (EntryField) newField;
-        for (int i = 0; i < number; ++i)
-            field.addEntry("");
-
+        field.addAdditionalBlankEntries(number);
         addListFragment.addNewField(field);
     }
 

@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
+import com.sundown.maplists.utils.ViewUtils;
 
 /**
  * Created by Sundown on 7/7/2015.
@@ -36,14 +37,7 @@ public class EditTitleView extends LinearLayout {
     }
 
     public String getTitle(){
-        String text = editTitleText.getText().toString();
-        if (text.length() == 0){
-            //nothing was entered..
-            if (editTitleText.getHint() != null) {
-                text = editTitleText.getHint().toString();
-            }
-        }
-        return text.trim();
+        return ViewUtils.getStringFromEditText(editTitleText);
     }
 
     public boolean getChecked() { return checkBox.isChecked();}

@@ -5,7 +5,7 @@ package com.sundown.maplists.models;
  */
 public enum FieldType {
     NAME, PHONE, EMAIL, DATE, TIME, DATE_TIME,
-    URL, PRICE, PHOTO, LIST_ITEMS, TEXT, MESSAGE,
+    URL, PRICE, PHOTO, ITEM_LIST, PRICE_LIST, TEXT, MESSAGE,
     NUMBER, DECIMAL, DROPDOWN,  CHECKBOX,  RATING, SUBJECT
 
 }

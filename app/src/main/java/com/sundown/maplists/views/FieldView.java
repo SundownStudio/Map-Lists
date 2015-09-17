@@ -19,9 +19,12 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
+import com.sundown.maplists.utils.ViewUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -40,11 +43,12 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static SimpleDateFormat dateFormat = new SimpleDateFormat("MM'/'dd");
     private final static SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm:ss a");
-    public static final String PHOTO = "P";
-    public static final String EDIT = "E";
-    public static final String SPINNER = "S";
-    public static final String CHECKBOX = "C";
-    public static final String RATING = "R";
+    private static final String PHOTO = "P";
+    private static final String EDIT = "E";
+    private static final String SPINNER = "S";
+    private static final String CHECKBOX = "C";
+    private static final String RATING = "R";
+    private static final String DOUBLE_VIEW = "D";
     private static final int MAX_ENTRY_CHARS = 1000;
     private FieldViewListener listener;
 
@@ -126,8 +130,13 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
             case CHECKBOX:
                 addCheckBox(field);
                 break;
+            case ITEM_LIST:
+            case PRICE_LIST:{
+                addDoubleEditTextViews(field);
+                break;
+            }
             default:
-                addEntryViews(field);
+                addSingleEditTextViews(field);
                 break;
         }
     }
@@ -170,7 +179,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
     }
 
 
-    private void addEntryViews(Field field){
+    private void addSingleEditTextViews(Field field){
         EntryField entry = (EntryField) field;
         int size = entry.getNumEntries();
 
@@ -181,6 +190,24 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 v.setHint(hint);
             v.setLayoutParams(layoutFillWidth);
             fieldEntryContainer.addView(v);
+        }
+    }
+
+    private void addDoubleEditTextViews(Field field){
+        EntryField entry = (EntryField) field;
+        int size = entry.getNumEntries();
+
+        for (int i = 0; i < size; ++i){
+            if (i+1 < size) {
+                DoubleEditView v = (DoubleEditView) inflate(getContext(), R.layout.double_edit_view, null);
+                v.setTag(DOUBLE_VIEW);
+
+                String hint = entry.getEntry(i);
+                if (hint != null && hint.length() > 0) v.setHint(1, hint);
+                hint = entry.getEntry(++i); //note the increment
+                if (hint != null && hint.length() > 0) v.setHint(2, hint);
+                fieldEntryContainer.addView(v);
+            }
         }
     }
 
@@ -250,38 +277,36 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
             fieldTitle.setText(title);
     }
 
-    public String getEntry(int element){
+    public List<String> getEntryFromChildView(int element){
         View child = getChild(element);
         String tag = String.valueOf(child.getTag());
-        String text = "";
+        List<String> list = new LinkedList();
 
         switch(tag){
             case PHOTO:
                 return null;
 
-            case RATING:
-                RatingBar b = (RatingBar)child;
-                return String.valueOf(b.getRating());
+            case RATING: {
+                list.add(ViewUtils.getStringFromRatingBar((RatingBar) child));
+                break;
+            }
 
-            case EDIT:
-                EditText e = (EditText)child;
-                text = e.getText().toString();
-                if (text.length() == 0){
-                    //nothing was entered..
-                    if (e.getHint() != null) {
-                        text = e.getHint().toString();
-                    }
-                }
-                return text.trim();
+            case EDIT: {
+                list.add(ViewUtils.getStringFromEditText((EditText) child));
+                break;
+            }
 
-            case CHECKBOX:
-                CheckBox box = (CheckBox)child;
-                int x = box.isChecked() ? 1 : 0;
-                return String.valueOf(x);
+            case CHECKBOX: {
+                list.add(ViewUtils.getStringFromCheckBox((CheckBox) child));
+                break;
+            }
 
-            default:
-                return text;
+            case DOUBLE_VIEW: {
+                ViewUtils.getStringsFromDoubleEditView(list, (DoubleEditView) child);
+                break;
+            }
         }
+        return list;
     }
 
 }

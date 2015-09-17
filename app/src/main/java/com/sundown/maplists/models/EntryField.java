@@ -35,7 +35,22 @@ public class EntryField extends Field {
         return this;
     }
 
+    public void addEntry(List<String> list){
+        for (String s: list)
+            entries.add(s);
+    }
+
     public void clearEntries(){ entries.clear(); }
+
+    public void addAdditionalBlankEntries(int num){
+        if (getType() == FieldType.ITEM_LIST || getType() == FieldType.PRICE_LIST) {
+            addEntry("");
+            num *= 2; //even entries left, odd entries right
+        }
+
+        for (int i = 0; i < num; ++i)
+            addEntry("");
+    }
 
     @Override
     public Map<String, Object> getProperties() {

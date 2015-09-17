@@ -120,7 +120,7 @@ public class SecondaryListsView extends RelativeLayout {
                     case URL:
                     case PRICE:
                     case MESSAGE:
-                    case LIST_ITEMS:{
+                    case ITEM_LIST:{
                         drawViews((EntryField) field, holder);
                         break;
                     }
@@ -138,7 +138,7 @@ public class SecondaryListsView extends RelativeLayout {
                 for (int i = 0; i < size; ++i) {
                     drawSingleView(entryField.getEntry(i), entryField.getType(), holder);
                 }
-            } else if (entryField.getType() == FieldType.LIST_ITEMS){
+            } else if (entryField.getType() == FieldType.ITEM_LIST){
                 for (int i = 0; i < size; ++i) {
                     drawSingleView(HtmlUtils.getListItemHtml(entryField.getEntry(i)), entryField.getType(), holder);
                 }
@@ -178,7 +178,7 @@ public class SecondaryListsView extends RelativeLayout {
 
         private void drawSingleView(String entry1, FieldType type, ViewHolder holder){
             ListItemSingleView view = holder.getSingleView();
-            if (type == FieldType.MESSAGE || type == FieldType.LIST_ITEMS){
+            if (type == FieldType.MESSAGE || type == FieldType.ITEM_LIST){
                 view.initWithoutIcon(entry1);
             } else {
                 view.initWithIcon(imageResources.get(type), entry1);

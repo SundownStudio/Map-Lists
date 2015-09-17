@@ -184,8 +184,10 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
 
     @Override
     public void confirmAction(boolean confirmed) {
-        db.delete(model.getDocumentId(), model.getMapId(), Operation.DELETE_LOCATION_LIST);
-        returnActivityResult();
+        if (confirmed) {
+            db.delete(model.getDocumentId(), model.getMapId(), Operation.DELETE_LOCATION_LIST);
+            returnActivityResult();
+        }
     }
 
     private void returnActivityResult(){

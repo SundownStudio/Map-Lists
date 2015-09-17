@@ -198,7 +198,7 @@ public class LocationListFragment extends Fragment {
         drawTitleView(entryField.getTitle());
         int size = entryField.getNumEntries();
         FieldType type = entryField.getType();
-        if (type == FieldType.LIST_ITEMS){
+        if (type == FieldType.ITEM_LIST){
             for (int i = 0; i < size; ++i){
                 drawSingleView(HtmlUtils.getListItemHtml(entryField.getEntry(i)), type, false);
             }
