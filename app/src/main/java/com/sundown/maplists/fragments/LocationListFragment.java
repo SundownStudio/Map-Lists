@@ -17,14 +17,12 @@ import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.utils.HtmlUtils;
-import com.sundown.maplists.views.ListItemDoubleView;
+import com.sundown.maplists.utils.LocationViewManager;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
 import com.sundown.maplists.views.PhotoView;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Sundown on 7/21/2015.
@@ -39,19 +37,7 @@ public class LocationListFragment extends Fragment {
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private LayoutInflater inflater;
-    private static final Map<FieldType, Integer> imageResources;
-    static
-    {
-        imageResources = new HashMap<>();
-        imageResources.put(FieldType.NAME, R.drawable.ic_name);
-        imageResources.put(FieldType.PHONE, R.drawable.ic_phonenumber);
-        imageResources.put(FieldType.EMAIL, R.drawable.ic_email);
-        imageResources.put(FieldType.DATE, R.drawable.ic_date);
-        imageResources.put(FieldType.TIME, R.drawable.ic_time);
-        imageResources.put(FieldType.URL, R.drawable.ic_url);
-        imageResources.put(FieldType.PRICE, R.drawable.ic_price);
-    }
-
+    private LocationViewManager locationViewManager;
 
     public static LocationListFragment newInstance() {
         return new LocationListFragment();
@@ -89,6 +75,7 @@ public class LocationListFragment extends Fragment {
     }
 
     private void initLayout(){
+        locationViewManager = LocationViewManager.getInstance().reset(getContext());
 
         if (layout != null)
             layout.removeAllViews();
@@ -124,7 +111,27 @@ public class LocationListFragment extends Fragment {
             case DATE_TIME:
             case URL:
             case PRICE: {
-                drawViewsWithIcons((EntryField) field);
+                EntryField entryField = (EntryField) field;
+                addTitleView(entryField);
+
+                int size = entryField.getNumEntries();
+                for (int i = 0; i < size; ++i) {
+                    if (size > i + 1) {
+
+                        if (type == FieldType.DATE_TIME){
+                            layout.addView(locationViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
+                        } else if (type == FieldType.PRICE){
+                            layout.addView(locationViewManager.drawDoubleView(type, type, HtmlUtils.determineColorHtml(entryField.getEntry(i)), HtmlUtils.determineColorHtml(entryField.getEntry(++i))));
+
+                        } else {
+                            layout.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
+                        }
+
+                    } else {
+                        ListItemSingleView view = locationViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
+                        layout.addView(view);
+                    }
+                }
                 break;
             }
 
@@ -133,7 +140,7 @@ public class LocationListFragment extends Fragment {
                 RatingBar bar = new RatingBar(getActivity());
                 bar.setNumStars(5);
                 bar.setEnabled(false);
-                drawTitleView(entryField.getTitle());
+                addTitleView(entryField);
                 String entry = entryField.getEntry(0);
                 if (entry != null) {
                     try {
@@ -151,7 +158,7 @@ public class LocationListFragment extends Fragment {
                 EntryField entryField = (EntryField) field;
                 CheckBox checkBox = new CheckBox(getActivity());
                 checkBox.setEnabled(false);
-                drawTitleView(entryField.getTitle());
+                addTitleView(entryField);
                 String entry = entryField.getEntry(0);
                 if (entry != null) {
                     try {
@@ -175,75 +182,47 @@ public class LocationListFragment extends Fragment {
                 break;
             }
 
+            case ITEM_LIST:{
+                EntryField entryField = (EntryField) field;
+                addTitleView(entryField);
+                addAllDoubleViews(entryField, null, null);
+                break;
+            }
+
+            case PRICE_LIST:{
+                EntryField entryField = (EntryField) field;
+                addTitleView(entryField);
+                addAllDoubleViews(entryField, null, FieldType.PRICE);
+                break;
+            }
+
             default: {
                 drawViewsWithoutIcons((EntryField) field);
             }
         }
     }
 
-    private void drawViewsWithIcons(EntryField entryField){
-        drawTitleView(entryField.getTitle());
+    private void addTitleView(EntryField entryField){
+        ListItemSingleView v = locationViewManager.drawSingleView(null, entryField.getTitle(), true);
+        layout.addView(v);
+    }
+
+    private void addAllDoubleViews(EntryField entryField, FieldType type1, FieldType type2){
         int size = entryField.getNumEntries();
-        for (int i = 0; i < size; ++i){
-            if (size > i+1) {
-                drawDoubleView(entryField.getEntry(i), entryField.getEntry(i + 1), entryField.getType());
-                i++;
-            } else {
-                drawSingleView(entryField.getEntry(i), entryField.getType(), true);
+        for (int i = 0; i < size; ++i) {
+            if (size > i + 1) {
+                layout.addView(locationViewManager.drawDoubleView(type1, type2, entryField.getEntry(i), entryField.getEntry(++i)));
             }
         }
     }
 
     private void drawViewsWithoutIcons(EntryField entryField){
-        drawTitleView(entryField.getTitle());
+        addTitleView(entryField);
         int size = entryField.getNumEntries();
-        FieldType type = entryField.getType();
-        if (type == FieldType.ITEM_LIST){
-            for (int i = 0; i < size; ++i){
-                drawSingleView(HtmlUtils.getListItemHtml(entryField.getEntry(i)), type, false);
-            }
-        } else {
-            for (int i = 0; i < size; ++i){
-                drawSingleView(entryField.getEntry(i), type, false);
-            }
+        for (int i = 0; i < size; ++i) {
+            ListItemSingleView view = locationViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
+            layout.addView(view);
         }
-    }
-
-    private void drawTitleView(String title){
-        ListItemSingleView view = getSingleView();
-        view.initAsTitle(title);
-        layout.addView(view);
-    }
-
-
-    private void drawDoubleView(String entry1, String entry2, FieldType type){
-        ListItemDoubleView view = (ListItemDoubleView)inflater.inflate(R.layout.list_item_double_view, layout, false);
-        if (type == FieldType.DATE_TIME) {
-            view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2);
-        } else if (type == FieldType.PRICE){
-            entry1 = HtmlUtils.determineColorHtml(entry1);
-            entry2 = HtmlUtils.determineColorHtml(entry2);
-            view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
-
-        } else {
-            view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
-        }
-        layout.addView(view);
-    }
-
-
-    private void drawSingleView(String entry1, FieldType type, boolean drawWithIcon){
-        ListItemSingleView view = getSingleView();
-        if (drawWithIcon) {
-            view.initWithIcon(imageResources.get(type), entry1);
-        } else {
-            view.initWithoutIcon(entry1);
-        }
-        layout.addView(view);
-    }
-
-    private ListItemSingleView getSingleView(){
-        return  (ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, layout, false);
     }
 
 }

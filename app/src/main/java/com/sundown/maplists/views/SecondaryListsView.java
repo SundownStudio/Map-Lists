@@ -18,12 +18,10 @@ import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.utils.HtmlUtils;
+import com.sundown.maplists.utils.LocationViewManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
 
 /**
@@ -39,18 +37,6 @@ public class SecondaryListsView extends RelativeLayout {
     private TextView emptyListText;
     private AdapterLocationItems adapter;
     private AllListsListener listener;
-    private static final Map<FieldType, Integer> imageResources;
-    static
-    {
-        imageResources = new HashMap<>();
-        imageResources.put(FieldType.NAME, R.drawable.ic_name);
-        imageResources.put(FieldType.PHONE, R.drawable.ic_phonenumber);
-        imageResources.put(FieldType.EMAIL, R.drawable.ic_email);
-        imageResources.put(FieldType.DATE, R.drawable.ic_date);
-        imageResources.put(FieldType.TIME, R.drawable.ic_time);
-        imageResources.put(FieldType.URL, R.drawable.ic_url);
-        imageResources.put(FieldType.PRICE, R.drawable.ic_price);
-    }
 
     public SecondaryListsView(Context context, AttributeSet attrs) { super(context, attrs);}
 
@@ -83,10 +69,12 @@ public class SecondaryListsView extends RelativeLayout {
 
         private LayoutInflater inflater;
         private ArrayList<SecondaryList> locationItems = new ArrayList<>();
+        private LocationViewManager locationViewManager;
 
 
         public AdapterLocationItems(Context context) {
             inflater = LayoutInflater.from(context);
+            locationViewManager = LocationViewManager.getInstance().reset(context);
         }
 
         @Override
@@ -118,74 +106,71 @@ public class SecondaryListsView extends RelativeLayout {
                     case TIME:
                     case DATE_TIME:
                     case URL:
-                    case PRICE:
-                    case MESSAGE:
+                    case PRICE:{
+                        EntryField entryField = (EntryField) field;
+                        addTitleView(entryField, holder);
+
+                        int size = entryField.getNumEntries();
+                        for (int i = 0; i < size; ++i) {
+                            if (size > i + 1) {
+
+                                if (type == FieldType.DATE_TIME){
+                                    holder.container.addView(locationViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
+                                } else if (type == FieldType.PRICE){
+                                    holder.container.addView(locationViewManager.drawDoubleView(type, type, HtmlUtils.determineColorHtml(entryField.getEntry(i)), HtmlUtils.determineColorHtml(entryField.getEntry(++i))));
+
+                                } else {
+                                    holder.container.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
+                                }
+
+                            } else {
+                                ListItemSingleView view = locationViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
+                                holder.container.addView(view);
+                            }
+                        }
+                        break;
+                    }
+                    case MESSAGE:{
+                        EntryField entryField = (EntryField) field;
+                        addTitleView(entryField, holder);
+                        int size = entryField.getNumEntries();
+                        for (int i = 0; i < size; ++i) {
+                            ListItemSingleView view = locationViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
+                            holder.container.addView(view);
+                        }
+                        break;
+                    }
                     case ITEM_LIST:{
-                        drawViews((EntryField) field, holder);
+                        EntryField entryField = (EntryField) field;
+                        addTitleView(entryField, holder);
+                        addAllDoubleViews(entryField, holder, null, null);
+                        break;
+                    }
+                    case PRICE_LIST:{
+                        EntryField entryField = (EntryField) field;
+                        addTitleView(entryField, holder);
+                        addAllDoubleViews(entryField, holder, null, FieldType.PRICE);
                         break;
                     }
                 }
             }
         }
 
-        private void drawViews(EntryField entryField, ViewHolder holder){
+        private void addTitleView(EntryField entryField, ViewHolder holder){
+            if (entryField.isTitleShown()) {
+                ListItemSingleView v = locationViewManager.drawSingleView(null, entryField.getTitle(), true);
+                holder.container.addView(v);
+            }
+        }
+
+        private void addAllDoubleViews(EntryField entryField, ViewHolder holder, FieldType type1, FieldType type2){
             int size = entryField.getNumEntries();
-            if (entryField.isTitleShown()){
-                drawTitleView(entryField.getTitle(), holder);
-            }
-
-            if (entryField.getType() == FieldType.MESSAGE) {
-                for (int i = 0; i < size; ++i) {
-                    drawSingleView(entryField.getEntry(i), entryField.getType(), holder);
-                }
-            } else if (entryField.getType() == FieldType.ITEM_LIST){
-                for (int i = 0; i < size; ++i) {
-                    drawSingleView(HtmlUtils.getListItemHtml(entryField.getEntry(i)), entryField.getType(), holder);
-                }
-            } else {
-                for (int i = 0; i < size; ++i) {
-                    if (size > i + 1) {
-                        drawDoubleView(entryField.getEntry(i), entryField.getEntry(i + 1), entryField.getType(), holder);
-                        i++;
-                    } else {
-                        drawSingleView(entryField.getEntry(i), entryField.getType(), holder);
-                    }
+            for (int i = 0; i < size; ++i) {
+                if (size > i + 1) {
+                    holder.container.addView(locationViewManager.drawDoubleView(type1, type2, entryField.getEntry(i), entryField.getEntry(++i)));
                 }
             }
         }
-
-        private void drawTitleView(String title, ViewHolder holder){
-            ListItemSingleView view = holder.getSingleView();
-            view.initAsTitle(title);
-            holder.container.addView(view);
-        }
-
-        private void drawDoubleView(String entry1, String entry2, FieldType type, ViewHolder holder) {
-            ListItemDoubleView view = holder.getDoubleView();
-            if (type == FieldType.DATE_TIME){
-                view.initWithIcon(imageResources.get(FieldType.DATE), imageResources.get(FieldType.TIME), entry1, entry2);
-            } else if (type == FieldType.PRICE){
-                entry1 = HtmlUtils.determineColorHtml(entry1);
-                entry2 = HtmlUtils.determineColorHtml(entry2);
-                view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
-
-            } else {
-                view.initWithIcon(imageResources.get(type), imageResources.get(type), entry1, entry2);
-            }
-            holder.container.addView(view);
-        }
-
-
-        private void drawSingleView(String entry1, FieldType type, ViewHolder holder){
-            ListItemSingleView view = holder.getSingleView();
-            if (type == FieldType.MESSAGE || type == FieldType.ITEM_LIST){
-                view.initWithoutIcon(entry1);
-            } else {
-                view.initWithIcon(imageResources.get(type), entry1);
-            }
-            holder.container.addView(view);
-        }
-
 
 
         @Override
@@ -201,14 +186,8 @@ public class SecondaryListsView extends RelativeLayout {
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-            private final static int VIEW_TYPE_SINGLE = 1;
-            private final static int VIEW_TYPE_DOUBLE = 2;
-            private final static int VIEW_TYPE_ALL = 3;
-
             TextView subjectText;
             LinearLayout container;
-            private Stack<ListItemSingleView> singleViews = new Stack<>();
-            private Stack<ListItemDoubleView> doubleViews = new Stack<>();
 
 
             public ViewHolder(View itemView) {
@@ -217,9 +196,6 @@ public class SecondaryListsView extends RelativeLayout {
 
                 subjectText = (TextView) itemView.findViewById(R.id.listItemSubject);
                 container = (LinearLayout) itemView.findViewById(R.id.listItemContainer);
-
-                generateViews(VIEW_TYPE_ALL);
-
             }
 
             @Override
@@ -227,42 +203,6 @@ public class SecondaryListsView extends RelativeLayout {
                 listener.LocationListSelected(locationItems.get(getAdapterPosition()));
             }
 
-            public ListItemSingleView getSingleView(){
-                if (singleViews.size() == 0){
-                    generateViews(VIEW_TYPE_SINGLE);
-                }
-                return singleViews.pop();
-            }
-
-            public ListItemDoubleView getDoubleView(){
-                if (doubleViews.size() == 0){
-                    generateViews(VIEW_TYPE_DOUBLE);
-                }
-                return doubleViews.pop();
-            }
-
-            private void generateViews(int viewType) {
-
-                switch (viewType){
-                    case VIEW_TYPE_ALL:
-                        for (int i = 0; i < 10; ++i){
-                            singleViews.push((ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, container, false));
-                            doubleViews.push((ListItemDoubleView)inflater.inflate(R.layout.list_item_double_view, container, false));
-                        }
-                        break;
-                    case VIEW_TYPE_SINGLE:
-                        for (int i = 0; i < 10; ++i){
-                            singleViews.push((ListItemSingleView)inflater.inflate(R.layout.list_item_single_view, container, false));
-                        }
-                        break;
-                    case VIEW_TYPE_DOUBLE:
-                        for (int i = 0; i < 10; ++i){
-                            doubleViews.push((ListItemDoubleView)inflater.inflate(R.layout.list_item_double_view, container, false));
-                        }
-                        break;
-                }
-
-            }
 
             private void reset(){
                 container.removeAllViews();

@@ -37,11 +37,20 @@ public class ListItemDoubleView extends LinearLayout {
         contentsTwo = (TextView) findViewById(R.id.listItemContentsTwo);
     }
 
-    public void initWithIcon(int resIdOne, int resIdTwo, String textOne, String textTwo){
-        imageOne.setVisibility(VISIBLE);
-        imageTwo.setVisibility(VISIBLE);
-        imageOne.setImageResource(resIdOne);
-        imageTwo.setImageResource(resIdTwo);
+
+    public void init(Integer resIdOne, Integer resIdTwo, String textOne, String textTwo){
+        if (resIdOne == null){
+            imageOne.setVisibility(GONE);
+        } else {
+            imageOne.setVisibility(VISIBLE);
+            imageOne.setImageResource(resIdOne);
+        }
+        if (resIdTwo == null){
+            imageTwo.setVisibility(GONE);
+        } else {
+            imageTwo.setVisibility(VISIBLE);
+            imageTwo.setImageResource(resIdTwo);
+        }
         contentsOne.setTypeface(null, Typeface.NORMAL);
         contentsTwo.setTypeface(null, Typeface.NORMAL);
         contentsOne.setText(Html.fromHtml(textOne));
@@ -49,5 +58,4 @@ public class ListItemDoubleView extends LinearLayout {
         layoutParams.setMargins(20, 0, 20, 0);
         this.setLayoutParams(layoutParams);
     }
-
 }

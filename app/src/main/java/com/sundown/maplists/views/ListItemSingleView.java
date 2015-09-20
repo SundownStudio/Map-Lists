@@ -32,28 +32,23 @@ public class ListItemSingleView extends LinearLayout{
         contents = (TextView) findViewById(R.id.listItemContents);
     }
 
-    public void initAsTitle(String title){
-        image.setVisibility(GONE);
-        contents.setTypeface(null, Typeface.BOLD);
-        contents.setText(Html.fromHtml(title));
-        layoutParams.setMargins(10,20,10,0);
+
+    public void init(Integer resId, String text){
+        if (resId == null) { //init without image
+            image.setVisibility(GONE);
+            layoutParams.setMargins(10, 0, 10, 0);
+        } else if (resId == 0){ //init as title without image
+            image.setVisibility(GONE);
+            contents.setTypeface(null, Typeface.BOLD);
+            layoutParams.setMargins(10, 20, 10, 0);
+        } else { //init as regular text with image
+            image.setVisibility(VISIBLE);
+            image.setImageResource(resId);
+            contents.setTypeface(null, Typeface.NORMAL);
+            layoutParams.setMargins(20, 0, 20, 0);
+        }
+        contents.setText(Html.fromHtml(text));
         this.setLayoutParams(layoutParams);
     }
 
-    public void initWithIcon(int resId, String text){
-        image.setVisibility(VISIBLE);
-        image.setImageResource(resId);
-        contents.setTypeface(null, Typeface.NORMAL);
-        contents.setText(Html.fromHtml(text));
-        layoutParams.setMargins(20, 0, 20, 0);
-        this.setLayoutParams(layoutParams);
-    }
-
-    public void initWithoutIcon(String text){
-        image.setVisibility(GONE);
-        contents.setTypeface(null, Typeface.NORMAL);
-        contents.setText(Html.fromHtml(text));
-        layoutParams.setMargins(10, 0, 10, 0);
-        this.setLayoutParams(layoutParams);
-    }
 }
