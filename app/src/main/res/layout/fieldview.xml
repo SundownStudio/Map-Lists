@@ -31,7 +31,8 @@
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@+id/editFieldTitle"
         android:text="Title"
-        android:textSize="16dp" />
+        android:textSize="16dp"
+        android:textStyle="bold"/>
 
 
     <LinearLayout

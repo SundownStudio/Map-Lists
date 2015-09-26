@@ -21,8 +21,14 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/info_image"
+            android:textSize="16dp"
             android:text="Title"
-            android:textColor="@color/colorPrimaryText" />
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryText"
+            android:shadowColor="#000000"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="0.5"/>
 
         <TextView
             android:id="@+id/info_snippet"
@@ -32,7 +38,11 @@
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/info_image"
             android:text="Snippet"
-            android:textColor="@color/colorSecondaryText" />
+            android:textColor="@color/colorSecondaryText"
+            android:shadowColor="#000000"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="1"/>
 
 
     </RelativeLayout>

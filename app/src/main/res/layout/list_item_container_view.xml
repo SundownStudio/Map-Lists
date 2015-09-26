@@ -12,28 +12,35 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="4dp">
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/listItemSubject"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:background="@color/colorPrimaryDark"
-        android:gravity="center_vertical|center_horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:text=""
-        android:textColor="@android:color/white"
-        android:textSize="14dp"
-        android:textStyle="bold" />
+        <LinearLayout
+            android:id="@+id/listItemSubjectLayout"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:background="@color/colorPrimaryDark">
 
-    <LinearLayout
-        android:id="@+id/listItemContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/listItemSubject"
-        android:orientation="vertical" />
+            <TextView
+                android:id="@+id/listItemSubjectText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:shadowColor="#000000"
+                android:text=""
+                android:textColor="@android:color/white"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/listItemContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/listItemSubjectLayout"
+            android:orientation="vertical" />
 
     </RelativeLayout>
 

@@ -17,7 +17,6 @@ import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.SecondaryList;
-import com.sundown.maplists.utils.HtmlUtils;
 import com.sundown.maplists.utils.LocationViewManager;
 
 import java.util.ArrayList;
@@ -96,7 +95,7 @@ public class SecondaryListsView extends RelativeLayout {
                     case SUBJECT: { //reserved field only one per item
                         EntryField entryField = (EntryField) field;
                         holder.subjectText.setText(entryField.getEntry(0));
-                        holder.subjectText.setBackgroundColor(locationItem.getColor());
+                        holder.subjectLayout.setBackgroundColor(locationItem.getColor());
                         break;
                     }
                     case NAME:
@@ -117,7 +116,7 @@ public class SecondaryListsView extends RelativeLayout {
                                 if (type == FieldType.DATE_TIME){
                                     holder.container.addView(locationViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
                                 } else if (type == FieldType.PRICE){
-                                    holder.container.addView(locationViewManager.drawDoubleView(type, type, HtmlUtils.determineColorHtml(entryField.getEntry(i)), HtmlUtils.determineColorHtml(entryField.getEntry(++i))));
+                                    holder.container.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
 
                                 } else {
                                     holder.container.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
@@ -187,6 +186,7 @@ public class SecondaryListsView extends RelativeLayout {
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             TextView subjectText;
+            LinearLayout subjectLayout;
             LinearLayout container;
 
 
@@ -194,7 +194,8 @@ public class SecondaryListsView extends RelativeLayout {
                 super(itemView);
                 itemView.setOnClickListener(this);
 
-                subjectText = (TextView) itemView.findViewById(R.id.listItemSubject);
+                subjectText = (TextView) itemView.findViewById(R.id.listItemSubjectText);
+                subjectLayout = (LinearLayout) itemView.findViewById(R.id.listItemSubjectLayout);
                 container = (LinearLayout) itemView.findViewById(R.id.listItemContainer);
             }
 
@@ -206,7 +207,7 @@ public class SecondaryListsView extends RelativeLayout {
 
             private void reset(){
                 container.removeAllViews();
-                subjectText.setBackgroundColor(Color.argb(0, 0, 0, 0));
+                subjectLayout.setBackgroundColor(Color.argb(0, 0, 0, 0));
                 subjectText.setText("");
             }
 

@@ -65,6 +65,7 @@ public class LocationViewManager {
         return view;
     }
 
+
     public ListItemDoubleView drawDoubleView(FieldType type1, FieldType type2, String entry1, String entry2){
         ListItemDoubleView view = createListItemDoubleView();
         view.init(imageResources.get(type1), imageResources.get(type2), entry1, entry2);

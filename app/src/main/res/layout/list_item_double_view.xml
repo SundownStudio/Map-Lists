@@ -1,40 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sundown.maplists.views.ListItemDoubleView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:weightSum="2">
+    android:layout_height="wrap_content"
+    android:shrinkColumns="true">
 
-    <ImageView
-        android:id="@+id/listItemImageOne"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:src="@mipmap/ic_launcher" />
 
-    <TextView
-        android:id="@+id/listItemContentsOne"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:text=""
-        android:layout_marginLeft="5dp"/>
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/listItemImageTwo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:src="@mipmap/ic_launcher" />
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4">
 
-    <TextView
-        android:id="@+id/listItemContentsTwo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:text=""
-        android:layout_marginLeft="5dp"/>
+            <ImageView
+                android:id="@+id/listItemImageOne"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/ic_launcher" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/listItemContentsOne"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="6"
+            android:gravity="left"
+            android:text="sss" />
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4">
+
+            <ImageView
+                android:id="@+id/listItemImageTwo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/ic_launcher" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/listItemContentsTwo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="6"
+            android:gravity="left"
+            android:text="ddd" />
+
+
+    </TableRow>
 
 </com.sundown.maplists.views.ListItemDoubleView>

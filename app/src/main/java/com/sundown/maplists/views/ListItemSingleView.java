@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
@@ -14,10 +15,12 @@ import com.sundown.maplists.R;
 /**
  * Created by Sundown on 8/31/2015.
  */
-public class ListItemSingleView extends LinearLayout{
+public class ListItemSingleView extends RelativeLayout {
 
     private ImageView image;
     private TextView contents;
+
+    /** note this is necessary even though we now using RelativeLayout */
     private LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
 
@@ -37,10 +40,12 @@ public class ListItemSingleView extends LinearLayout{
         if (resId == null) { //init without image
             image.setVisibility(GONE);
             layoutParams.setMargins(10, 0, 10, 0);
+
         } else if (resId == 0){ //init as title without image
             image.setVisibility(GONE);
             contents.setTypeface(null, Typeface.BOLD);
-            layoutParams.setMargins(10, 20, 10, 0);
+            layoutParams.setMargins(10, 25, 10, 0);
+
         } else { //init as regular text with image
             image.setVisibility(VISIBLE);
             image.setImageResource(resId);

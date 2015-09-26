@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
@@ -14,7 +15,7 @@ import com.sundown.maplists.R;
 /**
  * Created by Sundown on 8/31/2015.
  */
-public class ListItemDoubleView extends LinearLayout {
+public class ListItemDoubleView extends TableLayout { //TODO this should really extend TableRow.. if we end up keeping this design then fix this cuz right now Im not sure and pressed for time
 
     private ImageView imageOne;
     private TextView contentsOne;

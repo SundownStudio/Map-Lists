@@ -16,7 +16,6 @@ import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.utils.HtmlUtils;
 import com.sundown.maplists.utils.LocationViewManager;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
@@ -121,7 +120,7 @@ public class LocationListFragment extends Fragment {
                         if (type == FieldType.DATE_TIME){
                             layout.addView(locationViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
                         } else if (type == FieldType.PRICE){
-                            layout.addView(locationViewManager.drawDoubleView(type, type, HtmlUtils.determineColorHtml(entryField.getEntry(i)), HtmlUtils.determineColorHtml(entryField.getEntry(++i))));
+                            layout.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
 
                         } else {
                             layout.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
