@@ -29,7 +29,7 @@
             android:layout_marginLeft="5dp"
             android:layout_weight="6"
             android:gravity="left"
-            android:text="sss" />
+            android:text="" />
 
 
         <RelativeLayout
@@ -52,7 +52,7 @@
             android:layout_marginLeft="5dp"
             android:layout_weight="6"
             android:gravity="left"
-            android:text="ddd" />
+            android:text="" />
 
 
     </TableRow>

@@ -21,21 +21,28 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="4dp">
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/listViewSubject"
                     android:layout_width="match_parent"
-                    android:layout_height="20dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
                     android:background="@color/colorPrimaryDark"
-                    android:gravity="center_vertical|center_horizontal"
+                    android:gravity="center"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:text=""
                     android:textColor="@android:color/white"
-                    android:textSize="14dp"
+                    android:textSize="18dp"
                     android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/listViewShadow"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_below="@+id/listViewSubject"
+                    android:background="@drawable/shadow" />
 
                 <LinearLayout
                     android:id="@+id/listViewContainer"

@@ -11,7 +11,7 @@ import java.util.Map;
 public abstract class Field implements PropertiesHandler {
 
     public interface Observer {
-        void updateTitle(String title);
+        void setTitle(String title);
     }
 
     /** used for view tagging */
@@ -45,7 +45,7 @@ public abstract class Field implements PropertiesHandler {
 
     public void setTitle(String title) {
         this.title = title;
-        observer.updateTitle(title);
+        observer.setTitle(title);
     }
 
     private boolean showTitle;

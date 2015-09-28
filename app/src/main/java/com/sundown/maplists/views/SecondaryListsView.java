@@ -1,7 +1,6 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -18,6 +17,7 @@ import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.utils.LocationViewManager;
+import com.sundown.maplists.utils.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +95,7 @@ public class SecondaryListsView extends RelativeLayout {
                     case SUBJECT: { //reserved field only one per item
                         EntryField entryField = (EntryField) field;
                         holder.subjectText.setText(entryField.getEntry(0));
-                        holder.subjectLayout.setBackgroundColor(locationItem.getColor());
+                        holder.subjectText.setBackgroundDrawable(ViewUtils.getTopRoundedCornersDrawable(getResources().getDimension(R.dimen.rounded_corners), locationItem.getColor()));
                         break;
                     }
                     case NAME:
@@ -186,7 +186,7 @@ public class SecondaryListsView extends RelativeLayout {
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
             TextView subjectText;
-            LinearLayout subjectLayout;
+            //LinearLayout subjectLayout;
             LinearLayout container;
 
 
@@ -195,7 +195,7 @@ public class SecondaryListsView extends RelativeLayout {
                 itemView.setOnClickListener(this);
 
                 subjectText = (TextView) itemView.findViewById(R.id.listItemSubjectText);
-                subjectLayout = (LinearLayout) itemView.findViewById(R.id.listItemSubjectLayout);
+                //subjectLayout = (LinearLayout) itemView.findViewById(R.id.listItemSubjectLayout);
                 container = (LinearLayout) itemView.findViewById(R.id.listItemContainer);
             }
 
@@ -207,7 +207,7 @@ public class SecondaryListsView extends RelativeLayout {
 
             private void reset(){
                 container.removeAllViews();
-                subjectLayout.setBackgroundColor(Color.argb(0, 0, 0, 0));
+                //subjectLayout.setBackgroundColor(Color.argb(0, 0, 0, 0));
                 subjectText.setText("");
             }
 

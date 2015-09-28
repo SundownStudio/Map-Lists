@@ -1,6 +1,7 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
+import android.graphics.drawable.ShapeDrawable;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -29,9 +30,9 @@ public class LocationListView extends RelativeLayout {
         subject = (TextView) findViewById(R.id.listViewSubject);
     }
 
-    public void setSubject(String subjectText, int color){
+    public void setSubject(ShapeDrawable roundedCornersDrawable, String subjectText){
+        if (roundedCornersDrawable != null) subject.setBackgroundDrawable(roundedCornersDrawable);
         subject.setText(subjectText);
-        subject.setBackgroundColor(color);
     }
 
     public void updateView(LinearLayout layout){

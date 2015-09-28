@@ -1,6 +1,7 @@
 package com.sundown.maplists.views;
 
 import android.content.Context;
+import android.text.Html;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.util.AttributeSet;
@@ -108,7 +109,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
         this.context = context;
         this.listener = listener;
         this.type = field.getType();
-        updateTitle(field.getTitle());
+        setTitle(field.getTitle());
         addComponentView(field);
 
         if (field.isPermanent())
@@ -272,9 +273,9 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
     }
 
     @Override
-    public void updateTitle(String title) {
+    public void setTitle(String title) {
         if (title != null)
-            fieldTitle.setText(title);
+            fieldTitle.setText(Html.fromHtml(title));
     }
 
     public List<String> getEntryFromChildView(int element){

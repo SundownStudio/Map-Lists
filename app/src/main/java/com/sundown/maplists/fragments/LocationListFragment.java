@@ -17,6 +17,7 @@ import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.PhotoField;
 import com.sundown.maplists.utils.LocationViewManager;
+import com.sundown.maplists.utils.ViewUtils;
 import com.sundown.maplists.views.ListItemSingleView;
 import com.sundown.maplists.views.LocationListView;
 import com.sundown.maplists.views.PhotoView;
@@ -99,7 +100,7 @@ public class LocationListFragment extends Fragment {
         switch (type) {
             case SUBJECT: {
                 EntryField entryField = (EntryField) field;
-                view.setSubject(entryField.getEntry(0), model.getColor());
+                view.setSubject(ViewUtils.getTopRoundedCornersDrawable(getActivity().getResources().getDimension(R.dimen.rounded_corners), model.getColor()), entryField.getEntry(0));
                 break;
             }
             case NAME:

@@ -1,5 +1,7 @@
 package com.sundown.maplists.utils;
 
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RatingBar;
@@ -36,6 +38,19 @@ public class ViewUtils {
         list.add(doubleEditView.getText(1));
         list.add(doubleEditView.getText(2));
         return list;
+    }
+
+    public static ShapeDrawable getTopRoundedCornersDrawable(float dimens, int color){
+        ShapeDrawable roundedCornersDrawable = new ShapeDrawable();
+        float[] rads = new float[8];
+        rads[0] = dimens; //top-left x
+        rads[1] = dimens; //top-left y
+        rads[2] = dimens; //top-right x
+        rads[3] = dimens; //top-right y
+        roundedCornersDrawable.setShape(new RoundRectShape(rads, null, null));
+        roundedCornersDrawable.getPaint().setColor(color);
+
+        return roundedCornersDrawable;
     }
 
 }
