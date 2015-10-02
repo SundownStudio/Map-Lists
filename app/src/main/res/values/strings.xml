@@ -48,13 +48,17 @@
     <string name="add_field">Add Field</string>
     <string name="add_new_item">Add New Item</string>
     <string name="name">Name</string>
+    <string name="new_location">New Location</string>
     <string name="snippet">Snippet</string>
+    <string name="empty">Empty</string>
     <string name="thumbnail">Thumbnail</string>
     <string name="empty_location_list">This location contains no items yet. \nPress the + button to begin adding some!</string>
     <string name="empty_schemas_list">You have no saved schemas yet.</string>
     <string name="no_image_loaded">No image loaded</string>
     <string name="couldnt_load_image">Could not load image</string>
     <string name="photo">Photo</string>
+    <string name="subject">Subject</string>
+    <string name="default_marker_color">#303F9F</string>
 
     <!-- see AddListActivity getPrimaryFieldTypeString() if altering this list -->
     <string-array name="all_field_names">
@@ -139,4 +143,7 @@
     <string name="how_many">How many?</string>
     <string name="select_number_instr_1">Please select how many</string>
     <string name="select_number_instr_2">you want to add under this title.</string>
+
+
+
 </resources>

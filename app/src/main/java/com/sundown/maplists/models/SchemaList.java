@@ -14,8 +14,10 @@ import static com.sundown.maplists.storage.JsonConstants.SCHEMA_NAME;
 public class SchemaList extends AbstractList implements PropertiesHandler {
 
     private int schemaId;
+
+    private ListType listType;
+
     private String schemaName;
-    private ListType schemaListType;
 
     public void setSchemaName(String schemaName) {
         this.schemaName = schemaName;
@@ -36,9 +38,9 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     }
 
 
-    public SchemaList(int mapId, ListType schemaListType, int color) {
+    public SchemaList(int mapId, ListType listType, int color) {
         super(mapId);
-        this.schemaListType = schemaListType;
+        this.listType = listType;
         this.color = color;
     }
 
@@ -69,7 +71,7 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = super.getProperties();
         properties.put(SCHEMA_ID, schemaId);
-        properties.put(LIST_TYPE, schemaListType.name());
+        properties.put(LIST_TYPE, listType.name());
         properties.put(SCHEMA_NAME, schemaName);
         properties.put(COLOR, color);
         return properties;
@@ -79,7 +81,7 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     public SchemaList setProperties(Map properties) {
         super.setProperties(properties);
         schemaId = (Integer) properties.get(SCHEMA_ID);
-        schemaListType = ListType.valueOf(properties.get(LIST_TYPE).toString());
+        listType = ListType.valueOf(properties.get(LIST_TYPE).toString());
         schemaName = String.valueOf(properties.get(SCHEMA_NAME));
         color = (Integer) properties.get(COLOR);
         return this;

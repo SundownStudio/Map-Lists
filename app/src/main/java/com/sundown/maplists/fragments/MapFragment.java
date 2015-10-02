@@ -210,7 +210,7 @@ public class MapFragment extends Fragment implements
 
         if (model.getMapList(latLng) == null){
             savedLatLng = latLng;
-            MapList list = (MapList) ListFactory.createList(ListType.MAP, -1);
+            MapList list = (MapList) ListFactory.createList(getResources(), ListType.MAP, -1);
             list.setLatLng(latLng);
             db.insert(list, JsonConstants.COUNT_MAP_LISTS, JsonConstants.MAP_ID);
 
@@ -488,7 +488,7 @@ public class MapFragment extends Fragment implements
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
 
-                MapList mapList = (MapList) ListFactory.createList(ListType.MAP, -1).setProperties(properties);
+                MapList mapList = (MapList) ListFactory.createList(getResources(), ListType.MAP, -1).setProperties(properties);
                 model.storeMapList(mapList.getLatLng(), mapList);
 
             }

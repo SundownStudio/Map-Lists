@@ -107,7 +107,7 @@ public class ListModeFragment extends Fragment {
             for (Iterator<QueryRow> it = result; it.hasNext(); ) {
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId());
-                model.add((SecondaryList) ListFactory.createList(ListType.SECONDARY, mapId).setProperties(properties));
+                model.add((SecondaryList) ListFactory.createList(getResources(), ListType.SECONDARY, mapId).setProperties(properties));
             }
 
             drawModel();

@@ -85,7 +85,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
 
     private void loadModel(){
         Map<String, Object> properties = db.read(documentId);
-        model =  ListFactory.createList(ListType.SECONDARY, mapId).setProperties(properties);
+        model =  ListFactory.createList(getResources(), ListType.SECONDARY, mapId).setProperties(properties);
     }
 
     private void setUpToolBars(String itemName){

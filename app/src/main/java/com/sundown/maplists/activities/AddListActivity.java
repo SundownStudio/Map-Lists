@@ -111,11 +111,11 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         setUpToolBars(getString(R.string.add_lists_activity));
 
         if (operation == Operation.INSERT) { //only for secondarylists
-            model = ListFactory.createList(listType, mapId);
+            model = ListFactory.createList(getResources(), listType, mapId);
 
         } else if (operation == Operation.UPDATE){ //can be both maplists and secondarylists
             Map<String, Object> properties = db.read(documentId);
-            model = ListFactory.createList(listType, mapId).setProperties(properties);
+            model = ListFactory.createList(getResources(), listType, mapId).setProperties(properties);
         }
 
         if (savedInstanceState == null){
