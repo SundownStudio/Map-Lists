@@ -35,7 +35,4 @@ public class Log {
         toast.show();
 
     }
-
-
-
 }

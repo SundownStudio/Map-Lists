@@ -22,6 +22,7 @@ import com.sundown.maplists.fragments.MapFragment;
 import com.sundown.maplists.fragments.NavigationDrawerFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
+import com.sundown.maplists.models.ListType;
 import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
@@ -289,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.action_secondary_lists: {
                 MapList list = mapFragment.getSelectedMapList();
-                Intent intent = new Intent(MainActivity.this, SecondaryListsActivity.class);
+                Intent intent = new Intent(MainActivity.this, ListModeActivity.class);
                 intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
                 intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
                 try {
@@ -326,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
                     MapList list = mapFragment.getSelectedMapList();
                     Intent intent = new Intent(MainActivity.this, AddListActivity.class);
-                    intent.putExtra(JsonConstants.TYPE, JsonConstants.TYPE_MAP_LIST);
+                    intent.putExtra(JsonConstants.LIST_TYPE, ListType.MAP.name());
                     intent.putExtra(JsonConstants.OPERATION, Operation.UPDATE.name());
                     intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
                     intent.putExtra(JsonConstants.MAP_ID, list.getMapId());

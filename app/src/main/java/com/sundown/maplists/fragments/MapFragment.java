@@ -28,7 +28,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.LocationListFactory;
+import com.sundown.maplists.models.ListFactory;
+import com.sundown.maplists.models.ListType;
 import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.network.FetchAddressIntentService;
@@ -209,7 +210,7 @@ public class MapFragment extends Fragment implements
 
         if (model.getMapList(latLng) == null){
             savedLatLng = latLng;
-            MapList list = (MapList) LocationListFactory.createLocationList(LocationListFactory.MAPLIST, -1);
+            MapList list = (MapList) ListFactory.createList(ListType.MAP, -1);
             list.setLatLng(latLng);
             db.insert(list, JsonConstants.COUNT_MAP_LISTS, JsonConstants.MAP_ID);
 
@@ -426,20 +427,28 @@ public class MapFragment extends Fragment implements
 
             try {
                 if (resultCode == SUCCESS_RESULT) {
-                    int operation = Integer.parseInt(resultData.getString(GEO_OPERATION));
+                    String result = resultData.getString(GEO_OPERATION);
 
-                    if (operation == FROM_ADDRESS) {
-                        double lat = resultData.getDouble(MAP_LATITUDE);
-                        double lon = resultData.getDouble(MAP_LONGITUDE);
-                        createNewLocation(new LatLng(lat, lon));
+                    if (result == null) {
+                        resultCode = FAILURE_RESULT;
 
-                    } else if (operation == FROM_LATLNG) {
-                        String address = resultData.getString(RESULT_DATA_KEY);
-                        Log.m("MapFragment", address);
-                        showToast(getActivity().getApplicationContext(), address);
+                    } else {
+                        int operation = Integer.parseInt(result);
+
+                        if (operation == FROM_ADDRESS) {
+                            double lat = resultData.getDouble(MAP_LATITUDE);
+                            double lon = resultData.getDouble(MAP_LONGITUDE);
+                            createNewLocation(new LatLng(lat, lon));
+
+                        } else if (operation == FROM_LATLNG) {
+                            String address = resultData.getString(RESULT_DATA_KEY);
+                            Log.m("MapFragment", address);
+                            showToast(getActivity().getApplicationContext(), address);
+                        }
                     }
+                }
 
-                } else if (resultCode == FAILURE_RESULT) {
+                if (resultCode == FAILURE_RESULT) {
                     String errorMessage = resultData.getString(MAP_ERROR);
                     if (errorMessage == null) errorMessage = "Sorry, an unknown error has occurred";
                     showToast(getActivity().getApplicationContext(), errorMessage);
@@ -479,7 +488,7 @@ public class MapFragment extends Fragment implements
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
 
-                MapList mapList = (MapList) LocationListFactory.createLocationList(LocationListFactory.MAPLIST, -1).setProperties(properties);
+                MapList mapList = (MapList) ListFactory.createList(ListType.MAP, -1).setProperties(properties);
                 model.storeMapList(mapList.getLatLng(), mapList);
 
             }

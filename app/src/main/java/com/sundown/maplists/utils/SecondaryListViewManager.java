@@ -15,9 +15,9 @@ import java.util.Map;
 /**
  * Created by Sundown on 9/17/2015.
  */
-public class LocationViewManager {
+public class SecondaryListViewManager {
 
-    private static LocationViewManager instance;
+    private static SecondaryListViewManager instance;
     private LayoutInflater inflater;
     private static final Map<FieldType, Integer> imageResources;
     static
@@ -32,18 +32,18 @@ public class LocationViewManager {
         imageResources.put(FieldType.PRICE, R.drawable.ic_price);
     }
 
-    public static LocationViewManager getInstance(){
+    public static SecondaryListViewManager getInstance(){
         if (instance == null){
-            instance = new LocationViewManager(MapListsApp.getContext());
+            instance = new SecondaryListViewManager(MapListsApp.getContext());
         }
         return instance;
     }
 
-    private LocationViewManager(Context context){
+    private SecondaryListViewManager(Context context){
         inflater = LayoutInflater.from(context);
     }
 
-    public LocationViewManager reset(Context context){
+    public SecondaryListViewManager reset(Context context){
         inflater = LayoutInflater.from(context);
         return this;
     }

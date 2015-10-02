@@ -46,21 +46,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sundown.maplists.activities.MainActivity" />
         </activity>
-        <activity android:name=".activities.SecondaryListsActivity"
-            android:label="@string/secondary_lists_activity"
+        <activity android:name=".activities.ListModeActivity"
+            android:label="@string/list_mode_activity"
             android:parentActivityName="com.sundown.maplists.activities.MainActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sundown.maplists.activities.MainActivity" />
         </activity>
-        <activity android:name="com.sundown.maplists.activities.LocationListActivity"
-            android:label="@string/location_list_activity"
-            android:parentActivityName=".activities.SecondaryListsActivity" >
+        <activity android:name=".activities.SecondaryListActivity"
+            android:label="@string/secondary_list_activity"
+            android:parentActivityName=".activities.ListModeActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SecondaryListsActivity" />
+                android:value=".activities.ListModeActivity" />
         </activity>
         <activity android:name="com.sundown.maplists.activities.ManageSchemasActivity"
             android:label="@string/manage_schemas_activity"

@@ -16,7 +16,7 @@ public class TaskRotateImage extends AsyncTask<Void, Void, Boolean> {
     }
 
     private TaskRotateImageListener listener;
-    public PhotoField model;
+    private PhotoField model;
 
     public TaskRotateImage(PhotoField model, TaskRotateImageListener listener){
         this.model = model;

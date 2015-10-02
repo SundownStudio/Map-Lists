@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by Sundown on 4/13/2015.
  */
-public class MapList extends LocationList {
+public class MapList extends SchemaList {
 
 
     private LatLng latLng;
@@ -23,14 +23,13 @@ public class MapList extends LocationList {
 
 
     protected MapList(int mapId, int color) {
-        super(mapId, color);
+        super(mapId, ListType.MAP, color);
     }
 
 
     @Override
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = super.getProperties();
-        properties.put(JsonConstants.TYPE, JsonConstants.TYPE_MAP_LIST);
         properties.put(JsonConstants.MAP_LATITUDE, latLng.latitude);
         properties.put(JsonConstants.MAP_LONGITUDE, latLng.longitude);
         return properties;

@@ -28,8 +28,8 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
-import com.sundown.maplists.models.LocationList;
-import com.sundown.maplists.models.LocationListFactory;
+import com.sundown.maplists.models.ListFactory;
+import com.sundown.maplists.models.ListType;
 import com.sundown.maplists.models.SchemaList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.pojo.MenuOption;
@@ -84,7 +84,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     private ManageSchemasFragment manageSchemasFragment;
 
     private Operation operation;
-    private LocationList model;
+    private SchemaList model;
     private Field newField;
     private boolean saveUpdate;
 
@@ -92,7 +92,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     /** our list of saved schemas */
     private ArrayList<SchemaList> savedSchemaLists;
     private ContentLoader schemaLoader;
-    private SchemaList originalSchemaList;
+    //private SchemaList originalSchemaList; todo
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,7 +100,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         setContentView(R.layout.activity_add_list);
 
         Bundle bundle = getIntent().getExtras();
-        String type = bundle.getString(JsonConstants.TYPE);
+        ListType listType = ListType.valueOf(bundle.getString(JsonConstants.LIST_TYPE));
         operation = Operation.valueOf(bundle.getString(JsonConstants.OPERATION));
         String documentId = bundle.getString(JsonConstants.DOCUMENT_ID);
         int mapId = bundle.getInt(JsonConstants.MAP_ID);
@@ -110,18 +110,12 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         savedSchemaLists = new ArrayList<>();
         setUpToolBars(getString(R.string.add_lists_activity));
 
-        if (type.equals(JsonConstants.TYPE_MAP_LIST)){
+        if (operation == Operation.INSERT) { //only for secondarylists
+            model = ListFactory.createList(listType, mapId);
+
+        } else if (operation == Operation.UPDATE){ //can be both maplists and secondarylists
             Map<String, Object> properties = db.read(documentId);
-            model = LocationListFactory.createLocationList(LocationListFactory.MAPLIST, mapId).setProperties(properties);
-
-        } else if (type.equals(JsonConstants.TYPE_LOCATION_LIST)){
-            if (operation == Operation.INSERT) {
-                model = LocationListFactory.createLocationList(LocationListFactory.SECONDARYLIST, mapId);
-
-            } else if (operation == Operation.UPDATE){
-                Map<String, Object> properties = db.read(documentId);
-                model =  LocationListFactory.createLocationList(LocationListFactory.SECONDARYLIST, mapId).setProperties(properties);
-            }
+            model = ListFactory.createList(listType, mapId).setProperties(properties);
         }
 
         if (savedInstanceState == null){
@@ -145,7 +139,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             }
         }
 
-        originalSchemaList = new SchemaList(model);
+        //originalSchemaList = new SchemaList(model);
     }
 
     @Override
@@ -200,6 +194,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.Toast(getApplicationContext(), "Alternating schemas not implemented yet", Log.TOAST_SHORT);
+
+                //model.implementSchemaList(savedSchemaLists.get(position));
+                //addListFragment.setModel(model);
             }
 
             @Override
@@ -272,13 +269,14 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             case R.id.action_add_list:
                 saveUpdate = true;
                 model = addListFragment.refreshModel();
-                SchemaList newSchemaList = new SchemaList(model);
-                if (!originalSchemaList.equals(newSchemaList)){ //schema has changed! prompt user to save new schema
-                    addSchemaFragment = AddSchemaDialogFragment.getInstance(getString(R.string.schema) + "0" + (savedSchemaLists.size()+1));
-                    addSchemaFragment.show(fm, FRAGMENT_ADD_SCHEMA);
-                } else {
+                //SchemaList newSchemaList = new SchemaList(model);
+                //todo
+                //if (!originalSchemaList.equals(newSchemaList)){ //schema has changed! prompt user to save new schema
+                //   addSchemaFragment = AddSchemaDialogFragment.getInstance(getString(R.string.schema) + "0" + (savedSchemaLists.size()+1));
+                //   addSchemaFragment.show(fm, FRAGMENT_ADD_SCHEMA);
+                //} else {
                     finish();
-                }
+                //}
                 break;
 
             case R.id.action_cancel_add_list:
@@ -380,9 +378,10 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     public void schemaAdded(String schemaName) {
         schemaLoader.stop();
         if (schemaName != null) {
-            SchemaList schemaList = new SchemaList(model);
-            schemaList.setSchemaName(schemaName);
-            db.insert(schemaList, JsonConstants.COUNT_SCHEMAS, JsonConstants.SCHEMA_ID);
+            //todo
+            //SchemaList schemaList = new SchemaList(model);
+            //schemaList.setSchemaName(schemaName);
+            //db.insert(schemaList, JsonConstants.COUNT_SCHEMAS, JsonConstants.SCHEMA_ID);
         }
         finish();
     }
@@ -427,7 +426,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             for (Iterator<QueryRow> it = result; it.hasNext(); ) {
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId());
-                savedSchemaLists.add(new SchemaList().setProperties(properties));
+                //savedSchemaLists.add(new SchemaList().setProperties(properties)); todo
             }
 
             if (savedSchemaLists.size() > 0)

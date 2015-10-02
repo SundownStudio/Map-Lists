@@ -7,6 +7,7 @@ public final class JsonConstants {
 
     public static final String PARENT_DOC_ID = "parent_doc";
     public static final String DOCUMENT_ID = "_id"; //underscore REQUIRED for cb, do not use for our own fields
+    public static final String DOCUMENT_TYPE = "docType";
 
     public static final String MAP_ID = "mapId";
     public static final String MAP_LATITUDE = "lat";
@@ -29,10 +30,8 @@ public final class JsonConstants {
     public static final String SCHEMA_ID = "schemaId";
     public static final String SCHEMA_NAME = "schemaName";
 
-    public static final String TYPE = "type";
-    public static final String TYPE_MAP_LIST = "mapList";
-    public static final String TYPE_LOCATION_LIST = "locationList";
-    public static final String TYPE_SCHEMA_LIST = "schemaList";
+
+    public static final String LIST_TYPE = "type";
     public static final String OPERATION = "operation";
     public static final String COUNTS = "counts";
     public static final String COUNT_SCHEMAS = "schema_counts";

@@ -14,12 +14,12 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
-import com.sundown.maplists.models.LocationList;
 import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.utils.LocationViewManager;
+import com.sundown.maplists.models.SchemaList;
+import com.sundown.maplists.utils.SecondaryListViewManager;
 import com.sundown.maplists.utils.ViewUtils;
 import com.sundown.maplists.views.ListItemSingleView;
-import com.sundown.maplists.views.LocationListView;
+import com.sundown.maplists.views.SecondaryListView;
 import com.sundown.maplists.views.PhotoView;
 
 import java.util.List;
@@ -27,20 +27,20 @@ import java.util.List;
 /**
  * Created by Sundown on 7/21/2015.
  */
-public class LocationListFragment extends Fragment {
+public class SecondaryListFragment extends Fragment {
 
 
 
-    private LocationListView view;
-    private LocationList model;
+    private SecondaryListView view;
+    private SchemaList model;
     private LinearLayout layout;
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private LayoutInflater inflater;
-    private LocationViewManager locationViewManager;
+    private SecondaryListViewManager secondaryListViewManager;
 
-    public static LocationListFragment newInstance() {
-        return new LocationListFragment();
+    public static SecondaryListFragment newInstance() {
+        return new SecondaryListFragment();
     }
 
 
@@ -53,7 +53,7 @@ public class LocationListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.inflater = inflater;
-        view = (LocationListView) inflater.inflate(R.layout.location_list_view, container, false);
+        view = (SecondaryListView) inflater.inflate(R.layout.secondary_list_view, container, false);
         return view;
     }
 
@@ -69,13 +69,13 @@ public class LocationListFragment extends Fragment {
         setUserVisibleHint(false);
     }
 
-    public void setModel(LocationList model){
+    public void setModel(SchemaList model){
         this.model = model;
         initLayout();
     }
 
     private void initLayout(){
-        locationViewManager = LocationViewManager.getInstance().reset(getContext());
+        secondaryListViewManager = SecondaryListViewManager.getInstance().reset(getContext());
 
         if (layout != null)
             layout.removeAllViews();
@@ -119,16 +119,16 @@ public class LocationListFragment extends Fragment {
                     if (size > i + 1) {
 
                         if (type == FieldType.DATE_TIME){
-                            layout.addView(locationViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
+                            layout.addView(secondaryListViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
                         } else if (type == FieldType.PRICE){
-                            layout.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
+                            layout.addView(secondaryListViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
 
                         } else {
-                            layout.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
+                            layout.addView(secondaryListViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
                         }
 
                     } else {
-                        ListItemSingleView view = locationViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
+                        ListItemSingleView view = secondaryListViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
                         layout.addView(view);
                     }
                 }
@@ -203,7 +203,7 @@ public class LocationListFragment extends Fragment {
     }
 
     private void addTitleView(EntryField entryField){
-        ListItemSingleView v = locationViewManager.drawSingleView(null, entryField.getTitle(), true);
+        ListItemSingleView v = secondaryListViewManager.drawSingleView(null, entryField.getTitle(), true);
         layout.addView(v);
     }
 
@@ -211,7 +211,7 @@ public class LocationListFragment extends Fragment {
         int size = entryField.getNumEntries();
         for (int i = 0; i < size; ++i) {
             if (size > i + 1) {
-                layout.addView(locationViewManager.drawDoubleView(type1, type2, entryField.getEntry(i), entryField.getEntry(++i)));
+                layout.addView(secondaryListViewManager.drawDoubleView(type1, type2, entryField.getEntry(i), entryField.getEntry(++i)));
             }
         }
     }
@@ -220,7 +220,7 @@ public class LocationListFragment extends Fragment {
         addTitleView(entryField);
         int size = entryField.getNumEntries();
         for (int i = 0; i < size; ++i) {
-            ListItemSingleView view = locationViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
+            ListItemSingleView view = secondaryListViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
             layout.addView(view);
         }
     }

@@ -3,20 +3,18 @@ package com.sundown.maplists.models;
 import java.util.Map;
 
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
-import static com.sundown.maplists.storage.JsonConstants.TYPE;
-import static com.sundown.maplists.storage.JsonConstants.TYPE_LOCATION_LIST;
 
 /**
  * Created by Sundown on 5/4/2015.
  */
-public class SecondaryList extends LocationList {
+public class SecondaryList extends SchemaList {
 
 
     private int listId;
 
 
     protected SecondaryList(int mapId, int listId, int color) {
-        super(mapId, color);
+        super(mapId, ListType.SECONDARY, color);
         this.listId = listId;
     }
 
@@ -24,7 +22,6 @@ public class SecondaryList extends LocationList {
     @Override
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = super.getProperties();
-        properties.put(TYPE, TYPE_LOCATION_LIST);
         properties.put(LIST_ID, listId);
         return properties;
     }

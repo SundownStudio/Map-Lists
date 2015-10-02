@@ -16,7 +16,7 @@ import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
 import com.sundown.maplists.models.SecondaryList;
-import com.sundown.maplists.utils.LocationViewManager;
+import com.sundown.maplists.utils.SecondaryListViewManager;
 import com.sundown.maplists.utils.ViewUtils;
 
 import java.util.ArrayList;
@@ -26,10 +26,10 @@ import java.util.List;
 /**
  * Created by Sundown on 5/21/2015.
  */
-public class SecondaryListsView extends RelativeLayout {
+public class ListModeView extends RelativeLayout {
 
     public interface AllListsListener{
-        void LocationListSelected(SecondaryList list);
+        void SecondaryListSelected(SecondaryList list);
     }
 
     private RecyclerView recyclerView;
@@ -37,7 +37,7 @@ public class SecondaryListsView extends RelativeLayout {
     private AdapterLocationItems adapter;
     private AllListsListener listener;
 
-    public SecondaryListsView(Context context, AttributeSet attrs) { super(context, attrs);}
+    public ListModeView(Context context, AttributeSet attrs) { super(context, attrs);}
 
 
     @Override
@@ -45,7 +45,7 @@ public class SecondaryListsView extends RelativeLayout {
         super.onFinishInflate();
 
         emptyListText = (TextView) findViewById(R.id.emptyText);
-        recyclerView = (RecyclerView) findViewById(R.id.locationList);
+        recyclerView = (RecyclerView) findViewById(R.id.listModeRecycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new AdapterLocationItems(getContext());
         recyclerView.setAdapter(adapter);
@@ -67,13 +67,13 @@ public class SecondaryListsView extends RelativeLayout {
     private class AdapterLocationItems extends RecyclerView.Adapter<AdapterLocationItems.ViewHolder> {
 
         private LayoutInflater inflater;
-        private ArrayList<SecondaryList> locationItems = new ArrayList<>();
-        private LocationViewManager locationViewManager;
+        private ArrayList<SecondaryList> listItems = new ArrayList<>();
+        private SecondaryListViewManager secondaryListViewManager;
 
 
         public AdapterLocationItems(Context context) {
             inflater = LayoutInflater.from(context);
-            locationViewManager = LocationViewManager.getInstance().reset(context);
+            secondaryListViewManager = SecondaryListViewManager.getInstance().reset(context);
         }
 
         @Override
@@ -86,7 +86,7 @@ public class SecondaryListsView extends RelativeLayout {
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.reset();
 
-            SecondaryList locationItem = locationItems.get(position);
+            SecondaryList locationItem = listItems.get(position);
             List<Field> fields = locationItem.getFields();
 
             for (Field field: fields) {
@@ -114,16 +114,16 @@ public class SecondaryListsView extends RelativeLayout {
                             if (size > i + 1) {
 
                                 if (type == FieldType.DATE_TIME){
-                                    holder.container.addView(locationViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
+                                    holder.container.addView(secondaryListViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
                                 } else if (type == FieldType.PRICE){
-                                    holder.container.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
+                                    holder.container.addView(secondaryListViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
 
                                 } else {
-                                    holder.container.addView(locationViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
+                                    holder.container.addView(secondaryListViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
                                 }
 
                             } else {
-                                ListItemSingleView view = locationViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
+                                ListItemSingleView view = secondaryListViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
                                 holder.container.addView(view);
                             }
                         }
@@ -134,7 +134,7 @@ public class SecondaryListsView extends RelativeLayout {
                         addTitleView(entryField, holder);
                         int size = entryField.getNumEntries();
                         for (int i = 0; i < size; ++i) {
-                            ListItemSingleView view = locationViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
+                            ListItemSingleView view = secondaryListViewManager.drawSingleView(entryField.getType(), entryField.getEntry(i), false);
                             holder.container.addView(view);
                         }
                         break;
@@ -157,7 +157,7 @@ public class SecondaryListsView extends RelativeLayout {
 
         private void addTitleView(EntryField entryField, ViewHolder holder){
             if (entryField.isTitleShown()) {
-                ListItemSingleView v = locationViewManager.drawSingleView(null, entryField.getTitle(), true);
+                ListItemSingleView v = secondaryListViewManager.drawSingleView(null, entryField.getTitle(), true);
                 holder.container.addView(v);
             }
         }
@@ -166,7 +166,7 @@ public class SecondaryListsView extends RelativeLayout {
             int size = entryField.getNumEntries();
             for (int i = 0; i < size; ++i) {
                 if (size > i + 1) {
-                    holder.container.addView(locationViewManager.drawDoubleView(type1, type2, entryField.getEntry(i), entryField.getEntry(++i)));
+                    holder.container.addView(secondaryListViewManager.drawDoubleView(type1, type2, entryField.getEntry(i), entryField.getEntry(++i)));
                 }
             }
         }
@@ -174,12 +174,12 @@ public class SecondaryListsView extends RelativeLayout {
 
         @Override
         public int getItemCount() {
-            return locationItems.size();
+            return listItems.size();
         }
 
         public void setList(List<SecondaryList> locationItems) {
-            this.locationItems.clear(); //*** ALWAYS DO THIS FIRST BECAUSE SOME PHONES WILL THROW OutOfBounds Exception Inconsistency detected. Invalid view holder adapter positionViewHolder
-            this.locationItems.addAll(locationItems);
+            this.listItems.clear(); //*** ALWAYS DO THIS FIRST BECAUSE SOME PHONES WILL THROW OutOfBounds Exception Inconsistency detected. Invalid view holder adapter positionViewHolder
+            this.listItems.addAll(locationItems);
             notifyDataSetChanged();
         }
 
@@ -201,7 +201,7 @@ public class SecondaryListsView extends RelativeLayout {
 
             @Override
             public void onClick(View v) {
-                listener.LocationListSelected(locationItems.get(getAdapterPosition()));
+                listener.SecondaryListSelected(listItems.get(getAdapterPosition()));
             }
 
 

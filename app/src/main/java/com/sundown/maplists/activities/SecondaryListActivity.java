@@ -12,10 +12,11 @@ import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
-import com.sundown.maplists.fragments.LocationListFragment;
+import com.sundown.maplists.fragments.SecondaryListFragment;
 import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.LocationList;
-import com.sundown.maplists.models.LocationListFactory;
+import com.sundown.maplists.models.ListFactory;
+import com.sundown.maplists.models.ListType;
+import com.sundown.maplists.models.SchemaList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
@@ -27,22 +28,22 @@ import java.util.Map;
 /**
  * Created by Sundown on 8/19/2015.
  */
-public class LocationListActivity extends AppCompatActivity implements ActionDialogFragment.ConfirmActionListener {
+public class SecondaryListActivity extends AppCompatActivity implements ActionDialogFragment.ConfirmActionListener {
 
 
-    private static final String FRAGMENT_LOCATION_LIST = "LOCATION_LIST";
+    private static final String FRAGMENT_SECONDARY_LIST = "SECONDARY_LIST";
     private static final String FRAGMENT_ACTION= "ACTION";
 
     private FragmentManager fm;
     private DatabaseCommunicator db;
     private ToolbarManager toolbarManager;
-    private LocationList model;
+    private SchemaList model;
     private int mapId;
     private String documentId;
     private String parentDocumentId;
 
-    /** Displays the contents of a single LocationList */
-    private LocationListFragment locationListFragment;
+    /** Displays the contents of a single SecondaryList */
+    private SecondaryListFragment secondaryListFragment;
 
     /** Delete confirmation */
     private ActionDialogFragment actionDialogFragment;
@@ -62,14 +63,14 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
         setUpToolBars(getItemName());
 
         if (savedInstanceState == null){
-            locationListFragment = LocationListFragment.newInstance();
+            secondaryListFragment = SecondaryListFragment.newInstance();
             FragmentTransaction transaction = fm.beginTransaction();
-            transaction.replace(R.id.fragment_container, locationListFragment, FRAGMENT_LOCATION_LIST);
+            transaction.replace(R.id.fragment_container, secondaryListFragment, FRAGMENT_SECONDARY_LIST);
             transaction.commit();
 
         } else {
 
-            locationListFragment = (LocationListFragment) fm.findFragmentByTag(FRAGMENT_LOCATION_LIST);
+            secondaryListFragment = (SecondaryListFragment) fm.findFragmentByTag(FRAGMENT_SECONDARY_LIST);
             actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
         }
 
@@ -79,12 +80,12 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
     protected void onResume() {
         super.onResume();
         loadModel();
-        locationListFragment.setModel(model);
+        secondaryListFragment.setModel(model);
     }
 
     private void loadModel(){
         Map<String, Object> properties = db.read(documentId);
-        model =  LocationListFactory.createLocationList(LocationListFactory.SECONDARYLIST, mapId).setProperties(properties);
+        model =  ListFactory.createList(ListType.SECONDARY, mapId).setProperties(properties);
     }
 
     private void setUpToolBars(String itemName){
@@ -141,7 +142,7 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
         switch (item.getItemId()) {
             case R.id.action_delete: {
 
-                if (locationListFragment != null && locationListFragment.getUserVisibleHint()) {
+                if (secondaryListFragment != null && secondaryListFragment.getUserVisibleHint()) {
                     EntryField entryField = (EntryField) model.getField(0);
                     actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.delete_location), entryField.getEntry(0) + " " + getResources().getString(R.string.delete_confirm));
                 }
@@ -152,9 +153,9 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
 
             case R.id.action_edit: {
 
-                if (locationListFragment != null && locationListFragment.getUserVisibleHint()) {
-                    Intent intent = new Intent(LocationListActivity.this, AddListActivity.class);
-                    intent.putExtra(JsonConstants.TYPE, JsonConstants.TYPE_LOCATION_LIST);
+                if (secondaryListFragment != null && secondaryListFragment.getUserVisibleHint()) {
+                    Intent intent = new Intent(SecondaryListActivity.this, AddListActivity.class);
+                    intent.putExtra(JsonConstants.LIST_TYPE, ListType.SECONDARY.name());
                     intent.putExtra(JsonConstants.OPERATION, Operation.UPDATE.name());
                     intent.putExtra(JsonConstants.DOCUMENT_ID, model.getDocumentId());
                     intent.putExtra(JsonConstants.MAP_ID, model.getMapId());
@@ -185,7 +186,7 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
     @Override
     public void confirmAction(boolean confirmed) {
         if (confirmed) {
-            db.delete(model.getDocumentId(), model.getMapId(), Operation.DELETE_LOCATION_LIST);
+            db.delete(model.getDocumentId(), model.getMapId(), Operation.DELETE_SECONDARY_LIST);
             returnActivityResult();
         }
     }
@@ -205,6 +206,6 @@ public class LocationListActivity extends AppCompatActivity implements ActionDia
             if (entry.length() > 0)
                 return entry;
         } catch (Exception e){}
-        return getString(R.string.location_list_activity); //else return default
+        return getString(R.string.secondary_list_activity); //else return default
     }
 }

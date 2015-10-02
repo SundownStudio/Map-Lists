@@ -13,12 +13,12 @@ import com.sundown.maplists.R;
 /**
  * Created by Sundown on 7/21/2015.
  */
-public class LocationListView extends RelativeLayout {
+public class SecondaryListView extends RelativeLayout {
 
     private LinearLayout container;
     private TextView subject;
 
-    public LocationListView(Context context, AttributeSet attrs) {
+    public SecondaryListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

@@ -115,8 +115,8 @@
     <string name="address_found">Address Found</string>
     <string name="edit">"Edit "</string>
     <string name="add_lists_activity">AddLists</string>
-    <string name="secondary_lists_activity">SecondaryLists</string>
-    <string name="location_list_activity">LocationList</string>
+    <string name="list_mode_activity">ListMode</string>
+    <string name="secondary_list_activity">SecondaryList</string>
     <string name="manage_schemas_activity">ManageSchemas</string>
     <string name="add_list">Add List</string>
     <string name="cancel_add_list">Cancel Add List</string>

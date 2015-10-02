@@ -18,7 +18,7 @@ public class TaskOptimizeImage extends AsyncTask<String, Void, Boolean> {
 
     private TaskOptimizeImageListener listener;
     private int width, height;
-    public PhotoField model;
+    private PhotoField model;
 
 
     public TaskOptimizeImage(PhotoField model, int width, int height, TaskOptimizeImageListener listener){

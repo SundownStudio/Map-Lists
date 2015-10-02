@@ -3,10 +3,10 @@ package com.sundown.maplists.models;
 import java.util.List;
 import java.util.Map;
 
+import static com.sundown.maplists.storage.JsonConstants.COLOR;
+import static com.sundown.maplists.storage.JsonConstants.LIST_TYPE;
 import static com.sundown.maplists.storage.JsonConstants.SCHEMA_ID;
 import static com.sundown.maplists.storage.JsonConstants.SCHEMA_NAME;
-import static com.sundown.maplists.storage.JsonConstants.TYPE;
-import static com.sundown.maplists.storage.JsonConstants.TYPE_SCHEMA_LIST;
 
 /**
  * Created by Sundown on 8/25/2015.
@@ -15,6 +15,7 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
 
     private int schemaId;
     private String schemaName;
+    private ListType schemaListType;
 
     public void setSchemaName(String schemaName) {
         this.schemaName = schemaName;
@@ -24,17 +25,24 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
         return schemaName;
     }
 
-    public SchemaList() {}
+    private int color;
 
-    public SchemaList(LocationList locationList) {
-        super();
-        List<Field> fields = locationList.getFields();
-        for (Field field : fields) {
-            addField(new SchemaField(field));
-        }
+    public int getColor() {
+        return color;
     }
 
-    public String getTitles(StringBuffer buffer) {
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+
+    public SchemaList(int mapId, ListType schemaListType, int color) {
+        super(mapId);
+        this.schemaListType = schemaListType;
+        this.color = color;
+    }
+
+    public String getTitlesString(StringBuffer buffer) {
         List<Field> fields = getFields();
 
         for (Field field : fields) {
@@ -45,7 +53,7 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
         return buffer.toString();
     }
 
-    public String getTypes(StringBuffer buffer) {
+    public String getFieldTypesString(StringBuffer buffer) {
         List<Field> fields = getFields();
 
         for (Field field : fields) {
@@ -60,9 +68,10 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     @Override
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = super.getProperties();
-        properties.put(TYPE, TYPE_SCHEMA_LIST);
         properties.put(SCHEMA_ID, schemaId);
+        properties.put(LIST_TYPE, schemaListType.name());
         properties.put(SCHEMA_NAME, schemaName);
+        properties.put(COLOR, color);
         return properties;
     }
 
@@ -70,12 +79,14 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     public SchemaList setProperties(Map properties) {
         super.setProperties(properties);
         schemaId = (Integer) properties.get(SCHEMA_ID);
+        schemaListType = ListType.valueOf(properties.get(LIST_TYPE).toString());
         schemaName = String.valueOf(properties.get(SCHEMA_NAME));
+        color = (Integer) properties.get(COLOR);
         return this;
     }
 
 
-    @Override //note does not care about hashcode
+    @Override //note does not care about hashcode, used for seeing if schema changed
     public boolean equals(Object o) {
         if (o instanceof SchemaList) {
             SchemaList a = (SchemaList) o;

@@ -11,29 +11,30 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.fragments.SecondaryListsFragment;
+import com.sundown.maplists.fragments.ListModeFragment;
+import com.sundown.maplists.models.ListType;
 import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.ToolbarManager;
-import com.sundown.maplists.views.SecondaryListsView;
+import com.sundown.maplists.views.ListModeView;
 
 import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 
 /**
  * Created by Sundown on 8/19/2015.
  */
-public class SecondaryListsActivity extends AppCompatActivity implements SecondaryListsView.AllListsListener {
+public class ListModeActivity extends AppCompatActivity implements ListModeView.AllListsListener {
 
-    private static final String FRAGMENT_SECONDARY_LISTS = "SECONDARY_LISTS";
+    private static final String FRAGMENT_LISTMODE = "LISTMODE";
     private static final int REQUEST_CODE = 101;
 
     private FragmentManager fm;
     private ToolbarManager toolbarManager;
 
-    /** shows the list of LocationLists associated with a particular location. */
-    private SecondaryListsFragment secondaryListsFragment;
+    /** shows the list of SecondaryLists associated with a particular location. */
+    private ListModeFragment listModeFragment;
     private String documentId;
     private int mapId;
 
@@ -53,17 +54,17 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
         setUpToolBars(getLocationName(getIntent().getExtras()));
 
         if (savedInstanceState == null){
-            secondaryListsFragment = SecondaryListsFragment.newInstance(mapId, this, toolbarManager);
+            listModeFragment = ListModeFragment.newInstance(mapId, this, toolbarManager);
             FragmentTransaction transaction = fm.beginTransaction();
-            transaction.replace(R.id.fragment_container, secondaryListsFragment, FRAGMENT_SECONDARY_LISTS);
+            transaction.replace(R.id.fragment_container, listModeFragment, FRAGMENT_LISTMODE);
             transaction.commit();
 
 
         } else {
-            secondaryListsFragment = (SecondaryListsFragment) fm.findFragmentByTag(FRAGMENT_SECONDARY_LISTS);
-            if (secondaryListsFragment != null){
-                secondaryListsFragment.setToolbarManager(toolbarManager);
-                secondaryListsFragment.setListener(this);
+            listModeFragment = (ListModeFragment) fm.findFragmentByTag(FRAGMENT_LISTMODE);
+            if (listModeFragment != null){
+                listModeFragment.setToolbarManager(toolbarManager);
+                listModeFragment.setListener(this);
             }
         }
     }
@@ -72,7 +73,7 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
         String locationName = bundle.getString(JsonConstants.FIELD_ENTRY);
         if (locationName != null && locationName.length() > 0)
             return locationName;
-        return getString(R.string.secondary_lists_activity);
+        return getString(R.string.list_mode_activity);
     }
 
     private void setUpToolBars(String locationName){
@@ -114,7 +115,7 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
         });
 
         toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, false));
-        secondaryListsFragment.startLoader();
+        listModeFragment.startLoader();
         return true;
     }
 
@@ -127,9 +128,9 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
     private boolean bottomToolbarPressed(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_list: {
-                if (secondaryListsFragment != null && secondaryListsFragment.getUserVisibleHint()) {
-                    Intent intent = new Intent(SecondaryListsActivity.this, AddListActivity.class);
-                    intent.putExtra(JsonConstants.TYPE, JsonConstants.TYPE_LOCATION_LIST);
+                if (listModeFragment != null && listModeFragment.getUserVisibleHint()) {
+                    Intent intent = new Intent(ListModeActivity.this, AddListActivity.class);
+                    intent.putExtra(JsonConstants.LIST_TYPE, ListType.SECONDARY.name());
                     intent.putExtra(JsonConstants.OPERATION, Operation.INSERT.name());
                     intent.putExtra(JsonConstants.DOCUMENT_ID, documentId);
                     intent.putExtra(JsonConstants.MAP_ID, mapId);
@@ -143,8 +144,8 @@ public class SecondaryListsActivity extends AppCompatActivity implements Seconda
 
 
     @Override
-    public void LocationListSelected(SecondaryList list) {
-        Intent intent = new Intent(SecondaryListsActivity.this, LocationListActivity.class);
+    public void SecondaryListSelected(SecondaryList list) {
+        Intent intent = new Intent(ListModeActivity.this, SecondaryListActivity.class);
         intent.putExtra(JsonConstants.PARENT_DOC_ID, documentId);
         intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
         intent.putExtra(JsonConstants.MAP_ID, list.getMapId());

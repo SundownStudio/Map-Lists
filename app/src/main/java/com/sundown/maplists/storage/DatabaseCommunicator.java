@@ -21,6 +21,7 @@ import com.couchbase.lite.android.AndroidContext;
 import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.AbstractList;
+import com.sundown.maplists.models.ListType;
 import com.sundown.maplists.models.PhotoField;
 
 import java.io.ByteArrayInputStream;
@@ -37,11 +38,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
+import static com.sundown.maplists.storage.JsonConstants.LIST_TYPE;
 import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
-import static com.sundown.maplists.storage.JsonConstants.TYPE;
-import static com.sundown.maplists.storage.JsonConstants.TYPE_LOCATION_LIST;
-import static com.sundown.maplists.storage.JsonConstants.TYPE_MAP_LIST;
-import static com.sundown.maplists.storage.JsonConstants.TYPE_SCHEMA_LIST;
 
 /**
  * Created by Sundown on 7/14/2015.
@@ -119,6 +117,8 @@ public class DatabaseCommunicator {
                 }
             } catch (CouchbaseLiteException e) {
                 Log.e(e); //TODO: something went wrong dialog
+            } catch (NullPointerException ne){
+                Log.e(ne);
             }
         }
         return null;
@@ -190,9 +190,12 @@ public class DatabaseCommunicator {
             viewByMapId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
-                    String type = (String) properties.get(TYPE);
-                    if (type.equals(TYPE_MAP_LIST)) {
-                        emitter.emit(properties.get(JsonConstants.MAP_ID), null);
+                    String type = (String) properties.get(LIST_TYPE);
+                    if (type != null) {
+                        ListType listType = ListType.valueOf(type);
+                        if (listType == ListType.MAP) {
+                            emitter.emit(properties.get(JsonConstants.MAP_ID), null);
+                        }
                     }
                 }
             }, VIEW_VERSION);     //view last parameter is version, this is retained so if map/reduce updated it will go back
@@ -202,10 +205,13 @@ public class DatabaseCommunicator {
             viewByItemId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
-                    String type = (String) properties.get(TYPE);
-                    if (type.equals(TYPE_LOCATION_LIST)) {
-                        int[] arr = new int[]{(Integer) properties.get(MAP_ID), (Integer) properties.get(LIST_ID)};
-                        emitter.emit(arr, null);
+                    String type = (String) properties.get(LIST_TYPE);
+                    if (type != null) {
+                        ListType listType = ListType.valueOf(type);
+                        if (listType == ListType.SECONDARY) {
+                            int[] arr = new int[]{(Integer) properties.get(MAP_ID), (Integer) properties.get(LIST_ID)};
+                            emitter.emit(arr, null);
+                        }
                     }
                 }
             }, VIEW_VERSION);     //view last parameter is version, this is retained so if map/reduce updated it will go back
@@ -214,10 +220,13 @@ public class DatabaseCommunicator {
             View viewBySchemaId = database.getView(VIEW_BY_SCHEMA_ID);
             viewBySchemaId.setMap(new Mapper() {
                 @Override
-                public void map(Map<String, Object> document, Emitter emitter) {
-                    String type = (String) document.get(TYPE);
-                    if (type.equals(TYPE_SCHEMA_LIST)) {
-                        emitter.emit(document.get(JsonConstants.SCHEMA_ID), null);
+                public void map(Map<String, Object> properties, Emitter emitter) {
+                    String type = (String) properties.get(LIST_TYPE);
+                    if (type != null) {
+                        ListType listType = ListType.valueOf(type);
+                        if (listType == ListType.SCHEMA) {
+                            emitter.emit(properties.get(JsonConstants.SCHEMA_ID), null);
+                        }
                     }
                 }
             }, VIEW_VERSION);
@@ -310,7 +319,7 @@ public class DatabaseCommunicator {
                     removeCount(String.valueOf(mapId));
                 }
 
-            } else if (operation == Operation.DELETE_LOCATION_LIST){
+            } else if (operation == Operation.DELETE_SECONDARY_LIST){
                 if (deleteDocument(documentId)){
                     decreaseCount(String.valueOf(mapId));
                 }
@@ -334,7 +343,7 @@ public class DatabaseCommunicator {
             }
         }
 
-        public Revision getCurrentRevision(String documentId){
+        public Revision getCurrentRevision(String documentId) throws NullPointerException {
             return database.getDocument(documentId).getCurrentRevision();
         }
 
@@ -390,7 +399,7 @@ public class DatabaseCommunicator {
 
             //create the counts doc if it doesn't exist yet
             Map<String, Object> properties = new HashMap(3);
-            properties.put(TYPE, JsonConstants.COUNTS);
+            properties.put(JsonConstants.DOCUMENT_TYPE, JsonConstants.COUNTS);
             properties.put(JsonConstants.COUNT_MAP_LISTS, 0);
             properties.put(JsonConstants.COUNT_SCHEMAS, 0);
             Document document = database.getDocument(DOC_COUNTS);

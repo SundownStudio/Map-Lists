@@ -68,9 +68,9 @@ public class ManageSchemasView extends RelativeLayout {
 
             holder.name.setText(schemaList.getSchemaName());
             buffer.setLength(0);
-            holder.titles.setText(schemaList.getTitles(buffer));
+            holder.titles.setText(schemaList.getTitlesString(buffer));
             buffer.setLength(0);
-            holder.types.setText(schemaList.getTypes(buffer));
+            holder.types.setText(schemaList.getFieldTypesString(buffer));
         }
 
         @Override

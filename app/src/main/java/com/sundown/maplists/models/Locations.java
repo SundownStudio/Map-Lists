@@ -14,7 +14,7 @@ public class Locations {
 
     private TreeMap<LatLng, MapList> locations = new TreeMap<>(new LatLngComparator()); //holding all data pertinent to locations
     public TreeMap<LatLng, MapList> getLocations(){return locations;}
-    private HashMap<LatLng, Marker> markers = new HashMap<>(); //holding all markers so we can slide skip to next on map - separate from locations cuz those are used elsewhere
+    private HashMap<LatLng, Marker> markers = new HashMap<>(); //holding all markers so we can slide skip to next on map - todo separate from locations cuz those are used elsewhere
     //todo: merge these
 
     private static Locations instance;
