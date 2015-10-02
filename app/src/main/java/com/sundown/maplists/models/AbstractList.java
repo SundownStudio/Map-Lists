@@ -9,7 +9,6 @@ import static com.sundown.maplists.storage.JsonConstants.DOCUMENT_ID;
 import static com.sundown.maplists.storage.JsonConstants.FIELDS;
 import static com.sundown.maplists.storage.JsonConstants.FIELD_PERMANENT;
 import static com.sundown.maplists.storage.JsonConstants.FIELD_TYPE;
-import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
 
 /**
  * Created by Sundown on 7/14/2015.
@@ -22,18 +21,11 @@ public abstract class AbstractList implements PropertiesHandler {
         return documentId;
     }
 
-    private int mapId;
-
-    public int getMapId() {
-        return mapId;
-    }
-
     private List<Field> fields;
 
     public List<Field>getFields() { return fields; }
 
-    protected AbstractList(int mapId) {
-        this.mapId = mapId;
+    protected AbstractList() {
         fields = new ArrayList<>();
     }
 
@@ -66,7 +58,6 @@ public abstract class AbstractList implements PropertiesHandler {
     @Override
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = new HashMap();
-        properties.put(MAP_ID, mapId);
         List list = new ArrayList();
 
         for (Field field : fields) {
@@ -81,7 +72,6 @@ public abstract class AbstractList implements PropertiesHandler {
     public AbstractList setProperties(Map properties) {
         fields.clear();
         documentId = String.valueOf(properties.get(DOCUMENT_ID));
-        mapId = (Integer) properties.get(MAP_ID);
         List list = (List) properties.get(FIELDS);
 
         if (list != null) {

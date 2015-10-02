@@ -193,7 +193,7 @@ public class DatabaseCommunicator {
                     String type = (String) properties.get(LIST_TYPE);
                     if (type != null) {
                         ListType listType = ListType.valueOf(type);
-                        if (listType == ListType.MAP) {
+                        if (listType == ListType.PRIMARY) {
                             emitter.emit(properties.get(JsonConstants.MAP_ID), null);
                         }
                     }
@@ -400,7 +400,7 @@ public class DatabaseCommunicator {
             //create the counts doc if it doesn't exist yet
             Map<String, Object> properties = new HashMap(3);
             properties.put(JsonConstants.DOCUMENT_TYPE, JsonConstants.COUNTS);
-            properties.put(JsonConstants.COUNT_MAP_LISTS, 0);
+            properties.put(JsonConstants.COUNT_PRIMARY_LISTS, 0);
             properties.put(JsonConstants.COUNT_SCHEMAS, 0);
             Document document = database.getDocument(DOC_COUNTS);
             try {

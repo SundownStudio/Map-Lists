@@ -38,8 +38,8 @@ public class SchemaList extends AbstractList implements PropertiesHandler {
     }
 
 
-    public SchemaList(int mapId, ListType listType, int color) {
-        super(mapId);
+    public SchemaList(ListType listType, int color) {
+        super();
         this.listType = listType;
         this.color = color;
     }

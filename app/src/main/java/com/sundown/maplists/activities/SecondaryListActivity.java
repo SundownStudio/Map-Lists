@@ -14,9 +14,9 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.fragments.SecondaryListFragment;
 import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.ListFactory;
+import com.sundown.maplists.models.MapListFactory;
 import com.sundown.maplists.models.ListType;
-import com.sundown.maplists.models.SchemaList;
+import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
@@ -37,7 +37,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
     private FragmentManager fm;
     private DatabaseCommunicator db;
     private ToolbarManager toolbarManager;
-    private SchemaList model;
+    private MapList model;
     private int mapId;
     private String documentId;
     private String parentDocumentId;
@@ -85,7 +85,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
 
     private void loadModel(){
         Map<String, Object> properties = db.read(documentId);
-        model =  ListFactory.createList(getResources(), ListType.SECONDARY, mapId).setProperties(properties);
+        model =  MapListFactory.createList(getResources(), ListType.SECONDARY, mapId).setProperties(properties);
     }
 
     private void setUpToolBars(String itemName){

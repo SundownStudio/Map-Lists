@@ -28,10 +28,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.ListFactory;
+import com.sundown.maplists.models.MapListFactory;
 import com.sundown.maplists.models.ListType;
 import com.sundown.maplists.models.Locations;
-import com.sundown.maplists.models.MapList;
+import com.sundown.maplists.models.PrimaryList;
 import com.sundown.maplists.network.FetchAddressIntentService;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.ContentLoader;
@@ -208,11 +208,11 @@ public class MapFragment extends Fragment implements
         if (latLng == null) latLng = truncateLatLng(view.getCameraPosition());
 
 
-        if (model.getMapList(latLng) == null){
+        if (model.getPrimaryList(latLng) == null){
             savedLatLng = latLng;
-            MapList list = (MapList) ListFactory.createList(getResources(), ListType.MAP, -1);
+            PrimaryList list = (PrimaryList) MapListFactory.createList(getResources(), ListType.PRIMARY, -1);
             list.setLatLng(latLng);
-            db.insert(list, JsonConstants.COUNT_MAP_LISTS, JsonConstants.MAP_ID);
+            db.insert(list, JsonConstants.COUNT_PRIMARY_LISTS, JsonConstants.MAP_ID);
 
 
 
@@ -258,7 +258,7 @@ public class MapFragment extends Fragment implements
         marker.setDraggable(false);
         LatLng newLatLng = truncateLatLng(marker.getPosition());
 
-        if (model.getMapList(newLatLng) != null){
+        if (model.getPrimaryList(newLatLng) != null){
             view.animateToLocation(oldLatLng);
             Log.Toast(getActivity(), "You already have a marker at this location", Log.TOAST_LONG);
             marker.setPosition(oldLatLng);
@@ -267,16 +267,16 @@ public class MapFragment extends Fragment implements
             drag = true;
             model.swap(oldLatLng, newLatLng);
             savedLatLng = newLatLng;
-            MapList list = model.getMapList(newLatLng);
+            PrimaryList list = model.getPrimaryList(newLatLng);
             db.update(list);
 
         }
     }
 
 
-    public MapList getSelectedMapList(){
+    public PrimaryList getSelectedPrimaryList(){
         if (selectedMarker != null)
-           return model.getMapList(selectedMarker.getPosition());
+           return model.getPrimaryList(selectedMarker.getPosition());
         return null;
     }
 
@@ -488,8 +488,8 @@ public class MapFragment extends Fragment implements
                 QueryRow row = it.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
 
-                MapList mapList = (MapList) ListFactory.createList(getResources(), ListType.MAP, -1).setProperties(properties);
-                model.storeMapList(mapList.getLatLng(), mapList);
+                PrimaryList list = (PrimaryList) MapListFactory.createList(getResources(), ListType.PRIMARY, -1).setProperties(properties);
+                model.storePrimaryList(list.getLatLng(), list);
 
             }
 
@@ -505,13 +505,13 @@ public class MapFragment extends Fragment implements
                     view.cleanup();
                     releaseMarker();
                     Marker marker;
-                    TreeMap<LatLng, MapList> locations = model.getLocations();
+                    TreeMap<LatLng, PrimaryList> locations = model.getPrimaryLists();
                     Iterator it = locations.entrySet().iterator();
 
                     while (it.hasNext()) {
                         Map.Entry pair = (Map.Entry) it.next(); //todo: could iterate over keyset but leaving this cuz we will merge model lists at some point..  pair.getValue()
                         LatLng latLng = (LatLng) pair.getKey();
-                        MapList list = (MapList) pair.getValue();
+                        PrimaryList list = (PrimaryList) pair.getValue();
 
                         marker = addMarker(latLng, list.getColor());
                         if (savedLatLng != null && savedLatLng.equals(marker.getPosition())) {

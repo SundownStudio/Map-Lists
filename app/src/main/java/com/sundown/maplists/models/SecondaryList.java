@@ -5,9 +5,9 @@ import java.util.Map;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
 /**
- * Created by Sundown on 5/4/2015.
+ * In addition to primary lists, each location can also have a set of secondary lists, these are created in list-mode
  */
-public class SecondaryList extends SchemaList {
+public class SecondaryList extends MapList {
 
 
     private int listId;

@@ -1,44 +1,38 @@
 package com.sundown.maplists.models;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.sundown.maplists.storage.JsonConstants;
-
 import java.util.Map;
 
+import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
+
 /**
- * Created by Sundown on 4/13/2015.
+ * These are drawable lists associated with a particular map id
  */
-public class MapList extends SchemaList {
+public abstract class MapList extends SchemaList {
 
+    private int mapId;
 
-    private LatLng latLng;
-
-    public void setLatLng(LatLng latLng) {
-        this.latLng = latLng;
-    }
-
-    public LatLng getLatLng() {
-        return latLng;
+    public int getMapId() {
+        return mapId;
     }
 
 
-    protected MapList(int mapId, int color) {
-        super(mapId, ListType.MAP, color);
+    protected MapList(int mapId, ListType listType, int color) {
+        super(listType, color);
+        this.mapId = mapId;
     }
 
 
     @Override
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = super.getProperties();
-        properties.put(JsonConstants.MAP_LATITUDE, latLng.latitude);
-        properties.put(JsonConstants.MAP_LONGITUDE, latLng.longitude);
+        properties.put(MAP_ID, mapId);
         return properties;
     }
 
     @Override
     public MapList setProperties(Map properties) {
         super.setProperties(properties);
-        latLng = new LatLng((Double) properties.get(JsonConstants.MAP_LATITUDE), (Double) properties.get(JsonConstants.MAP_LONGITUDE));
+        mapId = (Integer) properties.get(MAP_ID);
         return this;
     }
 

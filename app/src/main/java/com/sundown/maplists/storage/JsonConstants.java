@@ -12,7 +12,6 @@ public final class JsonConstants {
     public static final String MAP_ID = "mapId";
     public static final String MAP_LATITUDE = "lat";
     public static final String MAP_LONGITUDE = "lon";
-    public static final String MAP_MULTIPLE_LISTS_ENABLED = "multiple_lists_enabled";
 
 
     public static final String LIST_ID = "listId";
@@ -35,5 +34,5 @@ public final class JsonConstants {
     public static final String OPERATION = "operation";
     public static final String COUNTS = "counts";
     public static final String COUNT_SCHEMAS = "schema_counts";
-    public static final String COUNT_MAP_LISTS = "mapList_counts";
+    public static final String COUNT_PRIMARY_LISTS = "primaryList_counts";
 }

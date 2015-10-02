@@ -17,8 +17,8 @@ import com.sundown.maplists.dialogs.EditTitleDialogFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
+import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.models.SchemaList;
 import com.sundown.maplists.models.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.storage.DatabaseCommunicator;
@@ -59,8 +59,8 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     private AddListView view;
 
     /** our model, can either be a MapList or a SecondaryList */
-    private SchemaList model;
-    public void setModel(SchemaList model){
+    private MapList model;
+    public void setModel(MapList model){
         this.model = model;
         drawForm();
     }
@@ -75,7 +75,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     private ActivityResult result;
 
 
-    public static AddListFragment newInstance(SchemaList model) {
+    public static AddListFragment newInstance(MapList model) {
         AddListFragment fragment = new AddListFragment();
         fragment.model = model;
         return fragment;
@@ -195,7 +195,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     }
 
     /** for each field in model list, get entry */
-    public SchemaList refreshModel() {
+    public MapList refreshModel() {
 
         int numFields = model.getFields().size();
         for (int i = 0; i < numFields; ++i){

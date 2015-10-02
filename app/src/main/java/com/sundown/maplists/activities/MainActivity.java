@@ -23,7 +23,7 @@ import com.sundown.maplists.fragments.NavigationDrawerFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.ListType;
-import com.sundown.maplists.models.MapList;
+import com.sundown.maplists.models.PrimaryList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.storage.Operation;
@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements
     private boolean bottomToolbarPressed(MenuItem item){
         switch (item.getItemId()) {
             case R.id.action_secondary_lists: {
-                MapList list = mapFragment.getSelectedMapList();
+                PrimaryList list = mapFragment.getSelectedPrimaryList();
                 Intent intent = new Intent(MainActivity.this, ListModeActivity.class);
                 intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
                 intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             }
             case R.id.action_delete: {
-                EntryField entry = (EntryField) mapFragment.getSelectedMapList().getField(0);
+                EntryField entry = (EntryField) mapFragment.getSelectedPrimaryList().getField(0);
                 String location = entry.getEntry(0);
                 if (location.length() == 0)
                     location = "This location";
@@ -325,9 +325,9 @@ public class MainActivity extends AppCompatActivity implements
             }
             case R.id.action_edit: {
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
-                    MapList list = mapFragment.getSelectedMapList();
+                    PrimaryList list = mapFragment.getSelectedPrimaryList();
                     Intent intent = new Intent(MainActivity.this, AddListActivity.class);
-                    intent.putExtra(JsonConstants.LIST_TYPE, ListType.MAP.name());
+                    intent.putExtra(JsonConstants.LIST_TYPE, ListType.PRIMARY.name());
                     intent.putExtra(JsonConstants.OPERATION, Operation.UPDATE.name());
                     intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
                     intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void confirmAction (boolean confirmed){
         if (confirmed) {
-            MapList list = mapFragment.getSelectedMapList();
+            PrimaryList list = mapFragment.getSelectedPrimaryList();
             db.delete(list.getDocumentId(), list.getMapId(), Operation.DELETE_LOCATION);
         }
     }

@@ -12,8 +12,8 @@ import java.util.TreeMap;
  */
 public class Locations {
 
-    private TreeMap<LatLng, MapList> locations = new TreeMap<>(new LatLngComparator()); //holding all data pertinent to locations
-    public TreeMap<LatLng, MapList> getLocations(){return locations;}
+    private TreeMap<LatLng, PrimaryList> primaryLists = new TreeMap<>(new LatLngComparator()); //holding all data pertinent to locations
+    public TreeMap<LatLng, PrimaryList> getPrimaryLists(){return primaryLists;}
     private HashMap<LatLng, Marker> markers = new HashMap<>(); //holding all markers so we can slide skip to next on map - todo separate from locations cuz those are used elsewhere
     //todo: merge these
 
@@ -26,12 +26,12 @@ public class Locations {
     }
 
     public void clear(){
-        locations.clear();
+        primaryLists.clear();
         markers.clear();
     }
 
-    public MapList getMapList(LatLng latLng){
-        return locations.get(latLng);
+    public PrimaryList getPrimaryList(LatLng latLng){
+        return primaryLists.get(latLng);
     }
 
     public Marker getNextMarker(LatLng latLng, boolean forward){
@@ -39,20 +39,20 @@ public class Locations {
         LatLng nextKey;
         if (latLng == null) {
             if (forward) {
-                nextKey = locations.firstKey();
+                nextKey = primaryLists.firstKey();
             } else {
-                nextKey = locations.lastKey();
+                nextKey = primaryLists.lastKey();
             }
         } else {
             if (forward) {
-                nextKey = locations.higherKey(latLng);
+                nextKey = primaryLists.higherKey(latLng);
                 if (nextKey == null) {
-                    nextKey = locations.firstKey();
+                    nextKey = primaryLists.firstKey();
                 }
             } else {
-                nextKey = locations.lowerKey(latLng);
+                nextKey = primaryLists.lowerKey(latLng);
                 if (nextKey == null) {
-                    nextKey = locations.lastKey();
+                    nextKey = primaryLists.lastKey();
                 }
             }
         }
@@ -60,8 +60,8 @@ public class Locations {
         return markers.get(nextKey);
     }
 
-    public void storeMapList(LatLng latLng, MapList list){
-        locations.put(latLng, list);
+    public void storePrimaryList(LatLng latLng, PrimaryList list){
+        primaryLists.put(latLng, list);
     }
 
     public void storeMarker(LatLng latLng, Marker marker){ //todo: see if we can put this all into the one item..
@@ -70,18 +70,18 @@ public class Locations {
 
     //used for dragging
     public void swap(LatLng oldLatLng, LatLng newLatLng){
-        MapList list = removeMapList(oldLatLng);
+        PrimaryList list = removeMapList(oldLatLng);
         Marker marker = removeMarker(oldLatLng);
 
         list.setLatLng(newLatLng);
 
-        storeMapList(newLatLng, list);
+        storePrimaryList(newLatLng, list);
         storeMarker(newLatLng, marker);
     }
 
 
-    private MapList removeMapList(LatLng latLng){
-        return locations.remove(latLng);
+    private PrimaryList removeMapList(LatLng latLng){
+        return primaryLists.remove(latLng);
     }
 
     private Marker removeMarker(LatLng latLng){
@@ -89,7 +89,7 @@ public class Locations {
     }
 
     public int numLocations(){
-        return locations.size();
+        return primaryLists.size();
     }
 
 

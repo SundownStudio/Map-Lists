@@ -23,8 +23,8 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Locations;
-import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.models.PhotoField;
+import com.sundown.maplists.models.PrimaryList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.utils.ColorUtils;
 
@@ -180,7 +180,7 @@ public class MapView extends FrameLayout {
 
             LatLng latLng = marker.getPosition();
 
-            MapList list = model.getMapList(latLng);
+            PrimaryList list = model.getPrimaryList(latLng);
             EntryField titleEntry = (EntryField) list.getField(0);
             EntryField snippetEntry = (EntryField) list.getField(1);
             PhotoField photoField = (PhotoField) list.getField(2);

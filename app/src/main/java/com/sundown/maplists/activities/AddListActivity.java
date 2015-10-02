@@ -28,8 +28,9 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.EntryField;
 import com.sundown.maplists.models.Field;
 import com.sundown.maplists.models.FieldType;
-import com.sundown.maplists.models.ListFactory;
+import com.sundown.maplists.models.MapListFactory;
 import com.sundown.maplists.models.ListType;
+import com.sundown.maplists.models.MapList;
 import com.sundown.maplists.models.SchemaList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.pojo.MenuOption;
@@ -84,7 +85,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     private ManageSchemasFragment manageSchemasFragment;
 
     private Operation operation;
-    private SchemaList model;
+    private MapList model;
     private Field newField;
     private boolean saveUpdate;
 
@@ -111,11 +112,11 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         setUpToolBars(getString(R.string.add_lists_activity));
 
         if (operation == Operation.INSERT) { //only for secondarylists
-            model = ListFactory.createList(getResources(), listType, mapId);
+            model = MapListFactory.createList(getResources(), listType, mapId);
 
         } else if (operation == Operation.UPDATE){ //can be both maplists and secondarylists
             Map<String, Object> properties = db.read(documentId);
-            model = ListFactory.createList(getResources(), listType, mapId).setProperties(properties);
+            model = MapListFactory.createList(getResources(), listType, mapId).setProperties(properties);
         }
 
         if (savedInstanceState == null){
