@@ -1,9 +1,11 @@
-package com.sundown.maplists.models;
+package com.sundown.maplists.models.lists;
 
 import android.content.res.Resources;
 import android.graphics.Color;
 
 import com.sundown.maplists.R;
+import com.sundown.maplists.models.fields.FieldFactory;
+import com.sundown.maplists.models.fields.FieldType;
 
 /**
  * Created by Sundown on 9/8/2015.

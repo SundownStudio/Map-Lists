@@ -1,4 +1,7 @@
-package com.sundown.maplists.models;
+package com.sundown.maplists.models.lists;
+
+import com.sundown.maplists.models.PropertiesHandler;
+import com.sundown.maplists.models.fields.Field;
 
 import java.util.List;
 import java.util.Map;

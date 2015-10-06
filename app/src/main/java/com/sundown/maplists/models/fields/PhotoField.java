@@ -1,4 +1,4 @@
-package com.sundown.maplists.models;
+package com.sundown.maplists.models.fields;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

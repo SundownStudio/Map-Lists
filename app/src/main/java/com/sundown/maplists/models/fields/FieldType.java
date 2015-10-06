@@ -1,4 +1,4 @@
-package com.sundown.maplists.models;
+package com.sundown.maplists.models.fields;
 
 /**
  * Created by Sundown on 8/13/2015.

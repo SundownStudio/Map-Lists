@@ -10,9 +10,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.Field;
-import com.sundown.maplists.models.FieldFactory;
-import com.sundown.maplists.models.FieldType;
+import com.sundown.maplists.models.fields.Field;
+import com.sundown.maplists.models.fields.FieldFactory;
+import com.sundown.maplists.models.fields.FieldType;
 import com.sundown.maplists.views.AddFieldView;
 
 import java.util.ArrayList;

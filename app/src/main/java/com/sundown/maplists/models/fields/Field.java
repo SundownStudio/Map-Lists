@@ -1,5 +1,6 @@
-package com.sundown.maplists.models;
+package com.sundown.maplists.models.fields;
 
+import com.sundown.maplists.models.PropertiesHandler;
 import com.sundown.maplists.storage.JsonConstants;
 
 import java.util.HashMap;

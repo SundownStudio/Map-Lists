@@ -17,9 +17,9 @@ import android.widget.TextView;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.Field;
-import com.sundown.maplists.models.FieldType;
+import com.sundown.maplists.models.fields.EntryField;
+import com.sundown.maplists.models.fields.Field;
+import com.sundown.maplists.models.fields.FieldType;
 import com.sundown.maplists.utils.ViewUtils;
 
 import java.text.SimpleDateFormat;

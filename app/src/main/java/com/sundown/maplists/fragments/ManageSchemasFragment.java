@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.SchemaList;
+import com.sundown.maplists.models.lists.SchemaList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.ManageSchemasView;

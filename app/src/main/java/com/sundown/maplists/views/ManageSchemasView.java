@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.SchemaList;
+import com.sundown.maplists.models.lists.SchemaList;
 
 import java.util.Collections;
 import java.util.List;

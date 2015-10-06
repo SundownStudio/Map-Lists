@@ -20,9 +20,9 @@ import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.AbstractList;
-import com.sundown.maplists.models.ListType;
-import com.sundown.maplists.models.PhotoField;
+import com.sundown.maplists.models.lists.AbstractList;
+import com.sundown.maplists.models.lists.ListType;
+import com.sundown.maplists.models.fields.PhotoField;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,6 +40,7 @@ import java.util.UUID;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 import static com.sundown.maplists.storage.JsonConstants.LIST_TYPE;
 import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
+import static com.sundown.maplists.storage.JsonConstants.SCHEMA_ID;
 
 /**
  * Created by Sundown on 7/14/2015.
@@ -127,15 +128,22 @@ public class DatabaseCommunicator {
     public LiveQuery getLiveQuery(int query){
         if (query == QUERY_MAP){
             return cbManager.getMapQuery().toLiveQuery();
-        } else if (query == QUERY_SCHEMA){
+        } /*else if (query == QUERY_SCHEMA){
             return cbManager.getSchemaQuery().toLiveQuery();
-        }
+        }*/
         return null;
     }
 
     public LiveQuery getLiveQuery(int query, int mapId){
         if (query == QUERY_LOCATION){
             return cbManager.getLocationQuery(mapId).toLiveQuery();
+        }
+        return null;
+    }
+
+    public LiveQuery getLiveQuery(int query, String type){
+        if (query == QUERY_SCHEMA) {
+            return cbManager.getSchemaQuery(type).toLiveQuery();
         }
         return null;
     }
@@ -224,8 +232,10 @@ public class DatabaseCommunicator {
                     String type = (String) properties.get(LIST_TYPE);
                     if (type != null) {
                         ListType listType = ListType.valueOf(type);
-                        if (listType == ListType.SCHEMA) {
-                            emitter.emit(properties.get(JsonConstants.SCHEMA_ID), null);
+                        if (listType == ListType.PRIMARY_SCHEMA || listType == ListType.SECONDARY_SCHEMA) {
+                            String[] arr = new String[]{String.valueOf(properties.get(LIST_TYPE)), String.valueOf(properties.get(SCHEMA_ID))};
+                            emitter.emit(arr, null);
+                            //emitter.emit(properties.get(JsonConstants.SCHEMA_ID), null);
                         }
                     }
                 }
@@ -243,7 +253,14 @@ public class DatabaseCommunicator {
             return query;
         }
 
-        public Query getSchemaQuery(){ return database.getView(VIEW_BY_SCHEMA_ID).createQuery();}
+       // public Query getSchemaQuery(){ return database.getView(VIEW_BY_SCHEMA_ID).createQuery();}
+
+        public Query getSchemaQuery(String type) {
+            Query query = database.getView(VIEW_BY_SCHEMA_ID).createQuery();
+            query.setStartKey(new String[]{type, Integer.toString(0)});
+            query.setEndKey(new String[]{type, Integer.toString(MAX_ITEMS_PER_LIST)});
+            return query;
+        }
 
 
         public void insert(AbstractList list, String countId, String idName) throws CouchbaseLiteException {

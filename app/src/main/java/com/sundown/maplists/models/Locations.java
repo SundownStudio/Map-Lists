@@ -2,6 +2,7 @@ package com.sundown.maplists.models;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.sundown.maplists.models.lists.PrimaryList;
 
 import java.util.Comparator;
 import java.util.HashMap;

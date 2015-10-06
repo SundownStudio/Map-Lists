@@ -15,11 +15,11 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ColorPickerDialogFragment;
 import com.sundown.maplists.dialogs.EditTitleDialogFragment;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.EntryField;
-import com.sundown.maplists.models.Field;
-import com.sundown.maplists.models.MapList;
-import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.models.SecondaryList;
+import com.sundown.maplists.models.fields.EntryField;
+import com.sundown.maplists.models.fields.Field;
+import com.sundown.maplists.models.lists.MapList;
+import com.sundown.maplists.models.fields.PhotoField;
+import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.utils.PreferenceManager;
@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import static com.sundown.maplists.models.FieldType.PHOTO;
+import static com.sundown.maplists.models.fields.FieldType.PHOTO;
 
 /**
  * Created by Sundown on 8/18/2015.

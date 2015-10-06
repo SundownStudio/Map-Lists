@@ -21,10 +21,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.EntryField;
+import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.Locations;
-import com.sundown.maplists.models.PhotoField;
-import com.sundown.maplists.models.PrimaryList;
+import com.sundown.maplists.models.fields.PhotoField;
+import com.sundown.maplists.models.lists.PrimaryList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.utils.ColorUtils;
 

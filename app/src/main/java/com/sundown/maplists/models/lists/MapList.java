@@ -1,4 +1,4 @@
-package com.sundown.maplists.models;
+package com.sundown.maplists.models.lists;
 
 import java.util.Map;
 

@@ -12,8 +12,8 @@ import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.fragments.ListModeFragment;
-import com.sundown.maplists.models.ListType;
-import com.sundown.maplists.models.SecondaryList;
+import com.sundown.maplists.models.lists.ListType;
+import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.storage.Operation;

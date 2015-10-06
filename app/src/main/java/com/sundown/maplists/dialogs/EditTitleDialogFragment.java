@@ -9,7 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.Field;
+import com.sundown.maplists.models.fields.Field;
 import com.sundown.maplists.views.EditTitleView;
 
 /**

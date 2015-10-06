@@ -1,4 +1,10 @@
-package com.sundown.maplists.models;
+package com.sundown.maplists.models.lists;
+
+import com.sundown.maplists.models.PropertiesHandler;
+import com.sundown.maplists.models.fields.Field;
+import com.sundown.maplists.models.fields.FieldFactory;
+import com.sundown.maplists.models.fields.FieldType;
+import com.sundown.maplists.models.fields.PhotoField;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.sundown.maplists.models;
+package com.sundown.maplists.models.lists;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.sundown.maplists.storage.JsonConstants;
@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * These are the lists associated with each marker, each primary list denotes a marker on the map
  */
-public class PrimaryList extends MapList{
+public class PrimaryList extends MapList {
 
     private LatLng latLng;
 

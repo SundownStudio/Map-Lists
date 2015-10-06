@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 
 import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.FieldType;
+import com.sundown.maplists.models.fields.FieldType;
 import com.sundown.maplists.views.ListItemDoubleView;
 import com.sundown.maplists.views.ListItemSingleView;
 

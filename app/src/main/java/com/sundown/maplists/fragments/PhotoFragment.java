@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.couchbase.lite.CouchbaseLiteException;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.PhotoField;
+import com.sundown.maplists.models.fields.PhotoField;
 import com.sundown.maplists.tasks.TaskOptimizeImage;
 import com.sundown.maplists.tasks.TaskRotateImage;
 import com.sundown.maplists.utils.FileManager;

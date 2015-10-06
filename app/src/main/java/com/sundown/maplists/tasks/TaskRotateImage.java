@@ -3,7 +3,7 @@ package com.sundown.maplists.tasks;
 import android.os.AsyncTask;
 
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.PhotoField;
+import com.sundown.maplists.models.fields.PhotoField;
 
 /**
  * Created by Sundown on 8/15/2015.
