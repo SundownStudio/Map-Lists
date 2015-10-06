@@ -92,7 +92,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
     /** our list of saved schemas */
     private ArrayList<SchemaList> savedSchemaLists;
-    private ContentLoader schemaLoader;
+    //private ContentLoader schemaLoader;
     //private SchemaList originalSchemaList; todo
 
     @Override
@@ -146,7 +146,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     @Override
     protected void onPause() {
         super.onPause();
-        schemaLoader.stop();
+        //schemaLoader.stop();
         model = addListFragment.refreshModel();
 
         if (saveUpdate) {
@@ -243,9 +243,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
                 new MenuOption(DEFAULT_TOP, false),
                 new MenuOption(SCHEMA_ACTIONS, showSchemaActions));
 
-        if (schemaLoader == null) {
-            schemaLoader = new Loader().start();
-        }
+       // if (schemaLoader == null) {
+       //     schemaLoader = new Loader().start();
+       // }
 
         return true;
     }
@@ -377,7 +377,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
     @Override
     public void schemaAdded(String schemaName) {
-        schemaLoader.stop();
+        //schemaLoader.stop();
         if (schemaName != null) {
             //todo
             //SchemaList schemaList = new SchemaList(model);
