@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <com.sundown.maplists.views.ToolbarWithSpinner
         android:id="@+id/toolbar_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         should be this however on 5.0 it is interfering with padding.. cuz we hacked it earlier to do translucent bar
         we need to look for a new fix for that where we can use our primary/secondary colors.. -->
 
-    </android.support.v7.widget.Toolbar>
+    </com.sundown.maplists.views.ToolbarWithSpinner>
 
     <View
         android:id="@+id/toolbar_top_shadow"

@@ -22,11 +22,13 @@ public class AddSchemaDialogFragment extends DialogFragment {
     }
 
     private final static String HINT = "hint";
+    private final static String MESSAGE = "message";
     private AddSchemaListener listener;
 
-    public static AddSchemaDialogFragment getInstance(String hint){
+    public static AddSchemaDialogFragment getInstance(String message, String hint){
         AddSchemaDialogFragment fragment = new AddSchemaDialogFragment();
         Bundle args = new Bundle();
+        args.putString(MESSAGE, message);
         args.putString(HINT, hint);
         fragment.setArguments(args);
         return fragment;
@@ -49,6 +51,7 @@ public class AddSchemaDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final AddSchemaView view = (AddSchemaView) inflater.inflate(R.layout.dialog_add_schema, null);
         view.setHint(getArguments().getString(HINT));
+        view.setMessage(getArguments().getString(MESSAGE));
 
         builder.setView(view);
         builder.setTitle(getString(R.string.save_schema));

@@ -30,7 +30,7 @@ import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.ToolbarManager;
 
 public class MainActivity extends AppCompatActivity implements
-        ActionDialogFragment.ConfirmActionListener, MapFragment.MapFragmentListener {
+        ActionDialogFragment.ConfirmActionListener, MapFragment.MapFragmentListener, ToolbarManager.ToolbarListener {
 
 
     //NOTE: This app follows a MVC pattern:
@@ -205,10 +205,10 @@ public class MainActivity extends AppCompatActivity implements
         toolbarTop.setTitle(getString(R.string.app_name));
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayShowHomeEnabled(true); //we want the logo so we can click on it and trigger the navigation drawer
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
+        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
 
         drawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.fragment_navigation_drawer);
-        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbarManager.toolbarTop);
+        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbarManager.getToolbarTop());
         Log.m("toolbar", "toolbar setup in main");
     }
 
@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public boolean onCreateOptionsMenu(Menu topMenu) {
-        Menu bottomMenu = toolbarManager.toolbarBottom.getMenu();
+        Menu bottomMenu = toolbarManager.getBottomMenu();
 
         topMenu.clear();
         bottomMenu.clear();
@@ -227,22 +227,6 @@ public class MainActivity extends AppCompatActivity implements
         getMenuInflater().inflate(R.menu.menu_top, topMenu);
         getMenuInflater().inflate(R.menu.menu_bottom_map, bottomMenu);
 
-
-        toolbarManager.toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return topToolbarPressed(item);
-            }
-        });
-
-        toolbarManager.toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return bottomToolbarPressed(item);
-            }
-        });
-
-        Log.m("toolbar", "toolbar inflated");
         mapFragment.initMap(); //hacky.. find a better way.. must call this after toolbar instantiated, unfortunately onCreateOptionsMenu called at
         //all different times on different os versions and because of nested google map fragment we cannot put in map fragment
         //there really should be a lifecycle method for this.. google has open ticket to fix for years
@@ -256,10 +240,11 @@ public class MainActivity extends AppCompatActivity implements
      *
      * @param item selected MenuItem
      */
-    private boolean topToolbarPressed(MenuItem item){
+    @Override
+    public void topToolbarPressed(MenuItem item){
         switch (item.getItemId()){
             case R.id.action_settings:
-                return true;
+                break;
 
             case R.id.action_enter_address:{
                 enterAddressDialogFragment = new EnterAddressDialogFragment();
@@ -276,7 +261,6 @@ public class MainActivity extends AppCompatActivity implements
             }
 
         }
-        return true;
     }
 
     /**
@@ -286,7 +270,8 @@ public class MainActivity extends AppCompatActivity implements
      *
      * @param item selected MenuItem
      */
-    private boolean bottomToolbarPressed(MenuItem item){
+    @Override
+    public void bottomToolbarPressed(MenuItem item){
         switch (item.getItemId()) {
             case R.id.action_secondary_lists: {
                 PrimaryList list = mapFragment.getSelectedPrimaryList();
@@ -312,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements
                 EntryField entry = (EntryField) mapFragment.getSelectedPrimaryList().getField(0);
                 String location = entry.getEntry(0);
                 if (location.length() == 0)
-                    location = "This location";
+                    location = getString(R.string.this_location);
                 String confirmText = location + " " + getResources().getString(R.string.delete_confirm);
 
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
@@ -336,7 +321,6 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             }
         }
-        return true;
     }
 
     public void schedulePeriodicMethod(Runnable runnable) {

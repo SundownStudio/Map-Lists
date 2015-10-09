@@ -464,28 +464,15 @@ public class MapFragment extends Fragment implements
     private class Loader extends ContentLoader {
 
         @Override
-        public Loader start() {
-            // Set up my live query during view initialization:
-            liveQuery = db.getLiveQuery(db.QUERY_MAP);
-            if (liveQuery != null) {
-                liveQuery.addChangeListener(new LiveQuery.ChangeListener() {
-                    @Override
-                    public void changed(LiveQuery.ChangeEvent event) {
-                        if (event.getSource().equals(liveQuery)) {
-                            updateModel(event.getRows());
-                        }
-                    }
-                });
-                liveQuery.start();
-            }
-            return this;
+        public LiveQuery getLiveQuery() {
+            return db.getLiveQuery(db.QUERY_MAP);
         }
 
         @Override
         public void updateModel(QueryEnumerator result) {
             model.clear();
-            for (Iterator<QueryRow> it = result; it.hasNext(); ) {
-                QueryRow row = it.next();
+            while (result.hasNext()) {
+                QueryRow row = result.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
 
                 PrimaryList list = (PrimaryList) MapListFactory.createList(getResources(), ListType.PRIMARY, -1).setProperties(properties);

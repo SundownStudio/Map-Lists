@@ -20,9 +20,9 @@ import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.logging.Log;
+import com.sundown.maplists.models.fields.PhotoField;
 import com.sundown.maplists.models.lists.AbstractList;
 import com.sundown.maplists.models.lists.ListType;
-import com.sundown.maplists.models.fields.PhotoField;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -71,12 +70,13 @@ public class DatabaseCommunicator {
     }
 
 
-    public void insert(final AbstractList list, String countId, String idType) {
+    public int insert(final AbstractList list, String countId, String idType) {
         try {
-            cbManager.insert(list, countId, idType);
+            return cbManager.insert(list, countId, idType);
         } catch (CouchbaseLiteException e) {
             Log.e(e); //TODO: something went wrong dialog
         }
+        return -1;
     }
 
 
@@ -107,19 +107,21 @@ public class DatabaseCommunicator {
 
 
     public Bitmap loadBitmap(String documentId, String bitmapName){
-        if (bitmapName != null && bitmapName.length() > 0) {
-            try {
-                Revision currentRevision = cbManager.getCurrentRevision(documentId);
-                Attachment att = currentRevision.getAttachment(bitmapName);
-                if (att != null) {
-                    InputStream is;
-                    is = att.getContent();
-                    return BitmapFactory.decodeStream(is);
+        if (documentId != null) {
+            if (bitmapName != null && bitmapName.length() > 0 && !bitmapName.equals("null")) {
+                try {
+                    Revision currentRevision = cbManager.getCurrentRevision(documentId);
+                    Attachment att = currentRevision.getAttachment(bitmapName);
+                    if (att != null) {
+                        InputStream is;
+                        is = att.getContent();
+                        return BitmapFactory.decodeStream(is);
+                    }
+                } catch (CouchbaseLiteException e) {
+                    Log.e(e); //TODO: something went wrong dialog
+                } catch (NullPointerException ne) {
+                    Log.e("bitmapName: " + bitmapName, ne);
                 }
-            } catch (CouchbaseLiteException e) {
-                Log.e(e); //TODO: something went wrong dialog
-            } catch (NullPointerException ne){
-                Log.e(ne);
             }
         }
         return null;
@@ -128,9 +130,7 @@ public class DatabaseCommunicator {
     public LiveQuery getLiveQuery(int query){
         if (query == QUERY_MAP){
             return cbManager.getMapQuery().toLiveQuery();
-        } /*else if (query == QUERY_SCHEMA){
-            return cbManager.getSchemaQuery().toLiveQuery();
-        }*/
+        }
         return null;
     }
 
@@ -141,9 +141,9 @@ public class DatabaseCommunicator {
         return null;
     }
 
-    public LiveQuery getLiveQuery(int query, String type){
+    public LiveQuery getLiveQuery(int query, ListType type){
         if (query == QUERY_SCHEMA) {
-            return cbManager.getSchemaQuery(type).toLiveQuery();
+            return cbManager.getSchemaQuery(type.ordinal()).toLiveQuery();
         }
         return null;
     }
@@ -233,9 +233,8 @@ public class DatabaseCommunicator {
                     if (type != null) {
                         ListType listType = ListType.valueOf(type);
                         if (listType == ListType.PRIMARY_SCHEMA || listType == ListType.SECONDARY_SCHEMA) {
-                            String[] arr = new String[]{String.valueOf(properties.get(LIST_TYPE)), String.valueOf(properties.get(SCHEMA_ID))};
+                            int[] arr = new int[]{listType.ordinal(), (Integer) properties.get(SCHEMA_ID)};
                             emitter.emit(arr, null);
-                            //emitter.emit(properties.get(JsonConstants.SCHEMA_ID), null);
                         }
                     }
                 }
@@ -253,17 +252,15 @@ public class DatabaseCommunicator {
             return query;
         }
 
-       // public Query getSchemaQuery(){ return database.getView(VIEW_BY_SCHEMA_ID).createQuery();}
-
-        public Query getSchemaQuery(String type) {
+        public Query getSchemaQuery(int typeOrdinal) {
             Query query = database.getView(VIEW_BY_SCHEMA_ID).createQuery();
-            query.setStartKey(new String[]{type, Integer.toString(0)});
-            query.setEndKey(new String[]{type, Integer.toString(MAX_ITEMS_PER_LIST)});
+            query.setStartKey(new int[]{typeOrdinal, 0});
+            query.setEndKey(new int[]{typeOrdinal, MAX_ITEMS_PER_LIST});
             return query;
         }
 
 
-        public void insert(AbstractList list, String countId, String idName) throws CouchbaseLiteException {
+        public int insert(AbstractList list, String countId, String idName) throws CouchbaseLiteException {
             int count = increaseCount(countId);
 
             UUID uuid = UUID.randomUUID();
@@ -284,7 +281,7 @@ public class DatabaseCommunicator {
             } else {
                 saveDocument(document.createRevision(), properties, list.getPhotos());
             }
-
+            return count;
         }
 
         public void update(final AbstractList list) throws CouchbaseLiteException {
@@ -325,8 +322,8 @@ public class DatabaseCommunicator {
                 QueryEnumerator result = locationsQuery.run();
 
                 //delete all lists at this location
-                for (Iterator<QueryRow> it = result; it.hasNext(); ) {
-                    QueryRow row = it.next();
+                while (result.hasNext()) {
+                    QueryRow row = result.next();
                     deleteDocument(row.getSourceDocumentId());
                 }
 

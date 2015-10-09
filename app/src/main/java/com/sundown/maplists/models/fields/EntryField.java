@@ -22,12 +22,23 @@ public class EntryField extends Field {
         entries.add(entry);
     }
 
+    private EntryField(String title, List<String> entries, FieldType type, boolean permanent){
+        super(title, type, permanent);
+        this.entries = new ArrayList<>(entries.size());
+        for (String entry: entries)
+            this.entries.add(entry);
+    }
+
     public int getNumEntries(){
         return entries.size();
     }
 
     public String getEntry(int element){
         return entries.get(element);
+    }
+
+    public void setEntry(int element, String text){
+        entries.set(element, text);
     }
 
     public List<String> getEntries(){ return entries; }
@@ -85,4 +96,8 @@ public class EntryField extends Field {
         return this;
     }
 
+    @Override
+    public EntryField copy() {
+        return new EntryField(getTitle(), getEntries(), getType(), isPermanent());
+    }
 }

@@ -47,7 +47,7 @@ public class PhotoField extends Field {
         return thumbBitmap;
     }
 
-    private String imageName, thumbName;
+    private String imageName = "", thumbName = ""; //quickfix so couchbase doesn't save as 'null'.. should maybe deal with this on db level at some point if we dont need null..
 
     public String getImageName() {
         return imageName;
@@ -67,12 +67,13 @@ public class PhotoField extends Field {
 
 
     public void loadBitmaps(String documentId) {
-
-        if (imageName != null && imageName.length() > 0 && imageBitmap == null) {
-            imageBitmap = DatabaseCommunicator.getInstance().loadBitmap(documentId, imageName);
-        }
-        if (thumbName != null && thumbName.length() > 0 && thumbBitmap == null) {
-            thumbBitmap = DatabaseCommunicator.getInstance().loadBitmap(documentId, thumbName);
+        if (documentId != null) {
+            if (imageName != null && imageName.length() > 0 && imageBitmap == null) {
+                imageBitmap = DatabaseCommunicator.getInstance().loadBitmap(documentId, imageName);
+            }
+            if (thumbName != null && thumbName.length() > 0 && thumbBitmap == null) {
+                thumbBitmap = DatabaseCommunicator.getInstance().loadBitmap(documentId, thumbName);
+            }
         }
     }
 
@@ -189,6 +190,10 @@ public class PhotoField extends Field {
         preferenceManager.commit();
     }
 
+    @Override
+    public PhotoField copy() {
+        return new PhotoField(getTitle(), isPermanent(), PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance());
+    }
 }
 
 

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
@@ -14,7 +15,7 @@ import com.sundown.maplists.utils.ToolbarManager;
 /**
  * Created by Sundown on 8/26/2015.
  */
-public class ManageSchemasActivity extends AppCompatActivity {
+public class ManageSchemasActivity extends AppCompatActivity implements ToolbarManager.ToolbarListener {
 
     private static final String FRAGMENT_MANAGE_SCHEMAS = "MANAGE_SCHEMAS";
 
@@ -54,7 +55,17 @@ public class ManageSchemasActivity extends AppCompatActivity {
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
+        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
+
+    }
+
+    @Override
+    public void topToolbarPressed(MenuItem item) {
+
+    }
+
+    @Override
+    public void bottomToolbarPressed(MenuItem item) {
 
     }
 }

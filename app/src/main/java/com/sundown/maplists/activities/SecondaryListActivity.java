@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * Created by Sundown on 8/19/2015.
  */
-public class SecondaryListActivity extends AppCompatActivity implements ActionDialogFragment.ConfirmActionListener {
+public class SecondaryListActivity extends AppCompatActivity implements ActionDialogFragment.ConfirmActionListener, ToolbarManager.ToolbarListener {
 
 
     private static final String FRAGMENT_SECONDARY_LIST = "SECONDARY_LIST";
@@ -96,13 +96,13 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
         toolbarTop.setTitle(itemName);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
+        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu topMenu) {
-        Menu bottomMenu = toolbarManager.toolbarBottom.getMenu();
+        Menu bottomMenu = toolbarManager.getBottomMenu();
 
         topMenu.clear();
         bottomMenu.clear();
@@ -110,35 +110,17 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
         getMenuInflater().inflate(R.menu.menu_top, topMenu);
         getMenuInflater().inflate(R.menu.menu_bottom_map, bottomMenu);
 
-
-        toolbarManager.toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return topToolbarPressed(item);
-            }
-        });
-
-        toolbarManager.toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return bottomToolbarPressed(item);
-            }
-        });
-
         toolbarManager.drawMenu(new MenuOption(MenuOption.GroupView.EDIT_DELETE, true),
                 new MenuOption(MenuOption.GroupView.DEFAULT_TOP, false));
 
         return true;
     }
 
-    private boolean topToolbarPressed(MenuItem item) {
-        switch (item.getItemId()) {
-            default:
-                return true;
-        }
-    }
+    @Override
+    public void topToolbarPressed(MenuItem item) {}
 
-    private boolean bottomToolbarPressed(MenuItem item) {
+    @Override
+    public void bottomToolbarPressed(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete: {
 
@@ -165,7 +147,6 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
 
             }
         }
-        return true;
     }
 
 

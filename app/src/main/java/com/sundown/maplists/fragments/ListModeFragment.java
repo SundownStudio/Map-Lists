@@ -11,8 +11,8 @@ import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.lists.MapListFactory;
 import com.sundown.maplists.models.lists.ListType;
+import com.sundown.maplists.models.lists.MapListFactory;
 import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.ContentLoader;
@@ -20,7 +20,6 @@ import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.ListModeView;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 
 import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
@@ -84,28 +83,16 @@ public class ListModeFragment extends Fragment {
     private class Loader extends ContentLoader {
 
         @Override
-        public Loader start() {
-            liveQuery  = db.getLiveQuery(db.QUERY_LOCATION, mapId);
-            if (liveQuery != null) {
-                liveQuery.addChangeListener(new LiveQuery.ChangeListener() {
-                    @Override
-                    public void changed(LiveQuery.ChangeEvent event) {
-                        if (event.getSource().equals(liveQuery)) {
-                            updateModel(event.getRows());
-                        }
-                    }
-                });
-                liveQuery.start();
-            }
-            return this;
+        public LiveQuery getLiveQuery() {
+            return db.getLiveQuery(db.QUERY_LOCATION, mapId);
         }
 
         @Override
         public void updateModel(QueryEnumerator result) {
             //todo: ultimately this should store into a model where we keep track of what changes, that way when displaying list we can update the index only..
             model.clear();
-            for (Iterator<QueryRow> it = result; it.hasNext(); ) {
-                QueryRow row = it.next();
+            while (result.hasNext()) {
+                QueryRow row = result.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId());
                 model.add((SecondaryList) MapListFactory.createList(getResources(), ListType.SECONDARY, mapId).setProperties(properties));
             }
@@ -124,6 +111,5 @@ public class ListModeFragment extends Fragment {
             });
         }
     }
-
 }
 

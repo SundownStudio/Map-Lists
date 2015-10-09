@@ -26,5 +26,4 @@ public class FieldFactory {
         }
         return field;
     }
-
 }

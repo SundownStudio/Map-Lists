@@ -25,7 +25,7 @@ import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 /**
  * Created by Sundown on 8/19/2015.
  */
-public class ListModeActivity extends AppCompatActivity implements ListModeView.AllListsListener {
+public class ListModeActivity extends AppCompatActivity implements ListModeView.AllListsListener, ToolbarManager.ToolbarListener {
 
     private static final String FRAGMENT_LISTMODE = "LISTMODE";
     private static final int REQUEST_CODE = 101;
@@ -84,14 +84,14 @@ public class ListModeActivity extends AppCompatActivity implements ListModeView.
         toolbarTop.setTitle(locationName);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout);
+        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
 
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu topMenu) {
-        Menu bottomMenu = toolbarManager.toolbarBottom.getMenu();
+        Menu bottomMenu = toolbarManager.getBottomMenu();
 
         topMenu.clear();
         bottomMenu.clear();
@@ -99,33 +99,16 @@ public class ListModeActivity extends AppCompatActivity implements ListModeView.
         getMenuInflater().inflate(R.menu.menu_top, topMenu);
         getMenuInflater().inflate(R.menu.menu_bottom_secondarylists, bottomMenu);
 
-
-        toolbarManager.toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return topToolbarPressed(item);
-            }
-        });
-
-        toolbarManager.toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return bottomToolbarPressed(item);
-            }
-        });
-
         toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, false));
         listModeFragment.startLoader();
         return true;
     }
 
+    @Override
+    public void topToolbarPressed(MenuItem item) {}
 
-    private boolean topToolbarPressed(MenuItem item) {
-        return true;
-    }
-
-
-    private boolean bottomToolbarPressed(MenuItem item) {
+    @Override
+    public void bottomToolbarPressed(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_list: {
                 if (listModeFragment != null && listModeFragment.getUserVisibleHint()) {
@@ -139,7 +122,6 @@ public class ListModeActivity extends AppCompatActivity implements ListModeView.
                 }
             }
         }
-        return true;
     }
 
 

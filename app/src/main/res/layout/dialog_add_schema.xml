@@ -5,10 +5,10 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/add_schema_instruction"
+        android:id="@+id/add_schema_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/add_schema_instruction"
+        android:text=""
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"/>

@@ -1,6 +1,7 @@
 package com.sundown.maplists.models.lists;
 
 import com.sundown.maplists.models.PropertiesHandler;
+import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
 import com.sundown.maplists.models.fields.FieldFactory;
 import com.sundown.maplists.models.fields.FieldType;
@@ -27,21 +28,37 @@ public abstract class AbstractList implements PropertiesHandler {
         return documentId;
     }
 
-    private List<Field> fields;
-
-    public List<Field>getFields() { return fields; }
-
-    protected AbstractList() {
-        fields = new ArrayList<>();
+    private void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 
+    private List<Field> fields = new ArrayList<>();
 
-    public void removeField(int id) {
-        fields.remove(id);
+    public List<Field> getFields() {
+        return fields;
+    }
+
+    protected AbstractList() { }
+
+    protected AbstractList(AbstractList list) {
+        setDocumentId(getDocumentId());
+        List<Field> fields = list.getFields();
+        for (Field field : fields) {
+            if (field instanceof EntryField) {
+                addField((EntryField) field.copy());
+
+            } else if (field instanceof PhotoField) {
+                addField((PhotoField) field.copy());
+            }
+        }
     }
 
     public Field getField(Integer id) {
         return fields.get(id);
+    }
+
+    public void removeField(int id) {
+        fields.remove(id);
     }
 
     public int addField(Field field) {
@@ -77,7 +94,7 @@ public abstract class AbstractList implements PropertiesHandler {
     @Override
     public AbstractList setProperties(Map properties) {
         fields.clear();
-        documentId = String.valueOf(properties.get(DOCUMENT_ID));
+        setDocumentId(String.valueOf(properties.get(DOCUMENT_ID)));
         List list = (List) properties.get(FIELDS);
 
         if (list != null) {

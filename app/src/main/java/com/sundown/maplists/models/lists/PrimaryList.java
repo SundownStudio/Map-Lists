@@ -1,5 +1,7 @@
 package com.sundown.maplists.models.lists;
 
+import android.content.res.Resources;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.sundown.maplists.storage.JsonConstants;
 
@@ -20,9 +22,8 @@ public class PrimaryList extends MapList {
         return latLng;
     }
 
-
-    protected PrimaryList(int mapId, int color) {
-        super(mapId, ListType.PRIMARY, color);
+    protected PrimaryList(Resources resources, int mapId) {
+        super(resources, mapId, ListType.PRIMARY);
     }
 
 
@@ -37,7 +38,8 @@ public class PrimaryList extends MapList {
     @Override
     public PrimaryList setProperties(Map properties) {
         super.setProperties(properties);
-        latLng = new LatLng((Double) properties.get(JsonConstants.MAP_LATITUDE), (Double) properties.get(JsonConstants.MAP_LONGITUDE));
+        setLatLng(new LatLng((Double) properties.get(JsonConstants.MAP_LATITUDE), (Double) properties.get(JsonConstants.MAP_LONGITUDE)));
         return this;
     }
+
 }

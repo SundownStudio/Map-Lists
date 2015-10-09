@@ -15,15 +15,27 @@ public abstract class ContentLoader {
         db = DatabaseCommunicator.getInstance();
     }
 
+    public ContentLoader start(){
+        liveQuery = getLiveQuery();
+        if (liveQuery != null) {
+            liveQuery.addChangeListener(new LiveQuery.ChangeListener() {
+                @Override
+                public void changed(LiveQuery.ChangeEvent event) {
+                    if (event.getSource().equals(liveQuery)) {
+                        updateModel(event.getRows());
+                    }
+                }
+            });
+            liveQuery.start();
+        }
+        return this;
+    }
 
     public void stop() {
         liveQuery.stop();
     }
 
-    public abstract ContentLoader start();
+    public abstract LiveQuery getLiveQuery();
     public abstract void updateModel(QueryEnumerator result);
     public abstract void drawModel();
-
-
-
 }

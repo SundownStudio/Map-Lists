@@ -1,5 +1,6 @@
 package com.sundown.maplists.models.fields;
 
+import com.sundown.maplists.models.Copyable;
 import com.sundown.maplists.models.PropertiesHandler;
 import com.sundown.maplists.storage.JsonConstants;
 
@@ -9,13 +10,15 @@ import java.util.Map;
 /**
  * Created by Sundown on 6/22/2015.
  */
-public abstract class Field implements PropertiesHandler {
+public abstract class Field implements PropertiesHandler, Copyable {
 
     public interface Observer {
         void setTitle(String title);
     }
 
-    /** used for view tagging */
+    /**
+     * used for view tagging
+     */
     private int id;
 
     public int getId() {
@@ -26,18 +29,35 @@ public abstract class Field implements PropertiesHandler {
         this.id = id;
     }
 
+    /**
+     * indicates type of field
+     */
     private FieldType type;
 
     public FieldType getType() {
         return type;
     }
 
+    private void setFieldType(FieldType type) {
+        this.type = type;
+    }
+
+    /**
+     * indicates whether user can remove this field
+     */
     private boolean permanent;
 
     public boolean isPermanent() {
         return permanent;
     }
 
+    private void setIsPermanent(boolean permanent) {
+        this.permanent = permanent;
+    }
+
+    /**
+     * indicates the title for this field
+     */
     private String title;
 
     public String getTitle() {
@@ -46,20 +66,26 @@ public abstract class Field implements PropertiesHandler {
 
     public void setTitle(String title) {
         this.title = title;
-        observer.setTitle(title);
+        if (observer != null)
+            observer.setTitle(title);
     }
 
+    /**
+     * indicates whether or not this title is visible to user while in list-mode
+     */
     private boolean showTitle;
 
     public void setShowTitle(boolean show) {
         this.showTitle = show;
     }
 
-    public boolean isTitleShown(){
+    public boolean isTitleShown() {
         return showTitle;
     }
 
-    /** the corresponding fieldview object */
+    /**
+     * the corresponding fieldview object from AddList
+     */
     private Observer observer;
 
     public void setObserver(Observer observer) {
@@ -68,10 +94,10 @@ public abstract class Field implements PropertiesHandler {
 
 
     protected Field(String title, FieldType type, boolean permanent) {
-        this.title = title;
-        this.type = type;
-        this.permanent = permanent;
-        this.showTitle = false;
+        setTitle(title);
+        setFieldType(type);
+        setIsPermanent(permanent);
+        setShowTitle(false);
     }
 
     @Override
@@ -99,10 +125,10 @@ public abstract class Field implements PropertiesHandler {
 
     @Override
     public Field setProperties(Map properties) {
-        title = String.valueOf(properties.get(JsonConstants.FIELD_TITLE));
-        type = FieldType.valueOf(properties.get(JsonConstants.FIELD_TYPE).toString());
-        permanent = Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_PERMANENT)));
-        showTitle = Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_TITLE_SHOW)));
+        setTitle(String.valueOf(properties.get(JsonConstants.FIELD_TITLE)));
+        setFieldType(FieldType.valueOf(properties.get(JsonConstants.FIELD_TYPE).toString()));
+        setIsPermanent(Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_PERMANENT))));
+        setShowTitle(Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_TITLE_SHOW))));
         return this;
     }
 

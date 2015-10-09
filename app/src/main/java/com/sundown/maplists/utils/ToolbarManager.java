@@ -1,6 +1,8 @@
 package com.sundown.maplists.utils;
 
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
@@ -12,18 +14,44 @@ import com.sundown.maplists.pojo.MenuOption;
  */
 public class ToolbarManager {
 
-    public Toolbar toolbarTop;
-    public Toolbar toolbarBottom;
-    public LinearLayout toolbarTopLayout;
+    public interface ToolbarListener {
+        void topToolbarPressed(MenuItem item);
+        void bottomToolbarPressed(MenuItem item);
+    }
+
+    private Toolbar toolbarTop;
+    public Toolbar getToolbarTop(){ return toolbarTop; }
+    private Toolbar toolbarBottom;
+    private LinearLayout toolbarTopLayout;
+    private ToolbarListener listener;
 
 
-
-    public ToolbarManager(Toolbar toolbarTop, Toolbar toolbarBottom, LinearLayout toolbarTopLayout){
+    public ToolbarManager(Toolbar toolbarTop, Toolbar toolbarBottom, LinearLayout toolbarTopLayout, ToolbarListener listener){
         this.toolbarTop = toolbarTop;
         this.toolbarBottom = toolbarBottom;
         this.toolbarTopLayout = toolbarTopLayout;
+        this.listener = listener;
+        setup();
     }
 
+
+    private void setup(){
+        toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                listener.topToolbarPressed(item);
+                return true;
+            }
+        });
+
+        toolbarBottom.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                listener.bottomToolbarPressed(item);
+                return true;
+            }
+        });
+    }
 
     public void drawMenu(MenuOption... options){
         if (toolbarBottom == null || toolbarTop == null)
@@ -63,5 +91,11 @@ public class ToolbarManager {
         toolbarTopLayout.bringToFront();
     }
 
+    public void setTopVisibility(int visibility){
+        toolbarTopLayout.setVisibility(visibility);
+    }
 
+    public Menu getBottomMenu(){
+        return toolbarBottom.getMenu();
+    }
 }
