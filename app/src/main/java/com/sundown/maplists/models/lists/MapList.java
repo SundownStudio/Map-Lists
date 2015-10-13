@@ -1,7 +1,5 @@
 package com.sundown.maplists.models.lists;
 
-import android.content.res.Resources;
-
 import java.util.Map;
 
 import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
@@ -20,11 +18,14 @@ public abstract class MapList extends SchemaList {
     }
 
 
-    protected MapList(Resources resources, int mapId, ListType listType) {
-        super(resources, listType);
+    protected MapList(int mapId) {
+        super();
         this.mapId = mapId;
     }
 
+    public SchemaList copySchema() {
+        return super.copy();
+    }
 
     @Override
     public Map<String, Object> getProperties() {

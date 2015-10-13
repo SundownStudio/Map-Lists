@@ -2,6 +2,7 @@
 <resources>
 
 
+
     <string name="google_maps_key">enter api key here</string>
     <string name="google_places_key">enter api key here</string>
 

@@ -1,7 +1,5 @@
 package com.sundown.maplists.models.lists;
 
-import android.content.res.Resources;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.sundown.maplists.storage.JsonConstants;
 
@@ -22,10 +20,17 @@ public class PrimaryList extends MapList {
         return latLng;
     }
 
-    protected PrimaryList(Resources resources, int mapId) {
-        super(resources, mapId, ListType.PRIMARY);
+    protected PrimaryList(int mapId) {
+        super(mapId);
+        setListType(ListType.PRIMARY);
     }
 
+    @Override
+    public SchemaList copySchema() {
+        SchemaList schemaList = super.copy();
+        schemaList.setListType(ListType.PRIMARY_SCHEMA);
+        return schemaList;
+    }
 
     @Override
     public Map<String, Object> getProperties() {

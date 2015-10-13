@@ -1,7 +1,6 @@
 package com.sundown.maplists.models.lists;
 
 import com.sundown.maplists.models.PropertiesHandler;
-import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
 import com.sundown.maplists.models.fields.FieldFactory;
 import com.sundown.maplists.models.fields.FieldType;
@@ -28,7 +27,7 @@ public abstract class AbstractList implements PropertiesHandler {
         return documentId;
     }
 
-    private void setDocumentId(String documentId) {
+    protected void setDocumentId(String documentId) {
         this.documentId = documentId;
     }
 
@@ -39,19 +38,6 @@ public abstract class AbstractList implements PropertiesHandler {
     }
 
     protected AbstractList() { }
-
-    protected AbstractList(AbstractList list) {
-        setDocumentId(getDocumentId());
-        List<Field> fields = list.getFields();
-        for (Field field : fields) {
-            if (field instanceof EntryField) {
-                addField((EntryField) field.copy());
-
-            } else if (field instanceof PhotoField) {
-                addField((PhotoField) field.copy());
-            }
-        }
-    }
 
     public Field getField(Integer id) {
         return fields.get(id);

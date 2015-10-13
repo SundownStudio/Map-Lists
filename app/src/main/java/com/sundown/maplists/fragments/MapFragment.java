@@ -473,7 +473,7 @@ public class MapFragment extends Fragment implements
             model.clear();
             while (result.hasNext()) {
                 QueryRow row = result.next();
-                Map<String, Object> properties = db.read(row.getSourceDocumentId()); //todo: can also use row.getDocument.. try this afterwards
+                Map<String, Object> properties = db.read(row.getSourceDocumentId());
 
                 PrimaryList list = (PrimaryList) MapListFactory.createList(getResources(), ListType.PRIMARY, -1).setProperties(properties);
                 model.storePrimaryList(list.getLatLng(), list);

@@ -1,9 +1,5 @@
 package com.sundown.maplists.models.lists;
 
-import android.content.res.Resources;
-
-import com.sundown.maplists.R;
-
 import java.util.Map;
 
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
@@ -19,11 +15,18 @@ public class SecondaryList extends MapList {
     public void setListId(int listId){ this.listId = listId; }
 
 
-    protected SecondaryList(Resources resources, int mapId) {
-        super(resources, mapId, ListType.SECONDARY);
-        setListId(Integer.parseInt(resources.getString(R.string.default_list_id)));
+    protected SecondaryList(int mapId, int listId) {
+        super(mapId);
+        setListId(listId);
+        setListType(ListType.SECONDARY);
     }
 
+    @Override
+    public SchemaList copySchema() {
+        SchemaList schemaList = super.copy();
+        schemaList.setListType(ListType.SECONDARY_SCHEMA);
+        return schemaList;
+    }
 
     @Override
     public Map<String, Object> getProperties() {

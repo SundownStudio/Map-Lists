@@ -1,11 +1,9 @@
 package com.sundown.maplists.models.lists;
 
-import android.content.res.Resources;
-import android.graphics.Color;
-
-import com.sundown.maplists.R;
+import com.sundown.maplists.models.Copyable;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
+import com.sundown.maplists.models.fields.PhotoField;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,7 @@ import static com.sundown.maplists.storage.JsonConstants.SCHEMA_NAME;
 /**
  * Created by Sundown on 8/25/2015.
  */
-public class SchemaList extends AbstractList {
+public class SchemaList extends AbstractList implements Copyable{
 
     private int schemaId;
 
@@ -54,35 +52,8 @@ public class SchemaList extends AbstractList {
         this.color = color;
     }
 
-
-    public SchemaList() {
+    protected SchemaList() {
         super();
-    }
-
-
-    public SchemaList(Resources resources, SchemaList list) {
-        super(list);
-
-        if (list instanceof PrimaryList) {
-            setListType(ListType.PRIMARY_SCHEMA);
-            ((EntryField) getField(0)).setEntry(0, resources.getString(R.string.new_location));
-            ((EntryField) getField(1)).setEntry(0, resources.getString(R.string.empty));
-
-        } else if (list instanceof SecondaryList) {
-            setListType(ListType.SECONDARY_SCHEMA);
-            getField(0).setTitle(resources.getString(R.string.subject));
-        }
-        setColor(list.getColor());
-        setSchemaId(list.getSchemaId());
-        setSchemaName(list.getSchemaName());
-    }
-
-    public SchemaList(Resources resources, ListType listType) {
-        super();
-        setListType(listType);
-        setColor(Color.parseColor(resources.getString(R.string.default_marker_color)));
-        setSchemaId(Integer.parseInt(resources.getString(R.string.default_schema_id)));
-        setSchemaName(resources.getString(R.string.default_schema_name));
     }
 
     public String getTitlesString(StringBuffer buffer) {
@@ -107,6 +78,24 @@ public class SchemaList extends AbstractList {
         return buffer.toString();
     }
 
+    @Override
+    public SchemaList copy() {
+        SchemaList schemaList = new SchemaList();
+        schemaList.setColor(getColor());
+        schemaList.setSchemaId(getSchemaId());
+        schemaList.setSchemaName(getSchemaName());
+        schemaList.setDocumentId(getDocumentId());
+        List<Field> fields = getFields();
+        for (Field field : fields) {
+            if (field instanceof EntryField) {
+                schemaList.addField((EntryField) field.copy());
+
+            } else if (field instanceof PhotoField) {
+                schemaList.addField((PhotoField) field.copy());
+            }
+        }
+        return schemaList;
+    }
 
     @Override
     public Map<String, Object> getProperties() {

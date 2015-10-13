@@ -1,7 +1,6 @@
 package com.sundown.maplists.activities;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -155,13 +154,13 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             }
         }
 
-        origSchemaList = MapListFactory.createSchemaList(getResources(), model);
+        origSchemaList =  model.copySchema();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        schemaLoader.stop();
+        if (schemaLoader != null) schemaLoader.stop();
         model = addListFragment.refreshModel();
 
         if (saveListUpdate) {
@@ -232,9 +231,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
                 new MenuOption(DEFAULT_TOP, false),
                 new MenuOption(SCHEMA_ACTIONS, showSchemaActions));
 
-        if (schemaLoader == null) {
-            schemaLoader = new Loader().start();
-        }
+        if (schemaLoader == null) schemaLoader = new Loader().start();
 
         return true;
     }
@@ -255,7 +252,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             case R.id.action_add_list:
                 saveListUpdate = true;
                 model = addListFragment.refreshModel();
-                SchemaList newSchemaList = MapListFactory.createSchemaList(getResources(), model);
+                SchemaList newSchemaList = model.copySchema();
                 int saveSchema = SCHEMA_IGNORE;
 
                 if (didSchemaChange(newSchemaList)) { //schema has changed! does schema match an existing schema?
@@ -406,9 +403,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
     @Override
     public void schemaAdded(String schemaName) {
-        schemaLoader.stop();
+        if (schemaLoader != null) schemaLoader.stop();
         if (schemaName != null) {
-            SchemaList schemaList = MapListFactory.createSchemaList(getResources(), model);
+            SchemaList schemaList = model.copySchema();
             schemaList.setSchemaName(schemaName);
             int schemaId = db.insert(schemaList, JsonConstants.COUNT_SCHEMAS, JsonConstants.SCHEMA_ID);
             if (schemaId != -1) {
@@ -455,17 +452,16 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         @Override
         public void updateModel(QueryEnumerator result) {
             savedSchemaLists.clear();
+            SchemaList defaultSchema = MapListFactory.createList(getResources(), listType, model.getMapId()).copySchema();
 
             if (result.getCount() > 0) {
-                Resources resources = getResources();
-                SchemaList defaultSchema = MapListFactory.createSchemaList(resources, MapListFactory.createList(resources, listType, model.getMapId()));
                 savedSchemaLists.add(defaultSchema);
             }
 
             while(result.hasNext()){
                 QueryRow row = result.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId());
-                savedSchemaLists.add(new SchemaList().setProperties(properties));
+                savedSchemaLists.add(defaultSchema.copy().setProperties(properties));
             }
 
             if (savedSchemaLists.size() > 0)
