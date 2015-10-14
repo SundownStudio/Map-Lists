@@ -100,7 +100,7 @@ public abstract class Field implements PropertiesHandler, Copyable {
         setShowTitle(false);
     }
 
-    @Override
+    @Override //note that this is not a true equals().. im just doing this to minimize code for schema comparison.. if you ever need a true equals() then put this into a diff method..
     public boolean equals(Object o) {
         if (o instanceof Field) {
             Field a = (Field) o;

@@ -264,11 +264,11 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
                 } else {
                     if (saveSchema == SCHEMA_UNIQUE) { //schema is unique so prompt user to save it
-                        addSchemaFragment = AddSchemaDialogFragment.getInstance(getString(R.string.enter_name_for_schema), getString(R.string.schema) + "0" + (savedSchemaLists.size() + 1));
+                        addSchemaFragment = AddSchemaDialogFragment.getInstance(Operation.INSERT, getString(R.string.enter_name_for_schema), getString(R.string.schema) + "0" + (savedSchemaLists.size()), saveSchema);
 
-                    } else { //same schema already exists! so let's ask user if they wish to consolidate under this existing schema..
+                    } else { //same schema already exists! so let's ask user if they wish to consolidate under this existing schema.. saveSchema is now the index to update..
                         SchemaList list = savedSchemaLists.get(saveSchema);
-                        addSchemaFragment = AddSchemaDialogFragment.getInstance(getString(R.string.a_schema_already_exists), list.getSchemaName());
+                        addSchemaFragment = AddSchemaDialogFragment.getInstance(Operation.UPDATE, getString(R.string.a_schema_already_exists), list.getSchemaName(), saveSchema);
                     }
                     addSchemaFragment.show(fm, FRAGMENT_ADD_SCHEMA);
                 }
@@ -295,13 +295,14 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     }
 
     private boolean didSchemaChange(SchemaList list){
-        return !origSchemaList.equals(list);
+        if (list.getSchemaId() != origSchemaList.getSchemaId()) return true;
+        return !origSchemaList.hasSameAttributes(list);
     }
 
     private int doesChangedSchemaMatchExisting(SchemaList list){
         int num = savedSchemaLists.size();
         for (int i = 0; i < num; ++i){
-            if (savedSchemaLists.get(i).equals(list)) {
+            if (savedSchemaLists.get(i).hasSameAttributes(list)) {
                 if (i == ((ToolbarWithSpinner) toolbarManager.getToolbarTop()).getSelectedIndex()) {
                     return SCHEMA_IGNORE; //were already on the selected schema so end this
                 } else {
@@ -402,17 +403,23 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     }
 
     @Override
-    public void schemaAdded(String schemaName) {
+    public void schemaAdded(Operation operation, String schemaName, int indexToUpdate) {
         if (schemaLoader != null) schemaLoader.stop();
         if (schemaName != null) {
-            SchemaList schemaList = model.copySchema();
-            schemaList.setSchemaName(schemaName);
-            int schemaId = db.insert(schemaList, JsonConstants.COUNT_SCHEMAS, JsonConstants.SCHEMA_ID);
-            if (schemaId != -1) {
-                model.setSchemaId(schemaId);
-                model.setSchemaName(schemaName);
-                saveListUpdate = true;
+            if (operation == Operation.INSERT) {
+                SchemaList schemaList = model.copySchema();
+                schemaList.setSchemaName(schemaName);
+                int schemaId = db.insert(schemaList, JsonConstants.COUNT_SCHEMAS, JsonConstants.SCHEMA_ID);
+                if (schemaId != -1) {
+                    model.setSchemaId(schemaId);
+                    model.setSchemaName(schemaName);
+                }
+            } else {
+                SchemaList schemaList = savedSchemaLists.get(indexToUpdate);
+                model.setSchemaId(schemaList.getSchemaId());
+                model.setSchemaName(schemaList.getSchemaName());
             }
+            saveListUpdate = true;
         }
         finish();
     }
@@ -453,10 +460,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         public void updateModel(QueryEnumerator result) {
             savedSchemaLists.clear();
             SchemaList defaultSchema = MapListFactory.createList(getResources(), listType, model.getMapId()).copySchema();
-
-            if (result.getCount() > 0) {
-                savedSchemaLists.add(defaultSchema);
-            }
+            savedSchemaLists.add(defaultSchema);
 
             while(result.hasNext()){
                 QueryRow row = result.next();

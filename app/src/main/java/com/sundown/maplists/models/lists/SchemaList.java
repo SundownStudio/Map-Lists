@@ -118,10 +118,13 @@ public class SchemaList extends AbstractList implements Copyable{
     }
 
 
-    @Override //note does not care about hashcode, used for seeing if schema changed
-    public boolean equals(Object o) {
+    //this is where we distinguish between different schemas..
+    public boolean hasSameAttributes(Object o) {
         if (o instanceof SchemaList) {
             SchemaList a = (SchemaList) o;
+            if (a.getColor() != getColor()) //all elements of a schema should have the same color
+                return false;
+
             List<Field> listA = a.getFields();
             List<Field> listB = this.getFields();
             return listA.equals(listB);

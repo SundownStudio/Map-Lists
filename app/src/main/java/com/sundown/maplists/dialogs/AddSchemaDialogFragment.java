@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 
 import com.sundown.maplists.R;
+import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.views.AddSchemaView;
 
 
@@ -18,19 +19,23 @@ import com.sundown.maplists.views.AddSchemaView;
 public class AddSchemaDialogFragment extends DialogFragment {
 
     public interface AddSchemaListener {
-        void schemaAdded(String schemaName);
+        void schemaAdded(Operation operation, String schemaName, int indexToUpdate);
     }
 
     private final static String HINT = "hint";
     private final static String MESSAGE = "message";
     private AddSchemaListener listener;
+    private Operation operation;
+    private int indexToUpdate; //the index to update, used only for updates //todo refactor
 
-    public static AddSchemaDialogFragment getInstance(String message, String hint){
+    public static AddSchemaDialogFragment getInstance(Operation operation, String message, String hint, int indexToUpdate){
         AddSchemaDialogFragment fragment = new AddSchemaDialogFragment();
         Bundle args = new Bundle();
         args.putString(MESSAGE, message);
         args.putString(HINT, hint);
         fragment.setArguments(args);
+        fragment.operation = operation;
+        fragment.indexToUpdate = indexToUpdate;
         return fragment;
     }
 
@@ -52,21 +57,30 @@ public class AddSchemaDialogFragment extends DialogFragment {
         final AddSchemaView view = (AddSchemaView) inflater.inflate(R.layout.dialog_add_schema, null);
         view.setHint(getArguments().getString(HINT));
         view.setMessage(getArguments().getString(MESSAGE));
+        String title = getString(R.string.save_schema);
+        if (operation == Operation.UPDATE){
+            title = getString(R.string.schema_detected);
+        }
 
         builder.setView(view);
-        builder.setTitle(getString(R.string.save_schema));
+        builder.setTitle(title);
         builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                if (operation == Operation.UPDATE){
+                    if (!getArguments().getString(HINT).equals(view.getEnteredText())){ //we were gonna update but user entered a new name so insert under new name
+                        operation = Operation.INSERT;
+                    }
+                }
                 dialog.dismiss();
-                listener.schemaAdded(view.getEnteredText());
+                listener.schemaAdded(operation, view.getEnteredText(), indexToUpdate);
             }
         });
         builder.setNegativeButton(R.string.skip, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                listener.schemaAdded(null);
+                listener.schemaAdded(operation, null, indexToUpdate);
             }
         });
 

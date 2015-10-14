@@ -128,6 +128,7 @@
     <string name="schema">Schema</string>
     <string name="manage_schema">Manage Schemas</string>
     <string name="save_schema">Save Schema</string>
+    <string name="schema_detected">Schema Detected</string>
     <string name="save">Save</string>
     <string name="skip">Skip</string>
     <string name="enter_name_for_schema">Enter a name for this schema and press Save to save it, or press Skip.</string>
@@ -150,6 +151,7 @@
     <string name="default_schema_id">0</string>
     <string name="default_list_id">-1</string>
     <string name="this_location">This location</string>
+
 
 
 </resources>

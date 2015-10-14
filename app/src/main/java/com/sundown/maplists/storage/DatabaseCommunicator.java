@@ -276,11 +276,8 @@ public class DatabaseCommunicator {
             properties.put("created_at", currentTimeString);
             properties.put(idName, count); //mapID = count, listID = count, schemaID = count.. all increasing
 
-            if (idName.equals(JsonConstants.SCHEMA_ID)){
-                saveDocument(document.createRevision(), properties, null);
-            } else {
-                saveDocument(document.createRevision(), properties, list.getPhotos());
-            }
+            saveDocument(document.createRevision(), properties, list.getPhotos());
+
             return count;
         }
 
