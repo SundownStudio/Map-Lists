@@ -40,8 +40,8 @@ public class AddListView extends LinearLayout {
             @Override
             public void run() {
                 scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+                clearFocus();
             }
         });
     }
-
 }

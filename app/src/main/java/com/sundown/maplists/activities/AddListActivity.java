@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 
 import com.couchbase.lite.LiveQuery;
@@ -113,6 +114,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_list);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); //disable keyboard on some devices
 
         Bundle bundle = getIntent().getExtras();
         listType = ListType.valueOf(bundle.getString(JsonConstants.LIST_TYPE));

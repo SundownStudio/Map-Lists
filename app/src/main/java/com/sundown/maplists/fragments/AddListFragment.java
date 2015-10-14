@@ -157,6 +157,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         }
         view.updateView(form);
         handleActivityResult();
+        getActivity().getWindow().getDecorView().clearFocus();
     }
 
     public void addToForm(int id, Field field) {
