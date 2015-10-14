@@ -37,7 +37,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
     public interface FieldViewListener {
         void editFieldTitle(int tag);
         void deleteField(int tag);
-        void colorField(int tag);
+        void selectColor(int tag);
     }
 
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -99,7 +99,7 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
                 break;
 
             case R.id.colorFieldView:
-                listener.colorField((int) getTag());
+                listener.selectColor((int) getTag());
                 break;
         }
 

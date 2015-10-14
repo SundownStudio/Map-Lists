@@ -38,12 +38,11 @@ public class ColorPickerView extends LinearLayout {
                 colorText.setText(String.format("#%06X", (0xFFFFFF & color)));
             }
         });
-        int color = 0xFF394572;
-        top.setColor(color);
-
     }
 
     public String getColor(){
         return colorText.getText().toString();
     }
+
+    public void setColor(int color){ top.setColor(color);}
 }

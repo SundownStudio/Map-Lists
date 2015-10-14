@@ -331,11 +331,11 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (manageSchemasFragment != null && manageSchemasFragment.isVisible()) {
-                    setUpToolbarSpinner();
                     FragmentTransaction transaction = fm.beginTransaction();
                     transaction.replace(R.id.fragment_container, addListFragment, FRAGMENT_ADD_LIST);
                     transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                     transaction.commit();
+                    schemaLoader = new Loader().start();
                 } else {
                     finish();
                 }

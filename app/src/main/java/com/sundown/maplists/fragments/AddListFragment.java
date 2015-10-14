@@ -250,8 +250,8 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     }
 
     @Override
-    public void colorField(int tag) {
-        colorPickerDialogFragment = ColorPickerDialogFragment.newInstance(this);
+    public void selectColor(int tag) {
+        colorPickerDialogFragment = ColorPickerDialogFragment.newInstance(this, model.getColor());
         colorPickerDialogFragment.show(fm, FRAGMENT_PICK_COLOR);
     }
 

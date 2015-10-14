@@ -20,14 +20,16 @@ public class ColorPickerDialogFragment extends DialogFragment {
         void colorPicked(String color);
     }
 
-    public static ColorPickerDialogFragment newInstance(ColorPickerListener listener){
+    public static ColorPickerDialogFragment newInstance(ColorPickerListener listener, int color){
         ColorPickerDialogFragment frag = new ColorPickerDialogFragment();
         frag.listener = listener;
+        frag.color = color;
         return frag;
     }
 
     private ColorPickerView view;
     private ColorPickerListener listener;
+    private int color;
 
 
 
@@ -40,6 +42,7 @@ public class ColorPickerDialogFragment extends DialogFragment {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         view = (ColorPickerView) inflater.inflate(R.layout.dialog_color_picker, null);
+        view.setColor(color);
 
         builder.setView(view);
         builder.setTitle(getString(R.string.pick_color));
@@ -60,6 +63,4 @@ public class ColorPickerDialogFragment extends DialogFragment {
         return builder.create();
 
     }
-
-
 }

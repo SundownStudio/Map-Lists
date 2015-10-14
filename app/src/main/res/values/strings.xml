@@ -59,7 +59,7 @@
     <string name="couldnt_load_image">Could not load image</string>
     <string name="photo">Photo</string>
     <string name="subject">Subject</string>
-    <string name="default_marker_color">#303F9F</string>
+
 
     <!-- see AddListActivity getPrimaryFieldTypeString() if altering this list -->
     <string-array name="all_field_names">
@@ -141,6 +141,7 @@
     <string name="remove_list">Remove List</string>
 
     <!-- todo we're starting to accumulate alot of constants here.. consider adding a Constants file for these if we don't use them as strings.. -->
+    <string name="default_marker_color">#303F9F</string>
     <string name="seekbar_min">1</string>
     <string name="seekbar_max_regular">5</string>
     <string name="seekbar_max_list_items">10</string>
