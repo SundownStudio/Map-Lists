@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
-
     <string name="google_maps_key">enter api key here</string>
     <string name="google_places_key">enter api key here</string>
 
@@ -139,20 +137,10 @@
     <string name="edit_title">Edit Title</string>
     <string name="pick_color">Pick Color</string>
     <string name="remove_list">Remove List</string>
-
-    <!-- todo we're starting to accumulate alot of constants here.. consider adding a Constants file for these if we don't use them as strings.. -->
-    <string name="default_marker_color">#303F9F</string>
-    <string name="seekbar_min">1</string>
-    <string name="seekbar_max_regular">5</string>
-    <string name="seekbar_max_list_items">10</string>
     <string name="how_many">How many?</string>
     <string name="select_number_instr_1">Please select how many</string>
     <string name="select_number_instr_2">you want to add under this title.</string>
     <string name="default_schema_name">Default Schema</string>
-    <string name="default_schema_id">0</string>
-    <string name="default_list_id">-1</string>
     <string name="this_location">This location</string>
-
-
 
 </resources>

@@ -3,7 +3,6 @@ package com.sundown.maplists.models.lists;
 import com.sundown.maplists.models.PropertiesHandler;
 import com.sundown.maplists.models.fields.Field;
 import com.sundown.maplists.models.fields.FieldFactory;
-import com.sundown.maplists.models.fields.FieldType;
 import com.sundown.maplists.models.fields.PhotoField;
 
 import java.util.ArrayList;
@@ -19,7 +18,12 @@ import static com.sundown.maplists.storage.JsonConstants.FIELD_TYPE;
 /**
  * Created by Sundown on 7/14/2015.
  */
-public abstract class AbstractList implements PropertiesHandler {
+public abstract class BaseList implements PropertiesHandler {
+
+    public static final int PRIMARY = 1;
+    public static final int SECONDARY = 2;
+    public static final int PRIMARY_SCHEMA = 3;
+    public static final int SECONDARY_SCHEMA = 4;
 
     private String documentId;
 
@@ -37,7 +41,7 @@ public abstract class AbstractList implements PropertiesHandler {
         return fields;
     }
 
-    protected AbstractList() { }
+    protected BaseList() { }
 
     public Field getField(Integer id) {
         return fields.get(id);
@@ -56,7 +60,7 @@ public abstract class AbstractList implements PropertiesHandler {
         ArrayList<PhotoField> photoFields = new ArrayList<>();
 
         for (Field field : fields) {
-            if (field.getType() == FieldType.PHOTO) {
+            if (field.getType() == Field.PHOTO) {
                 photoFields.add((PhotoField) field);
             }
         }
@@ -78,7 +82,7 @@ public abstract class AbstractList implements PropertiesHandler {
     }
 
     @Override
-    public AbstractList setProperties(Map properties) {
+    public BaseList setProperties(Map properties) {
         fields.clear();
         setDocumentId(String.valueOf(properties.get(DOCUMENT_ID)));
         List list = (List) properties.get(FIELDS);
@@ -87,7 +91,7 @@ public abstract class AbstractList implements PropertiesHandler {
             int size = list.size();
             for (int i = 0; i < size; ++i) {
                 Map<String, Object> props = (Map<String, Object>) list.get(i);
-                FieldType type = FieldType.valueOf(props.get(FIELD_TYPE).toString());
+                int type = ((Integer)props.get(FIELD_TYPE));
                 boolean permanent = Boolean.parseBoolean(String.valueOf(props.get(FIELD_PERMANENT)));
                 fields.add(FieldFactory.createField("", "", type, permanent).setProperties(props));
             }

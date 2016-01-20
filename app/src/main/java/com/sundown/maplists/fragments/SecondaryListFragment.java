@@ -13,14 +13,13 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
-import com.sundown.maplists.models.fields.FieldType;
 import com.sundown.maplists.models.fields.PhotoField;
 import com.sundown.maplists.models.lists.SchemaList;
 import com.sundown.maplists.utils.SecondaryListViewManager;
 import com.sundown.maplists.utils.ViewUtils;
 import com.sundown.maplists.views.ListItemSingleView;
-import com.sundown.maplists.views.SecondaryListView;
 import com.sundown.maplists.views.PhotoView;
+import com.sundown.maplists.views.SecondaryListView;
 
 import java.util.List;
 
@@ -95,22 +94,22 @@ public class SecondaryListFragment extends Fragment {
 
 
     private void determineViewType(Field field){
-        FieldType type = field.getType();
+        int type = field.getType();
 
         switch (type) {
-            case SUBJECT: {
+            case Field.SUBJECT: {
                 EntryField entryField = (EntryField) field;
                 view.setSubject(ViewUtils.getTopRoundedCornersDrawable(getActivity().getResources().getDimension(R.dimen.rounded_corners), model.getColor()), entryField.getEntry(0));
                 break;
             }
-            case NAME:
-            case PHONE:
-            case EMAIL:
-            case DATE:
-            case TIME:
-            case DATE_TIME:
-            case URL:
-            case PRICE: {
+            case Field.NAME:
+            case Field.PHONE:
+            case Field.EMAIL:
+            case Field.DATE:
+            case Field.TIME:
+            case Field.DATE_TIME:
+            case Field.URL:
+            case Field.PRICE: {
                 EntryField entryField = (EntryField) field;
                 addTitleView(entryField);
 
@@ -118,9 +117,9 @@ public class SecondaryListFragment extends Fragment {
                 for (int i = 0; i < size; ++i) {
                     if (size > i + 1) {
 
-                        if (type == FieldType.DATE_TIME){
-                            layout.addView(secondaryListViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
-                        } else if (type == FieldType.PRICE){
+                        if (type == Field.DATE_TIME){
+                            layout.addView(secondaryListViewManager.drawDoubleView(Field.DATE, Field.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
+                        } else if (type == Field.PRICE){
                             layout.addView(secondaryListViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
 
                         } else {
@@ -135,7 +134,7 @@ public class SecondaryListFragment extends Fragment {
                 break;
             }
 
-            case RATING: {
+            case Field.RATING: {
                 EntryField entryField = (EntryField) field;
                 RatingBar bar = new RatingBar(getActivity());
                 bar.setNumStars(5);
@@ -154,7 +153,7 @@ public class SecondaryListFragment extends Fragment {
                 break;
             }
 
-            case CHECKBOX: {
+            case Field.CHECKBOX: {
                 EntryField entryField = (EntryField) field;
                 CheckBox checkBox = new CheckBox(getActivity());
                 checkBox.setEnabled(false);
@@ -172,7 +171,7 @@ public class SecondaryListFragment extends Fragment {
                 break;
             }
 
-            case PHOTO: {
+            case Field.PHOTO: {
                 PhotoField photoField = (PhotoField) field;
                 photoField.loadBitmaps(model.getDocumentId());
                 PhotoView photoView = (PhotoView)inflater.inflate(R.layout.photo_container, layout, false);
@@ -182,17 +181,17 @@ public class SecondaryListFragment extends Fragment {
                 break;
             }
 
-            case ITEM_LIST:{
+            case Field.ITEM_LIST:{
                 EntryField entryField = (EntryField) field;
                 addTitleView(entryField);
-                addAllDoubleViews(entryField, null, null);
+                addAllDoubleViews(entryField, -1, -1);
                 break;
             }
 
-            case PRICE_LIST:{
+            case Field.PRICE_LIST:{
                 EntryField entryField = (EntryField) field;
                 addTitleView(entryField);
-                addAllDoubleViews(entryField, null, FieldType.PRICE);
+                addAllDoubleViews(entryField, -1, Field.PRICE);
                 break;
             }
 
@@ -203,11 +202,11 @@ public class SecondaryListFragment extends Fragment {
     }
 
     private void addTitleView(EntryField entryField){
-        ListItemSingleView v = secondaryListViewManager.drawSingleView(null, entryField.getTitle(), true);
+        ListItemSingleView v = secondaryListViewManager.drawSingleView(-1, entryField.getTitle(), true);
         layout.addView(v);
     }
 
-    private void addAllDoubleViews(EntryField entryField, FieldType type1, FieldType type2){
+    private void addAllDoubleViews(EntryField entryField, int type1, int type2){
         int size = entryField.getNumEntries();
         for (int i = 0; i < size; ++i) {
             if (size > i + 1) {

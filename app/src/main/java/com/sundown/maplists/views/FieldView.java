@@ -19,7 +19,6 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
-import com.sundown.maplists.models.fields.FieldType;
 import com.sundown.maplists.utils.ViewUtils;
 
 import java.text.SimpleDateFormat;
@@ -61,8 +60,8 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
     private LinearLayout fieldEntryContainer;
     private ImageButton colorFieldView, editFieldTitle, deleteFieldView;
-    private FieldType type;
-    public FieldType getType(){ return type;}
+    private int type;
+    public int getType(){ return type;}
 
 
     public FieldView(Context context, AttributeSet attrs) {
@@ -122,17 +121,17 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
 
     private void addComponentView(Field field) {
         switch (field.getType()) {
-            case PHOTO:
+            case Field.PHOTO:
                 addPhotoFragmentView(field);
                 break;
-            case RATING:
+            case Field.RATING:
                 addRatingBar(field);
                 break;
-            case CHECKBOX:
+            case Field.CHECKBOX:
                 addCheckBox(field);
                 break;
-            case ITEM_LIST:
-            case PRICE_LIST:{
+            case Field.ITEM_LIST:
+            case Field.PRICE_LIST:{
                 addDoubleEditTextViews(field);
                 break;
             }
@@ -212,31 +211,31 @@ public class FieldView extends RelativeLayout implements View.OnClickListener, E
         }
     }
 
-    private EditText createEditText(FieldType type, int iteration){
+    private EditText createEditText(int type, int iteration){
         EditText v = new EditText(context);
         v.setTag(EDIT);
         v.setFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_ENTRY_CHARS)});
         switch (type) {
-            case NUMBER:
+            case Field.NUMBER:
                 v.setInputType(InputType.TYPE_CLASS_NUMBER);
                 break;
-            case DECIMAL:
+            case Field.DECIMAL:
                 v.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
                 break;
-            case DATE:
+            case Field.DATE:
                 v.setHint(dateFormat.format(new Date()));
                 break;
-            case TIME:
+            case Field.TIME:
                 v.setHint(timeFormat.format(new Date()));
                 break;
-            case DATE_TIME:
+            case Field.DATE_TIME:
                 if (iteration == 0){
                     v.setHint(dateFormat.format(new Date()));
                 } else {
                     v.setHint(timeFormat.format(new Date()));
                 }
                 break;
-            case PHONE:
+            case Field.PHONE:
                 v.setInputType(InputType.TYPE_CLASS_PHONE);
                 break;
         }

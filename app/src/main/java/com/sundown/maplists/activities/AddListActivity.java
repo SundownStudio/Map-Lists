@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
+import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.dialogs.AddFieldDialogFragment;
@@ -25,8 +26,7 @@ import com.sundown.maplists.fragments.ManageSchemasFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
-import com.sundown.maplists.models.fields.FieldType;
-import com.sundown.maplists.models.lists.ListType;
+import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.models.lists.MapList;
 import com.sundown.maplists.models.lists.MapListFactory;
 import com.sundown.maplists.models.lists.PrimaryList;
@@ -37,7 +37,6 @@ import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.ContentLoader;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
-import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.AddFieldView;
 import com.sundown.maplists.views.ToolbarWithSpinner;
@@ -97,9 +96,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
      */
     private ManageSchemasFragment manageSchemasFragment;
 
-    private Operation operation;
+    private int operation;
     private MapList model;
-    private ListType listType;
+    private int listType;
     private Field newFieldToAdd;
     private boolean saveListUpdate;
 
@@ -117,8 +116,8 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); //disable keyboard on some devices
 
         Bundle bundle = getIntent().getExtras();
-        listType = ListType.valueOf(bundle.getString(JsonConstants.LIST_TYPE));
-        operation = Operation.valueOf(bundle.getString(JsonConstants.OPERATION));
+        listType = bundle.getInt(JsonConstants.LIST_TYPE);
+        operation = bundle.getInt(JsonConstants.OPERATION);
         String documentId = bundle.getString(JsonConstants.DOCUMENT_ID);
         int mapId = bundle.getInt(JsonConstants.MAP_ID);
 
@@ -127,10 +126,10 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         savedSchemaLists = new ArrayList<>();
         setUpToolBars(getString(R.string.add_lists_activity));
 
-        if (operation == Operation.INSERT) { //only for secondarylists
+        if (operation == Constants.OP_INSERT) { //only for secondarylists
             model = MapListFactory.createList(getResources(), listType, mapId);
 
-        } else if (operation == Operation.UPDATE) { //can be both maplists and secondarylists
+        } else if (operation == Constants.OP_UPDATE) { //can be both maplists and secondarylists
             Map<String, Object> properties = db.read(documentId);
             model = MapListFactory.createList(getResources(), listType, mapId).setProperties(properties);
         }
@@ -166,9 +165,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         model = addListFragment.refreshModel();
 
         if (saveListUpdate) {
-            if (operation == Operation.INSERT) {
+            if (operation == Constants.OP_INSERT) {
                 db.insert(model, String.valueOf(model.getMapId()), LIST_ID);
-            } else if (operation == Operation.UPDATE) {
+            } else if (operation == Constants.OP_UPDATE) {
                 db.update(model);
             }
         }
@@ -266,11 +265,11 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
                 } else {
                     if (saveSchema == SCHEMA_UNIQUE) { //schema is unique so prompt user to save it
-                        addSchemaFragment = AddSchemaDialogFragment.getInstance(Operation.INSERT, getString(R.string.enter_name_for_schema), getString(R.string.schema) + "0" + (savedSchemaLists.size()), saveSchema);
+                        addSchemaFragment = AddSchemaDialogFragment.getInstance(Constants.OP_INSERT, getString(R.string.enter_name_for_schema), getString(R.string.schema) + "0" + (savedSchemaLists.size()), saveSchema);
 
                     } else { //same schema already exists! so let's ask user if they wish to consolidate under this existing schema.. saveSchema is now the index to update..
                         SchemaList list = savedSchemaLists.get(saveSchema);
-                        addSchemaFragment = AddSchemaDialogFragment.getInstance(Operation.UPDATE, getString(R.string.a_schema_already_exists), list.getSchemaName(), saveSchema);
+                        addSchemaFragment = AddSchemaDialogFragment.getInstance(Constants.OP_UPDATE, getString(R.string.a_schema_already_exists), list.getSchemaName(), saveSchema);
                     }
                     addSchemaFragment.show(fm, FRAGMENT_ADD_SCHEMA);
                 }
@@ -366,23 +365,23 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     }
 
 
-    private String getPrimaryFieldTypeString(FieldType type) {
+    private String getPrimaryFieldTypeString(int type) {
         String[] fieldNames = getResources().getStringArray(R.array.all_field_names);
         switch (type) {
-            case NAME:
+            case Field.NAME:
                 return fieldNames[0];
-            case PHONE:
+            case Field.PHONE:
                 return fieldNames[1];
-            case EMAIL:
+            case Field.EMAIL:
                 return fieldNames[2];
-            case URL:
+            case Field.URL:
                 return fieldNames[6];
-            case PRICE:
+            case Field.PRICE:
                 return fieldNames[7];
-            case ITEM_LIST: {
+            case Field.ITEM_LIST: {
                 String name = fieldNames[9];
                 return name.substring(0, name.lastIndexOf("-")); }
-            case PRICE_LIST: {
+            case Field.PRICE_LIST: {
                 String name = fieldNames[10];
                 return name.substring(0, name.lastIndexOf("-")); }
         }
@@ -405,10 +404,10 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     }
 
     @Override
-    public void schemaAdded(Operation operation, String schemaName, int indexToUpdate) {
+    public void schemaAdded(int operation, String schemaName, int indexToUpdate) {
         if (schemaLoader != null) schemaLoader.stop();
         if (schemaName != null) {
-            if (operation == Operation.INSERT) {
+            if (operation == Constants.OP_INSERT) {
                 SchemaList schemaList = model.copySchema();
                 schemaList.setSchemaName(schemaName);
                 int schemaId = db.insert(schemaList, JsonConstants.COUNT_SCHEMAS, JsonConstants.SCHEMA_ID);
@@ -432,10 +431,10 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     public void onSchemaSelected(int position) {
         MapList list = MapListFactory.createList(getResources(), listType, model.getMapId());
 
-        if (listType == ListType.PRIMARY) {
+        if (listType == BaseList.PRIMARY) {
             ((PrimaryList) list).setLatLng(((PrimaryList) model).getLatLng());
 
-        } else if (listType == ListType.SECONDARY) {
+        } else if (listType == BaseList.SECONDARY) {
             ((SecondaryList) list).setListId(((SecondaryList) model).getListId());
         }
         Map<String, Object> properties = savedSchemaLists.get(position).getProperties();
@@ -447,10 +446,10 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
     private class Loader extends ContentLoader {
 
-        private ListType determineListTypeForLoader(ListType listType){
-            if (listType == ListType.PRIMARY)
-                return ListType.PRIMARY_SCHEMA;
-            return ListType.SECONDARY_SCHEMA;
+        private int determineListTypeForLoader(int listType){
+            if (listType == BaseList.PRIMARY)
+                return BaseList.PRIMARY_SCHEMA;
+            return BaseList.SECONDARY_SCHEMA;
         }
 
         @Override

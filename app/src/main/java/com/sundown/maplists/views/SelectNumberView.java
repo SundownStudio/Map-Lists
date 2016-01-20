@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 
 /**
@@ -73,7 +74,7 @@ public class SelectNumberView extends RelativeLayout {
     public void init(String type, int myMax){
         this.type = type;
         seekBarIntroText.setText(getResources().getString(R.string.select_number_instr_1) + " " + type + "s " + getResources().getString(R.string.select_number_instr_2));
-        seekBarMinText.setText(getResources().getString(R.string.seekbar_min));
+        seekBarMinText.setText(Constants.SEEKBAR_MIN +"");
         seekBarMaxText.setText(myMax +"");
         this.max = myMax - 1;
         seekBar.setMax(max);

@@ -12,12 +12,7 @@ import android.widget.TextView;
 
 import com.sundown.maplists.R;
 
-import static com.sundown.maplists.views.PhotoView.Option.CANT_LOAD_IMAGE;
-import static com.sundown.maplists.views.PhotoView.Option.CLEAR_CONTAINER;
-import static com.sundown.maplists.views.PhotoView.Option.CLEAR_PROGRESS;
-import static com.sundown.maplists.views.PhotoView.Option.NO_IMAGE_LOADED;
-import static com.sundown.maplists.views.PhotoView.Option.NULL_BITMAP;
-import static com.sundown.maplists.views.PhotoView.Option.SHOW_PROGRESS;
+
 
 /**
  * Created by Sundown on 5/21/2015.
@@ -32,6 +27,13 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
         void deleteFragment();
     }
 
+    private static final int SHOW_PROGRESS = 0;
+    private static final int CLEAR_PROGRESS = 1;
+    private static final int NO_IMAGE_LOADED = 2;
+    private static final int CANT_LOAD_IMAGE = 3;
+    private static final int CLEAR_CONTAINER = 4;
+    private static final int NULL_BITMAP = 5;
+
     private PhotoViewListener listener;
     private ImageView locationImage;
     private ProgressBar progressBar;
@@ -39,10 +41,7 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
     private ImageButton takePicture, deletePicture, loadPicture, rotatePicture, removeFragment;
     private TextView noImageLoadedText;
 
-    public enum Option {
-        SHOW_PROGRESS, CLEAR_PROGRESS, NO_IMAGE_LOADED,
-        CANT_LOAD_IMAGE, CLEAR_CONTAINER, NULL_BITMAP
-    }
+
 
     public PhotoView(Context context, AttributeSet attrs) {super(context, attrs);}
 
@@ -120,10 +119,11 @@ public class PhotoView extends RelativeLayout implements View.OnClickListener {
     }
 
 
-    private void drawContainer(Option... options){
+    private void drawContainer(int... options){
+        int len = options.length;
 
-        for (Option x : options) {
-            switch (x) {
+        for (int i = 0; i < len; ++i) {
+            switch (options[i]) {
                 case SHOW_PROGRESS:{
                     progressBar.setVisibility(VISIBLE);
                     break;}

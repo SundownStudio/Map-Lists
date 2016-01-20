@@ -18,13 +18,13 @@ public class SecondaryList extends MapList {
     protected SecondaryList(int mapId, int listId) {
         super(mapId);
         setListId(listId);
-        setListType(ListType.SECONDARY);
+        setListType(SECONDARY);
     }
 
     @Override
     public SchemaList copySchema() {
         SchemaList schemaList = super.copy();
-        schemaList.setListType(ListType.SECONDARY_SCHEMA);
+        schemaList.setListType(SECONDARY_SCHEMA);
         return schemaList;
     }
 

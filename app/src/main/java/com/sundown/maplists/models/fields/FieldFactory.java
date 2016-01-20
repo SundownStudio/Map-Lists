@@ -9,14 +9,14 @@ import com.sundown.maplists.utils.PreferenceManager;
  */
 public class FieldFactory {
 
-    public static Field createField(String title, String entry, FieldType type, boolean permanent){
+    public static Field createField(String title, String entry, int type, boolean permanent){
         Field field;
         switch (type){
-            case PHOTO:
+            case Field.PHOTO:
                 field = new PhotoField(title, permanent, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance());
                 break;
 
-            case DATE_TIME:
+            case Field.DATE_TIME:
                 field = new EntryField(title, entry, type, permanent).addEntry("");
                 break;
 

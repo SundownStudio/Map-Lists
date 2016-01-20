@@ -11,7 +11,7 @@ import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.lists.ListType;
+import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.models.lists.MapListFactory;
 import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
@@ -94,7 +94,7 @@ public class ListModeFragment extends Fragment {
             while (result.hasNext()) {
                 QueryRow row = result.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId());
-                model.add((SecondaryList) MapListFactory.createList(getResources(), ListType.SECONDARY, mapId).setProperties(properties));
+                model.add((SecondaryList) MapListFactory.createList(getResources(), BaseList.SECONDARY, mapId).setProperties(properties));
             }
 
             drawModel();

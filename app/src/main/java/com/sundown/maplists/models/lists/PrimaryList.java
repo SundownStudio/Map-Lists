@@ -22,13 +22,13 @@ public class PrimaryList extends MapList {
 
     protected PrimaryList(int mapId) {
         super(mapId);
-        setListType(ListType.PRIMARY);
+        setListType(PRIMARY);
     }
 
     @Override
     public SchemaList copySchema() {
         SchemaList schemaList = super.copy();
-        schemaList.setListType(ListType.PRIMARY_SCHEMA);
+        schemaList.setListType(PRIMARY_SCHEMA);
         return schemaList;
     }
 

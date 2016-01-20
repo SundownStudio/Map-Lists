@@ -59,7 +59,7 @@ public class PhotoField extends Field {
 
 
     protected PhotoField(String title, boolean permanent, PhotoUtils photoUtils, FileManager fileManager, PreferenceManager preferenceManager) {
-        super(title, FieldType.PHOTO, permanent);
+        super(title, Field.PHOTO, permanent);
         this.photoUtils = photoUtils;
         this.fileManager = fileManager;
         this.preferenceManager = preferenceManager;

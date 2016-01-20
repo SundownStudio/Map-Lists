@@ -16,13 +16,13 @@ public class EntryField extends Field {
     private List<String> entries;
 
 
-    protected EntryField(String title, String entry, FieldType type, boolean permanent){
+    protected EntryField(String title, String entry, int type, boolean permanent){
         super(title, type, permanent);
         entries = new ArrayList<>();
         entries.add(entry);
     }
 
-    private EntryField(String title, List<String> entries, FieldType type, boolean permanent){
+    private EntryField(String title, List<String> entries, int type, boolean permanent){
         super(title, type, permanent);
         this.entries = new ArrayList<>(entries.size());
         for (String entry: entries)
@@ -56,7 +56,7 @@ public class EntryField extends Field {
     public void clearEntries(){ entries.clear(); }
 
     public void addAdditionalBlankEntries(int num){
-        if (getType() == FieldType.ITEM_LIST || getType() == FieldType.PRICE_LIST) {
+        if (getType() == Field.ITEM_LIST || getType() == Field.PRICE_LIST) {
             addEntry("");
             num *= 2; //even entries left, odd entries right
         }

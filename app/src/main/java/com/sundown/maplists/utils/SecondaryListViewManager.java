@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 
 import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.fields.FieldType;
+import com.sundown.maplists.models.fields.Field;
 import com.sundown.maplists.views.ListItemDoubleView;
 import com.sundown.maplists.views.ListItemSingleView;
 
@@ -19,17 +19,17 @@ public class SecondaryListViewManager {
 
     private static SecondaryListViewManager instance;
     private LayoutInflater inflater;
-    private static final Map<FieldType, Integer> imageResources;
+    private static final Map<Integer, Integer> imageResources;
     static
     {
         imageResources = new HashMap<>();
-        imageResources.put(FieldType.NAME, R.drawable.ic_name);
-        imageResources.put(FieldType.PHONE, R.drawable.ic_phonenumber);
-        imageResources.put(FieldType.EMAIL, R.drawable.ic_email);
-        imageResources.put(FieldType.DATE, R.drawable.ic_date);
-        imageResources.put(FieldType.TIME, R.drawable.ic_time);
-        imageResources.put(FieldType.URL, R.drawable.ic_url);
-        imageResources.put(FieldType.PRICE, R.drawable.ic_price);
+        imageResources.put(Field.NAME, R.drawable.ic_name);
+        imageResources.put(Field.PHONE, R.drawable.ic_phonenumber);
+        imageResources.put(Field.EMAIL, R.drawable.ic_email);
+        imageResources.put(Field.DATE, R.drawable.ic_date);
+        imageResources.put(Field.TIME, R.drawable.ic_time);
+        imageResources.put(Field.URL, R.drawable.ic_url);
+        imageResources.put(Field.PRICE, R.drawable.ic_price);
     }
 
     public static SecondaryListViewManager getInstance(){
@@ -56,7 +56,7 @@ public class SecondaryListViewManager {
         return (ListItemDoubleView)inflater.inflate(R.layout.list_item_double_view, null, false);
     }
 
-    public ListItemSingleView drawSingleView(FieldType type1, String entry1, boolean showAsTitle){
+    public ListItemSingleView drawSingleView(int type1, String entry1, boolean showAsTitle){
         ListItemSingleView view = createListItemSingleView();
         Integer resource = imageResources.get(type1);
         if (showAsTitle)
@@ -66,7 +66,7 @@ public class SecondaryListViewManager {
     }
 
 
-    public ListItemDoubleView drawDoubleView(FieldType type1, FieldType type2, String entry1, String entry2){
+    public ListItemDoubleView drawDoubleView(int type1, int type2, String entry1, String entry2){
         ListItemDoubleView view = createListItemDoubleView();
         view.init(imageResources.get(type1), imageResources.get(type2), entry1, entry2);
         return view;

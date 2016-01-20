@@ -16,6 +16,32 @@ public abstract class Field implements PropertiesHandler, Copyable {
         void setTitle(String title);
     }
 
+    //fieldtypes
+    public static final int NAME = 0;
+    public static final int PHONE = 1;
+    public static final int EMAIL = 2;
+    public static final int DATE = 3;
+    public static final int TIME = 4;
+    public static final int DATE_TIME = 5;
+    public static final int URL = 6;
+    public static final int PRICE = 7;
+    public static final int PHOTO = 8;
+    public static final int ITEM_LIST = 9;
+    public static final int PRICE_LIST = 10;
+    public static final int TEXT = 11;
+    public static final int MESSAGE = 12;
+    public static final int NUMBER = 13;
+    public static final int DECIMAL = 14;
+    public static final int DROPDOWN = 15;
+    public static final int CHECKBOX = 16;
+    public static final int RATING = 17;
+    public static final int SUBJECT = 18;
+
+    /** return an array of constants */
+    public static int[] getConstArray(){
+        return new int[]{NAME, PHONE, EMAIL, DATE, TIME, DATE_TIME, URL, PRICE, PHOTO, ITEM_LIST, PRICE_LIST, TEXT, MESSAGE, NUMBER, DECIMAL, DROPDOWN, CHECKBOX, RATING, SUBJECT};
+    }
+
     /**
      * used for view tagging
      */
@@ -32,13 +58,13 @@ public abstract class Field implements PropertiesHandler, Copyable {
     /**
      * indicates type of field
      */
-    private FieldType type;
+    private int type;
 
-    public FieldType getType() {
+    public int getType() {
         return type;
     }
 
-    private void setFieldType(FieldType type) {
+    private void setType(int type) {
         this.type = type;
     }
 
@@ -93,9 +119,9 @@ public abstract class Field implements PropertiesHandler, Copyable {
     }
 
 
-    protected Field(String title, FieldType type, boolean permanent) {
+    protected Field(String title, int type, boolean permanent) {
         setTitle(title);
-        setFieldType(type);
+        setType(type);
         setIsPermanent(permanent);
         setShowTitle(false);
     }
@@ -117,7 +143,7 @@ public abstract class Field implements PropertiesHandler, Copyable {
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = new HashMap();
         properties.put(JsonConstants.FIELD_TITLE, title);
-        properties.put(JsonConstants.FIELD_TYPE, type.name());
+        properties.put(JsonConstants.FIELD_TYPE, type);
         properties.put(JsonConstants.FIELD_PERMANENT, String.valueOf(permanent));
         properties.put(JsonConstants.FIELD_TITLE_SHOW, String.valueOf(showTitle));
         return properties;
@@ -126,7 +152,7 @@ public abstract class Field implements PropertiesHandler, Copyable {
     @Override
     public Field setProperties(Map properties) {
         setTitle(String.valueOf(properties.get(JsonConstants.FIELD_TITLE)));
-        setFieldType(FieldType.valueOf(properties.get(JsonConstants.FIELD_TYPE).toString()));
+        setType((Integer)properties.get(JsonConstants.FIELD_TYPE));
         setIsPermanent(Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_PERMANENT))));
         setShowTitle(Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_TITLE_SHOW))));
         return this;

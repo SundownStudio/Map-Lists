@@ -10,17 +10,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
+import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.fragments.SecondaryListFragment;
 import com.sundown.maplists.models.fields.EntryField;
-import com.sundown.maplists.models.lists.MapListFactory;
-import com.sundown.maplists.models.lists.ListType;
+import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.models.lists.MapList;
+import com.sundown.maplists.models.lists.MapListFactory;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
-import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.ToolbarManager;
 
 import java.util.Map;
@@ -85,7 +85,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
 
     private void loadModel(){
         Map<String, Object> properties = db.read(documentId);
-        model =  MapListFactory.createList(getResources(), ListType.SECONDARY, mapId).setProperties(properties);
+        model =  MapListFactory.createList(getResources(), BaseList.SECONDARY, mapId).setProperties(properties);
     }
 
     private void setUpToolBars(String itemName){
@@ -137,8 +137,8 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
 
                 if (secondaryListFragment != null && secondaryListFragment.getUserVisibleHint()) {
                     Intent intent = new Intent(SecondaryListActivity.this, AddListActivity.class);
-                    intent.putExtra(JsonConstants.LIST_TYPE, ListType.SECONDARY.name());
-                    intent.putExtra(JsonConstants.OPERATION, Operation.UPDATE.name());
+                    intent.putExtra(JsonConstants.LIST_TYPE, BaseList.SECONDARY);
+                    intent.putExtra(JsonConstants.OPERATION, Constants.OP_UPDATE);
                     intent.putExtra(JsonConstants.DOCUMENT_ID, model.getDocumentId());
                     intent.putExtra(JsonConstants.MAP_ID, model.getMapId());
                     startActivity(intent);
@@ -167,7 +167,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
     @Override
     public void confirmAction(boolean confirmed) {
         if (confirmed) {
-            db.delete(model.getDocumentId(), model.getMapId(), Operation.DELETE_SECONDARY_LIST);
+            db.delete(model.getDocumentId(), model.getMapId(), Constants.OP_DELETE_SECONDARY_LIST);
             returnActivityResult();
         }
     }

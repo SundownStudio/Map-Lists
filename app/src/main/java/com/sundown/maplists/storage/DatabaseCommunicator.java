@@ -18,11 +18,11 @@ import com.couchbase.lite.Revision;
 import com.couchbase.lite.UnsavedRevision;
 import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
+import com.sundown.maplists.Constants;
 import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.PhotoField;
-import com.sundown.maplists.models.lists.AbstractList;
-import com.sundown.maplists.models.lists.ListType;
+import com.sundown.maplists.models.lists.BaseList;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,7 +49,6 @@ public class DatabaseCommunicator {
     public static final int QUERY_MAP = 1;
     public static final int QUERY_LOCATION = 2;
     public static final int QUERY_SCHEMA = 3;
-    public static final int MAX_ITEMS_PER_LIST = 9999;
     private static final String IMAGE_TYPE = "image/jpg";
 
     private static CBManager cbManager;
@@ -70,7 +69,7 @@ public class DatabaseCommunicator {
     }
 
 
-    public int insert(final AbstractList list, String countId, String idType) {
+    public int insert(final BaseList list, String countId, String idType) {
         try {
             return cbManager.insert(list, countId, idType);
         } catch (CouchbaseLiteException e) {
@@ -80,7 +79,7 @@ public class DatabaseCommunicator {
     }
 
 
-    public void update(final AbstractList list) {
+    public void update(final BaseList list) {
         try {
             cbManager.update(list);
         } catch (CouchbaseLiteException e) {
@@ -89,7 +88,7 @@ public class DatabaseCommunicator {
     }
 
 
-    public void delete(String documentId, int mapId, Operation operation){
+    public void delete(String documentId, int mapId, int operation){
         try {
             cbManager.delete(documentId, mapId, operation);
         } catch (CouchbaseLiteException e) {
@@ -134,16 +133,11 @@ public class DatabaseCommunicator {
         return null;
     }
 
-    public LiveQuery getLiveQuery(int query, int mapId){
+    public LiveQuery getLiveQuery(int query, int id){
         if (query == QUERY_LOCATION){
-            return cbManager.getLocationQuery(mapId).toLiveQuery();
-        }
-        return null;
-    }
-
-    public LiveQuery getLiveQuery(int query, ListType type){
-        if (query == QUERY_SCHEMA) {
-            return cbManager.getSchemaQuery(type.ordinal()).toLiveQuery();
+            return cbManager.getLocationQuery(id).toLiveQuery();
+        } else if (query == QUERY_SCHEMA) {
+            return cbManager.getSchemaQuery(id).toLiveQuery();
         }
         return null;
     }
@@ -192,18 +186,14 @@ public class DatabaseCommunicator {
 
         private void initViews(){
             //view map/reduce functions are not persistent and must be registered at runtime so do this after loading manager/database
-
-            //todo see if its better to merge these by type.. if so, then on livequery do we need to be able to differentiate?..
             View viewByMapId = database.getView(VIEW_BY_MAP_ID);
             viewByMapId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
-                    String type = (String) properties.get(LIST_TYPE);
-                    if (type != null) {
-                        ListType listType = ListType.valueOf(type);
-                        if (listType == ListType.PRIMARY) {
+                    if (properties.containsKey(LIST_TYPE)){
+                        int type = (Integer) properties.get(LIST_TYPE);
+                        if (type == BaseList.PRIMARY)
                             emitter.emit(properties.get(JsonConstants.MAP_ID), null);
-                        }
                     }
                 }
             }, VIEW_VERSION);     //view last parameter is version, this is retained so if map/reduce updated it will go back
@@ -213,27 +203,25 @@ public class DatabaseCommunicator {
             viewByItemId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
-                    String type = (String) properties.get(LIST_TYPE);
-                    if (type != null) {
-                        ListType listType = ListType.valueOf(type);
-                        if (listType == ListType.SECONDARY) {
+                    if (properties.containsKey(LIST_TYPE)){
+                        int type = (Integer) properties.get(LIST_TYPE);
+                        if (type == BaseList.SECONDARY){
                             int[] arr = new int[]{(Integer) properties.get(MAP_ID), (Integer) properties.get(LIST_ID)};
                             emitter.emit(arr, null);
                         }
                     }
                 }
-            }, VIEW_VERSION);     //view last parameter is version, this is retained so if map/reduce updated it will go back
+            }, VIEW_VERSION);
 
 
             View viewBySchemaId = database.getView(VIEW_BY_SCHEMA_ID);
             viewBySchemaId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
-                    String type = (String) properties.get(LIST_TYPE);
-                    if (type != null) {
-                        ListType listType = ListType.valueOf(type);
-                        if (listType == ListType.PRIMARY_SCHEMA || listType == ListType.SECONDARY_SCHEMA) {
-                            int[] arr = new int[]{listType.ordinal(), (Integer) properties.get(SCHEMA_ID)};
+                    if (properties.containsKey(LIST_TYPE)) {
+                        int type = (Integer) properties.get(LIST_TYPE);
+                        if (type == BaseList.PRIMARY_SCHEMA || type == BaseList.SECONDARY_SCHEMA) {
+                            int[] arr = new int[]{type, (Integer) properties.get(SCHEMA_ID)};
                             emitter.emit(arr, null);
                         }
                     }
@@ -241,26 +229,25 @@ public class DatabaseCommunicator {
             }, VIEW_VERSION);
         }
 
-
         public Query getMapQuery(){ return database.getView(VIEW_BY_MAP_ID).createQuery(); }
 
         public Query getLocationQuery(int mapId){
             Query query =  database.getView(VIEW_BY_LIST_ID).createQuery();
 
             query.setStartKey(new int[]{mapId, 0});
-            query.setEndKey(new int[]{mapId, MAX_ITEMS_PER_LIST});
+            query.setEndKey(new int[]{mapId, Constants.MAX_ITEMS_PER_LIST});
             return query;
         }
 
         public Query getSchemaQuery(int typeOrdinal) {
             Query query = database.getView(VIEW_BY_SCHEMA_ID).createQuery();
             query.setStartKey(new int[]{typeOrdinal, 0});
-            query.setEndKey(new int[]{typeOrdinal, MAX_ITEMS_PER_LIST});
+            query.setEndKey(new int[]{typeOrdinal, Constants.MAX_ITEMS_PER_LIST});
             return query;
         }
 
 
-        public int insert(AbstractList list, String countId, String idName) throws CouchbaseLiteException {
+        public int insert(BaseList list, String countId, String idName) throws CouchbaseLiteException {
             int count = increaseCount(countId);
 
             UUID uuid = UUID.randomUUID();
@@ -281,7 +268,7 @@ public class DatabaseCommunicator {
             return count;
         }
 
-        public void update(final AbstractList list) throws CouchbaseLiteException {
+        public void update(final BaseList list) throws CouchbaseLiteException {
             Document doc = database.getDocument(list.getDocumentId());
             saveDocument(doc.createRevision(), list.getProperties(), list.getPhotos());
         }
@@ -310,9 +297,9 @@ public class DatabaseCommunicator {
             return newRevision;
         }
 
-        public void delete(String documentId, int mapId, Operation operation) throws CouchbaseLiteException {
+        public void delete(String documentId, int mapId, int operation) throws CouchbaseLiteException {
 
-            if (operation == Operation.DELETE_LOCATION){
+            if (operation == Constants.OP_DELETE_LOCATION){
 
                 Query locationsQuery = getLocationQuery(mapId);
 
@@ -330,12 +317,12 @@ public class DatabaseCommunicator {
                     removeCount(String.valueOf(mapId));
                 }
 
-            } else if (operation == Operation.DELETE_SECONDARY_LIST){
+            } else if (operation == Constants.OP_DELETE_SECONDARY_LIST){
                 if (deleteDocument(documentId)){
                     decreaseCount(String.valueOf(mapId));
                 }
 
-            } else if (operation == Operation.DELETE_SCHEMA){
+            } else if (operation == Constants.OP_DELETE_SCHEMA){
                 deleteDocument(documentId);
             }
 

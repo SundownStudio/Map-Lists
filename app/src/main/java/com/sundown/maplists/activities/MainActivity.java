@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
@@ -22,11 +23,10 @@ import com.sundown.maplists.fragments.MapFragment;
 import com.sundown.maplists.fragments.NavigationDrawerFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
-import com.sundown.maplists.models.lists.ListType;
+import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.models.lists.PrimaryList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
-import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.utils.ToolbarManager;
 
 public class MainActivity extends AppCompatActivity implements
@@ -312,8 +312,8 @@ public class MainActivity extends AppCompatActivity implements
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
                     PrimaryList list = mapFragment.getSelectedPrimaryList();
                     Intent intent = new Intent(MainActivity.this, AddListActivity.class);
-                    intent.putExtra(JsonConstants.LIST_TYPE, ListType.PRIMARY.name());
-                    intent.putExtra(JsonConstants.OPERATION, Operation.UPDATE.name());
+                    intent.putExtra(JsonConstants.LIST_TYPE, BaseList.PRIMARY);
+                    intent.putExtra(JsonConstants.OPERATION, Constants.OP_UPDATE);
                     intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
                     intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
                     startActivity(intent);
@@ -341,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements
     public void confirmAction (boolean confirmed){
         if (confirmed) {
             PrimaryList list = mapFragment.getSelectedPrimaryList();
-            db.delete(list.getDocumentId(), list.getMapId(), Operation.DELETE_LOCATION);
+            db.delete(list.getDocumentId(), list.getMapId(), Constants.OP_DELETE_LOCATION);
         }
     }
 

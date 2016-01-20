@@ -17,8 +17,8 @@ import com.sundown.maplists.dialogs.EditTitleDialogFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
-import com.sundown.maplists.models.lists.MapList;
 import com.sundown.maplists.models.fields.PhotoField;
+import com.sundown.maplists.models.lists.MapList;
 import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.storage.DatabaseCommunicator;
@@ -29,8 +29,6 @@ import com.sundown.maplists.views.FieldView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-
-import static com.sundown.maplists.models.fields.FieldType.PHOTO;
 
 /**
  * Created by Sundown on 8/18/2015.
@@ -163,7 +161,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     public void addToForm(int id, Field field) {
         field.setId(id);
         field.setObserver(addFieldView(field));
-        if (field.getType() == PHOTO) {
+        if (field.getType() == Field.PHOTO) {
             addPhotoFragment(id, (PhotoField) field);
         }
     }
@@ -202,7 +200,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         for (int i = 0; i < numFields; ++i){
             FieldView fieldView = (FieldView) form.findViewWithTag(i);
             try {
-                if (fieldView.getType() != PHOTO) {
+                if (fieldView.getType() != Field.PHOTO) {
                     EntryField entryField = (EntryField) model.getField(i);
                     int numEntries = entryField.getNumEntries();
                     entryField.clearEntries();
@@ -219,17 +217,17 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     private boolean isFieldValidForTitleDisplay(Field field){
         if (model instanceof SecondaryList) {
             switch (field.getType()) {
-                case NAME:
-                case PHONE:
-                case EMAIL:
-                case DATE:
-                case TIME:
-                case DATE_TIME:
-                case URL:
-                case PRICE:
-                case MESSAGE:
-                case ITEM_LIST:
-                case PRICE_LIST:{
+                case Field.NAME:
+                case Field.PHONE:
+                case Field.EMAIL:
+                case Field.DATE:
+                case Field.TIME:
+                case Field.DATE_TIME:
+                case Field.URL:
+                case Field.PRICE:
+                case Field.MESSAGE:
+                case Field.ITEM_LIST:
+                case Field.PRICE_LIST:{
                     return true;
                 }
             }

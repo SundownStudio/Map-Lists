@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.sundown.maplists.R;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
-import com.sundown.maplists.models.fields.FieldType;
 import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.utils.SecondaryListViewManager;
 import com.sundown.maplists.utils.ViewUtils;
@@ -90,22 +89,22 @@ public class ListModeView extends RelativeLayout {
             List<Field> fields = locationItem.getFields();
 
             for (Field field: fields) {
-                FieldType type = field.getType();
+                int type = field.getType();
                 switch (type) {
-                    case SUBJECT: { //reserved field only one per item
+                    case Field.SUBJECT: { //reserved field only one per item
                         EntryField entryField = (EntryField) field;
                         holder.subjectText.setText(entryField.getEntry(0));
                         holder.subjectText.setBackgroundDrawable(ViewUtils.getTopRoundedCornersDrawable(getResources().getDimension(R.dimen.rounded_corners), locationItem.getColor()));
                         break;
                     }
-                    case NAME:
-                    case PHONE:
-                    case EMAIL:
-                    case DATE:
-                    case TIME:
-                    case DATE_TIME:
-                    case URL:
-                    case PRICE:{
+                    case Field.NAME:
+                    case Field.PHONE:
+                    case Field.EMAIL:
+                    case Field.DATE:
+                    case Field.TIME:
+                    case Field.DATE_TIME:
+                    case Field.URL:
+                    case Field.PRICE:{
                         EntryField entryField = (EntryField) field;
                         addTitleView(entryField, holder);
 
@@ -113,9 +112,9 @@ public class ListModeView extends RelativeLayout {
                         for (int i = 0; i < size; ++i) {
                             if (size > i + 1) {
 
-                                if (type == FieldType.DATE_TIME){
-                                    holder.container.addView(secondaryListViewManager.drawDoubleView(FieldType.DATE, FieldType.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
-                                } else if (type == FieldType.PRICE){
+                                if (type == Field.DATE_TIME){
+                                    holder.container.addView(secondaryListViewManager.drawDoubleView(Field.DATE, Field.TIME, entryField.getEntry(i), entryField.getEntry(++i)));
+                                } else if (type == Field.PRICE){
                                     holder.container.addView(secondaryListViewManager.drawDoubleView(type, type, entryField.getEntry(i), entryField.getEntry(++i)));
 
                                 } else {
@@ -129,7 +128,7 @@ public class ListModeView extends RelativeLayout {
                         }
                         break;
                     }
-                    case MESSAGE:{
+                    case Field.MESSAGE:{
                         EntryField entryField = (EntryField) field;
                         addTitleView(entryField, holder);
                         int size = entryField.getNumEntries();
@@ -139,16 +138,16 @@ public class ListModeView extends RelativeLayout {
                         }
                         break;
                     }
-                    case ITEM_LIST:{
+                    case Field.ITEM_LIST:{
                         EntryField entryField = (EntryField) field;
                         addTitleView(entryField, holder);
-                        addAllDoubleViews(entryField, holder, null, null);
+                        addAllDoubleViews(entryField, holder, -1, -1);
                         break;
                     }
-                    case PRICE_LIST:{
+                    case Field.PRICE_LIST:{
                         EntryField entryField = (EntryField) field;
                         addTitleView(entryField, holder);
-                        addAllDoubleViews(entryField, holder, null, FieldType.PRICE);
+                        addAllDoubleViews(entryField, holder, -1, Field.PRICE);
                         break;
                     }
                 }
@@ -157,12 +156,12 @@ public class ListModeView extends RelativeLayout {
 
         private void addTitleView(EntryField entryField, ViewHolder holder){
             if (entryField.isTitleShown()) {
-                ListItemSingleView v = secondaryListViewManager.drawSingleView(null, entryField.getTitle(), true);
+                ListItemSingleView v = secondaryListViewManager.drawSingleView(-1, entryField.getTitle(), true);
                 holder.container.addView(v);
             }
         }
 
-        private void addAllDoubleViews(EntryField entryField, ViewHolder holder, FieldType type1, FieldType type2){
+        private void addAllDoubleViews(EntryField entryField, ViewHolder holder, int type1, int type2){
             int size = entryField.getNumEntries();
             for (int i = 0; i < size; ++i) {
                 if (size > i + 1) {
@@ -201,7 +200,9 @@ public class ListModeView extends RelativeLayout {
 
             @Override
             public void onClick(View v) {
-                listener.SecondaryListSelected(listItems.get(getAdapterPosition()));
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) //check in case item is deleted avoid crash
+                    listener.SecondaryListSelected(listItems.get(pos));
             }
 
 

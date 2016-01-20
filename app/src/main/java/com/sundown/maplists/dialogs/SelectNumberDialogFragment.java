@@ -8,8 +8,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 
+import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.fields.FieldType;
+import com.sundown.maplists.models.fields.Field;
 import com.sundown.maplists.views.SelectNumberView;
 
 /**
@@ -25,14 +26,14 @@ public class SelectNumberDialogFragment extends DialogFragment {
 
     private SelectNumberView view;
     private SelectNumberListener listener;
-    private FieldType type;
+    private int fieldType;
 
-    public static SelectNumberDialogFragment newInstance(String fieldTypeName, FieldType fieldType, SelectNumberListener listener){
+    public static SelectNumberDialogFragment newInstance(String fieldTypeName, int fieldType, SelectNumberListener listener){
         SelectNumberDialogFragment fragment = new SelectNumberDialogFragment();
         Bundle args = new Bundle();
         args.putString(FIELD_TYPE_NAME, fieldTypeName);
         fragment.setArguments(args);
-        fragment.type = fieldType;
+        fragment.fieldType = fieldType;
         fragment.listener = listener;
         return fragment;
     }
@@ -45,9 +46,9 @@ public class SelectNumberDialogFragment extends DialogFragment {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        int max = Integer.parseInt(getResources().getString(R.string.seekbar_max_regular));
-        if (type == FieldType.ITEM_LIST || type == FieldType.PRICE_LIST)
-            max = Integer.parseInt(getResources().getString(R.string.seekbar_max_list_items));
+        int max = Constants.SEEKBAR_MAX_REGULAR;
+        if (fieldType == Field.ITEM_LIST || fieldType == Field.PRICE_LIST)
+            max = Constants.SEEKBAR_MAX_LIST_ITEMS;
 
         view = (SelectNumberView) inflater.inflate(R.layout.dialog_select_number, null);
         view.init(getArguments().getString(FIELD_TYPE_NAME), max);

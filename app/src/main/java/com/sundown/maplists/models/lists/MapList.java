@@ -41,7 +41,7 @@ public abstract class MapList extends SchemaList {
         return this;
     }
 
-    public MapList setSchemaProperties(Map properties, ListType listType) {
+    public MapList setSchemaProperties(Map properties, int listType) {
         super.setProperties(properties);
         setListType(listType);
         return this;

@@ -16,7 +16,7 @@ import static com.sundown.maplists.storage.JsonConstants.SCHEMA_NAME;
 /**
  * Created by Sundown on 8/25/2015.
  */
-public class SchemaList extends AbstractList implements Copyable{
+public class SchemaList extends BaseList implements Copyable{
 
     private int schemaId;
 
@@ -26,9 +26,9 @@ public class SchemaList extends AbstractList implements Copyable{
         this.schemaId = schemaId;
     }
 
-    private ListType listType;
+    private int listType;
 
-    protected void setListType(ListType listType) {
+    protected void setListType(int listType) {
         this.listType = listType;
     }
 
@@ -101,7 +101,7 @@ public class SchemaList extends AbstractList implements Copyable{
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = super.getProperties();
         properties.put(SCHEMA_ID, schemaId);
-        properties.put(LIST_TYPE, listType.name());
+        properties.put(LIST_TYPE, listType);
         properties.put(SCHEMA_NAME, schemaName);
         properties.put(COLOR, color);
         return properties;
@@ -111,7 +111,7 @@ public class SchemaList extends AbstractList implements Copyable{
     public SchemaList setProperties(Map properties) {
         super.setProperties(properties);
         setSchemaId((Integer) properties.get(SCHEMA_ID));
-        setListType(ListType.valueOf(properties.get(LIST_TYPE).toString()));
+        setListType((Integer) properties.get(LIST_TYPE));
         setSchemaName(String.valueOf(properties.get(SCHEMA_NAME)));
         setColor((Integer) properties.get(COLOR));
         return this;

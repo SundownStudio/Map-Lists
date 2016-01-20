@@ -8,8 +8,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 
+import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
-import com.sundown.maplists.storage.Operation;
 import com.sundown.maplists.views.AddSchemaView;
 
 
@@ -19,16 +19,16 @@ import com.sundown.maplists.views.AddSchemaView;
 public class AddSchemaDialogFragment extends DialogFragment {
 
     public interface AddSchemaListener {
-        void schemaAdded(Operation operation, String schemaName, int indexToUpdate);
+        void schemaAdded(int operation, String schemaName, int indexToUpdate);
     }
 
     private final static String HINT = "hint";
     private final static String MESSAGE = "message";
     private AddSchemaListener listener;
-    private Operation operation;
+    private int operation;
     private int indexToUpdate; //the index to update, used only for updates //todo refactor
 
-    public static AddSchemaDialogFragment getInstance(Operation operation, String message, String hint, int indexToUpdate){
+    public static AddSchemaDialogFragment getInstance(int operation, String message, String hint, int indexToUpdate){
         AddSchemaDialogFragment fragment = new AddSchemaDialogFragment();
         Bundle args = new Bundle();
         args.putString(MESSAGE, message);
@@ -58,7 +58,7 @@ public class AddSchemaDialogFragment extends DialogFragment {
         view.setHint(getArguments().getString(HINT));
         view.setMessage(getArguments().getString(MESSAGE));
         String title = getString(R.string.save_schema);
-        if (operation == Operation.UPDATE){
+        if (operation == Constants.OP_UPDATE){
             title = getString(R.string.schema_detected);
         }
 
@@ -67,9 +67,9 @@ public class AddSchemaDialogFragment extends DialogFragment {
         builder.setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (operation == Operation.UPDATE){
+                if (operation == Constants.OP_UPDATE){
                     if (!getArguments().getString(HINT).equals(view.getEnteredText())){ //we were gonna update but user entered a new name so insert under new name
-                        operation = Operation.INSERT;
+                        operation = Constants.OP_INSERT;
                     }
                 }
                 dialog.dismiss();
