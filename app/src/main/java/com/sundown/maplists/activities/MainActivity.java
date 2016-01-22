@@ -1,12 +1,12 @@
 package com.sundown.maplists.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -14,13 +14,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
 import com.sundown.maplists.fragments.MapFragment;
-import com.sundown.maplists.fragments.NavigationDrawerFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.lists.BaseList;
@@ -47,10 +47,7 @@ public class MainActivity extends AppCompatActivity implements
     private DatabaseCommunicator db;
     private ToolbarManager toolbarManager;
 
-    private FloatingActionButton zoomIn;
-    private FloatingActionButton zoomOut;
-    private FloatingActionButton navigateNext;
-    private FloatingActionButton navigatePrior;
+    private FloatingActionButton zoomIn, zoomOut, navigateNext, navigatePrior;
 
     private final int INTERVAL = 100;
     private Handler handler = new Handler();
@@ -85,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements
     private EnterAddressDialogFragment enterAddressDialogFragment;
 
     /** Navigation drawer */
-    private NavigationDrawerFragment drawerFragment;
+    //private NavigationDrawerFragment drawerFragment;
 
 
     @Override
@@ -135,6 +132,25 @@ public class MainActivity extends AppCompatActivity implements
         zoomOut = (FloatingActionButton) findViewById(R.id.fab_zoomOut);
         navigateNext = (FloatingActionButton) findViewById(R.id.fab_navigateNext);
         navigatePrior = (FloatingActionButton) findViewById(R.id.fab_navigatePrior);
+
+        //pre-lollipop uses a different FAB graphic where shadow is part of margin so need to reset margins
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) navigateNext.getLayoutParams();
+            params.setMargins(0, 0, 0, -36);
+            navigateNext.setLayoutParams(params);
+
+            params = (RelativeLayout.LayoutParams) navigatePrior.getLayoutParams();
+            params.setMargins(0, 0, 110, -36);
+            navigatePrior.setLayoutParams(params);
+
+            params = (RelativeLayout.LayoutParams) zoomIn.getLayoutParams();
+            params.setMargins(0, 0, 0, 0);
+            zoomIn.setLayoutParams(params);
+
+            params = (RelativeLayout.LayoutParams) zoomOut.getLayoutParams();
+            params.setMargins(0, 0, 110, 0);
+            zoomOut.setLayoutParams(params);
+        }
 
         zoomIn.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -207,9 +223,8 @@ public class MainActivity extends AppCompatActivity implements
         getSupportActionBar().setDisplayShowHomeEnabled(true); //we want the logo so we can click on it and trigger the navigation drawer
         toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
 
-        drawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.fragment_navigation_drawer);
-        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbarManager.getToolbarTop());
-        Log.m("toolbar", "toolbar setup in main");
+        //drawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.fragment_navigation_drawer);
+        //drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbarManager.getToolbarTop());
     }
 
     /**
@@ -323,11 +338,11 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void schedulePeriodicMethod(Runnable runnable) {
+    private void schedulePeriodicMethod(Runnable runnable) {
         handler.postDelayed(runnable, INTERVAL);
     }
 
-    public void stopPeriodicMethod(Runnable runnable) {
+    private void stopPeriodicMethod(Runnable runnable) {
         handler.removeCallbacks(runnable);
     }
 

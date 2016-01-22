@@ -43,7 +43,7 @@ public abstract class BaseList implements PropertiesHandler {
 
     protected BaseList() { }
 
-    public Field getField(Integer id) {
+    public Field getField(int id) {
         return fields.get(id);
     }
 
@@ -91,7 +91,7 @@ public abstract class BaseList implements PropertiesHandler {
             int size = list.size();
             for (int i = 0; i < size; ++i) {
                 Map<String, Object> props = (Map<String, Object>) list.get(i);
-                int type = ((Integer)props.get(FIELD_TYPE));
+                int type = (Integer.parseInt(String.valueOf(props.get(FIELD_TYPE))));
                 boolean permanent = Boolean.parseBoolean(String.valueOf(props.get(FIELD_PERMANENT)));
                 fields.add(FieldFactory.createField("", "", type, permanent).setProperties(props));
             }
