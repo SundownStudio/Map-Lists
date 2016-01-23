@@ -9,9 +9,13 @@ import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.couchbase.lite.LiveQuery;
@@ -81,9 +85,7 @@ public class MapFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    public interface MapFragmentListener{
-        void displayFloatingButtons(boolean displayNavigationButtons);
-    }
+
 
     /** Constants */
     private static final String FRAGMENT_GMAP ="FRAGMENT_GMAP";
@@ -94,17 +96,17 @@ public class MapFragment extends Fragment implements
     public static final float DEFAULT_ZOOM = 2.0f;
 
     private ToolbarManager toolbarManager;
-    public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
+    public void setToolbarManager(ToolbarManager toolbarManager){
+        this.toolbarManager = toolbarManager;
+    }
     private DatabaseCommunicator db;
-    private SupportMapFragment mapFragment;
+    private SupportMapFragment supportMapFragment;
     private GoogleApiClient mGoogleApiClient;
     private PreferenceManager prefs;
     private MapView view;
     private Locations model;
     private ContentLoader loader;
     private AddressResultReceiver mResultReceiver;
-    private MapFragmentListener listener;
-    public void setMapFragmentListener(MapFragmentListener listener) { this.listener = listener;}
     private static Toast toast = null;
     private boolean drag;
 
@@ -130,7 +132,19 @@ public class MapFragment extends Fragment implements
         prefs = PreferenceManager.getInstance();
         view = (MapView) inflater.inflate(R.layout.fragment_map, container, false);
         view.setListener(this);
-        Log.m("toolbar", "mapfragment onCreateView");
+
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+        TypedValue typedValue = new TypedValue();
+        getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true);
+
+        //and this is how you adjust margin of nested framelayout with bottom toolbar using no relativelayouts on your main.xml boom
+        final DisplayMetrics metrics = new android.util.DisplayMetrics();
+        WindowManager wm = (WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(metrics);
+        float height = typedValue.getDimension(metrics);
+        params.setMargins(0, 0, 0, (int)height);
+        view.setLayoutParams(params);
+        Log.m("toolbar", "mapfragment onCreateView height: " + height);
         return view;
     }
 
@@ -166,7 +180,7 @@ public class MapFragment extends Fragment implements
 
 
     public void savePrefs(){
-        LatLng latLng = mapFragment.getMap().getCameraPosition().target;
+        LatLng latLng = supportMapFragment.getMap().getCameraPosition().target;
         if (selectedMarker != null){
             latLng = selectedMarker.getPosition();
         }
@@ -222,7 +236,8 @@ public class MapFragment extends Fragment implements
         }
     }
 
-    public void navigateNext(boolean forward) {
+    @Override
+    public void navigate(boolean forward) {
         LatLng currLatLng = null;
         if (selectedMarker != null) {
             selectedMarker.setDraggable(false);
@@ -233,9 +248,6 @@ public class MapFragment extends Fragment implements
 
     }
 
-    public void zoom(boolean in){
-        view.zoom(in);
-    }
 
     ////MAP MANIPULATION METHODS ////
 
@@ -321,11 +333,11 @@ public class MapFragment extends Fragment implements
 
     public void initMap() {
         FragmentManager fm = getChildFragmentManager();
-        mapFragment = (SupportMapFragment) fm.findFragmentByTag(FRAGMENT_GMAP);
-        if (mapFragment == null)
-            mapFragment = SupportMapFragment.newInstance();
-        fm.beginTransaction().replace(R.id.fragment_map_container, mapFragment, FRAGMENT_GMAP).commit();
-        mapFragment.getMapAsync(this);
+        supportMapFragment = (SupportMapFragment) fm.findFragmentByTag(FRAGMENT_GMAP);
+        if (supportMapFragment == null)
+            supportMapFragment = SupportMapFragment.newInstance();
+        fm.beginTransaction().replace(R.id.fragment_map_container, supportMapFragment, FRAGMENT_GMAP).commit();
+        supportMapFragment.getMapAsync(this);
 
     }
 
@@ -517,7 +529,7 @@ public class MapFragment extends Fragment implements
 
 
                     toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, true));
-                    listener.displayFloatingButtons((model.numLocations() > 1));
+                    view.displayFloatingButtons((model.numLocations() > 1));
 
                 }
             });

@@ -4,13 +4,17 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,8 +25,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sundown.maplists.R;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.Locations;
+import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.PhotoField;
 import com.sundown.maplists.models.lists.PrimaryList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
@@ -31,24 +35,121 @@ import com.sundown.maplists.utils.ColorUtils;
 /**
  * Created by Sundown on 5/21/2015.
  */
-public class MapView extends FrameLayout {
+public class MapView extends RelativeLayout {
 
     public interface MapViewListener {
         void markerClicked(Marker marker);
         void mapClicked();
         void markerDragged(Marker marker);
+        void navigate(boolean forward);
     }
 
     private MapViewListener listener;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Locations model;
     private Context context;
+    private FloatingActionButton zoomIn, zoomOut, navigateNext, navigatePrior;
+
+    private final int INTERVAL = 100;
+    private Handler handler = new Handler();
+    private Runnable zoomInRunnable =  new Runnable() {
+        @Override
+        public void run() {
+            zoom(true);
+            schedulePeriodicMethod(zoomInRunnable);
+        }
+    };
+    private Runnable zoomOutRunnable =  new Runnable() {
+        @Override
+        public void run() {
+            zoom(false);
+            schedulePeriodicMethod(zoomOutRunnable);
+        }
+    };
 
 
     public MapView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         model = Locations.getInstance();
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+
+        zoomIn = (FloatingActionButton) findViewById(R.id.fab_zoomIn);
+        zoomOut = (FloatingActionButton) findViewById(R.id.fab_zoomOut);
+        navigateNext = (FloatingActionButton) findViewById(R.id.fab_navigateNext);
+        navigatePrior = (FloatingActionButton) findViewById(R.id.fab_navigatePrior);
+
+        //pre-lollipop uses a different FAB graphic where shadow is part of margin so need to reset margins
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) navigateNext.getLayoutParams();
+            params.setMargins(0, 0, 0, -36);
+            navigateNext.setLayoutParams(params);
+
+            params = (RelativeLayout.LayoutParams) navigatePrior.getLayoutParams();
+            params.setMargins(0, 0, 110, -36);
+            navigatePrior.setLayoutParams(params);
+
+            params = (RelativeLayout.LayoutParams) zoomIn.getLayoutParams();
+            params.setMargins(0, 0, 0, 0);
+            zoomIn.setLayoutParams(params);
+
+            params = (RelativeLayout.LayoutParams) zoomOut.getLayoutParams();
+            params.setMargins(0, 0, 110, 0);
+            zoomOut.setLayoutParams(params);
+        }
+
+        zoomIn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        v.setPressed(true);
+                        schedulePeriodicMethod(zoomInRunnable);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        v.setPressed(false);
+                        stopPeriodicMethod(zoomInRunnable);
+                        break;
+                }
+                return true;
+            }
+        });
+
+
+        zoomOut.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        v.setPressed(true);
+                        schedulePeriodicMethod(zoomOutRunnable);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        v.setPressed(false);
+                        stopPeriodicMethod(zoomOutRunnable);
+                        break;
+                }
+                return true;
+            }
+        });
+
+        navigateNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.navigate(true);
+            }
+        });
+
+        navigatePrior.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.navigate(false);
+            }
+        });
     }
 
     public void setListener(MapViewListener listener){
@@ -61,6 +162,7 @@ public class MapView extends FrameLayout {
     }
 
     public void cleanup(){
+        clearFloatingButtons();
         try {
             mMap.clear();
         } catch (Exception e){
@@ -148,6 +250,33 @@ public class MapView extends FrameLayout {
             }
 
         });
+    }
+
+    private void schedulePeriodicMethod(Runnable runnable) {
+        handler.postDelayed(runnable, INTERVAL);
+    }
+
+    private void stopPeriodicMethod(Runnable runnable) {
+        handler.removeCallbacks(runnable);
+    }
+
+    private void clearFloatingButtons(){
+        zoomIn.setVisibility(View.GONE);
+        zoomOut.setVisibility(View.GONE);
+        navigatePrior.setVisibility(View.GONE);
+        navigateNext.setVisibility(View.GONE);
+    }
+
+    public void displayFloatingButtons(boolean displayNavigationButtons) {
+        if (displayNavigationButtons){
+            navigateNext.setVisibility(View.VISIBLE);
+            navigatePrior.setVisibility(View.VISIBLE);
+        } else {
+            navigateNext.setVisibility(View.GONE);
+            navigatePrior.setVisibility(View.GONE);
+        }
+        zoomOut.setVisibility(View.VISIBLE);
+        zoomIn.setVisibility(View.VISIBLE);
     }
 
     private class AdapterInfoWindow implements GoogleMap.InfoWindowAdapter {

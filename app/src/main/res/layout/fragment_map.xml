@@ -1,7 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sundown.maplists.views.MapView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_map_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_map_container" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_zoomIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:layout_marginRight="@dimen/fab_margin_right_r"
+        android:src="@drawable/ic_zoom_in"
+        android:visibility="gone"
+        app:fabSize="mini" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_zoomOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:layout_marginRight="@dimen/fab_margin_right"
+        android:src="@drawable/ic_zoom_out"
+        android:visibility="gone"
+        app:fabSize="mini" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_navigateNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fab_zoomOut"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:layout_marginRight="@dimen/fab_margin_right_r"
+        android:src="@drawable/ic_navigate_next_black_24dp"
+        android:visibility="gone"
+        app:fabSize="mini" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_navigatePrior"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fab_zoomIn"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/fab_margin_bottom"
+        android:layout_marginRight="@dimen/fab_margin_right"
+        android:src="@drawable/ic_navigate_before_black_24dp"
+        android:visibility="gone"
+        app:fabSize="mini" />
+
+    </com.sundown.maplists.views.MapView>
 
 

@@ -1,20 +1,14 @@
 package com.sundown.maplists.activities;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
@@ -29,13 +23,14 @@ import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.utils.ToolbarManager;
 
-public class MainActivity extends AppCompatActivity implements
-        ActionDialogFragment.ConfirmActionListener, MapFragment.MapFragmentListener, ToolbarManager.ToolbarListener {
+public class MapActivity extends AppCompatActivity implements
+        ActionDialogFragment.ConfirmActionListener, ToolbarManager.ToolbarListener {
 
 
     //NOTE: This app follows a MVC pattern:
-    //The Activities behave as parent-controllers for their respective Fragments... each Fragment is a controller for its own specific views and models.
-    //The Activity also handles all Toolbar clicks (since those usually result in starting new activities or displaying fragments).
+    //Activities behave as parent-controllers for their respective Fragments and Toolbars
+    //Each Fragment is a controller for its own specific views and models.
+    //The Activity handles all Toolbar clicks as those usually result in starting new activities or displaying additional fragments.
     //If you add more Activities/Fragments please try to keep this pattern intact
 
     private static final String FRAGMENT_MAP = "MAP";
@@ -46,26 +41,6 @@ public class MainActivity extends AppCompatActivity implements
     private FragmentManager fm;
     private DatabaseCommunicator db;
     private ToolbarManager toolbarManager;
-
-    private FloatingActionButton zoomIn, zoomOut, navigateNext, navigatePrior;
-
-    private final int INTERVAL = 100;
-    private Handler handler = new Handler();
-    private Runnable zoomInRunnable =  new Runnable() {
-        @Override
-        public void run() {
-            mapFragment.zoom(true);
-            schedulePeriodicMethod(zoomInRunnable);
-        }
-    };
-    private Runnable zoomOutRunnable =  new Runnable() {
-        @Override
-        public void run() {
-            mapFragment.zoom(false);
-            schedulePeriodicMethod(zoomOutRunnable);
-        }
-    };
-
 
     //FRAGMENTS
     /**
@@ -88,8 +63,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setUpButtons();
+        setContentView(R.layout.activity_map);
 
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
@@ -98,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState == null){ //activity first created, show map fragment as default..
             mapFragment = MapFragment.newInstance();
             mapFragment.setToolbarManager(toolbarManager);
-            mapFragment.setMapFragmentListener(this);
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, mapFragment, FRAGMENT_MAP);
             transaction.commit();
@@ -108,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements
             if (mapFragment == null)
                 mapFragment = MapFragment.newInstance();
             mapFragment.setToolbarManager(toolbarManager);
-            mapFragment.setMapFragmentListener(this);
 
             enterAddressDialogFragment = (EnterAddressDialogFragment) fm.findFragmentByTag(FRAGMENT_ENTER_ADDRESS);
             if (enterAddressDialogFragment != null){
@@ -124,90 +96,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        clearFloatingButtons();
     }
 
-    private void setUpButtons(){
-        zoomIn = (FloatingActionButton) findViewById(R.id.fab_zoomIn);
-        zoomOut = (FloatingActionButton) findViewById(R.id.fab_zoomOut);
-        navigateNext = (FloatingActionButton) findViewById(R.id.fab_navigateNext);
-        navigatePrior = (FloatingActionButton) findViewById(R.id.fab_navigatePrior);
-
-        //pre-lollipop uses a different FAB graphic where shadow is part of margin so need to reset margins
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) navigateNext.getLayoutParams();
-            params.setMargins(0, 0, 0, -36);
-            navigateNext.setLayoutParams(params);
-
-            params = (RelativeLayout.LayoutParams) navigatePrior.getLayoutParams();
-            params.setMargins(0, 0, 110, -36);
-            navigatePrior.setLayoutParams(params);
-
-            params = (RelativeLayout.LayoutParams) zoomIn.getLayoutParams();
-            params.setMargins(0, 0, 0, 0);
-            zoomIn.setLayoutParams(params);
-
-            params = (RelativeLayout.LayoutParams) zoomOut.getLayoutParams();
-            params.setMargins(0, 0, 110, 0);
-            zoomOut.setLayoutParams(params);
-        }
-
-        zoomIn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        v.setPressed(true);
-                        schedulePeriodicMethod(zoomInRunnable);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        v.setPressed(false);
-                        stopPeriodicMethod(zoomInRunnable);
-                        break;
-                }
-                return true;
-            }
-        });
-
-
-        zoomOut.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        v.setPressed(true);
-                        schedulePeriodicMethod(zoomOutRunnable);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        v.setPressed(false);
-                        stopPeriodicMethod(zoomOutRunnable);
-                        break;
-                }
-                return true;
-            }
-        });
-
-        navigateNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mapFragment.navigateNext(true);
-            }
-        });
-
-        navigatePrior.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mapFragment.navigateNext(false);
-            }
-        });
-    }
-
-    private void clearFloatingButtons(){
-        zoomIn.setVisibility(View.GONE);
-        zoomOut.setVisibility(View.GONE);
-        navigatePrior.setVisibility(View.GONE);
-        navigateNext.setVisibility(View.GONE);
-    }
 
     /**
      * Grab top and bottom toolbar views and add to toolbarManager
@@ -222,9 +112,6 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayShowHomeEnabled(true); //we want the logo so we can click on it and trigger the navigation drawer
         toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
-
-        //drawerFragment = (NavigationDrawerFragment) fm.findFragmentById(R.id.fragment_navigation_drawer);
-        //drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), toolbarManager.getToolbarTop());
     }
 
     /**
@@ -290,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.action_secondary_lists: {
                 PrimaryList list = mapFragment.getSelectedPrimaryList();
-                Intent intent = new Intent(MainActivity.this, ListModeActivity.class);
+                Intent intent = new Intent(MapActivity.this, ListModeActivity.class);
                 intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
                 intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
                 try {
@@ -326,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.action_edit: {
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
                     PrimaryList list = mapFragment.getSelectedPrimaryList();
-                    Intent intent = new Intent(MainActivity.this, AddListActivity.class);
+                    Intent intent = new Intent(MapActivity.this, AddListActivity.class);
                     intent.putExtra(JsonConstants.LIST_TYPE, BaseList.PRIMARY);
                     intent.putExtra(JsonConstants.OPERATION, Constants.OP_UPDATE);
                     intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
@@ -336,14 +223,6 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             }
         }
-    }
-
-    private void schedulePeriodicMethod(Runnable runnable) {
-        handler.postDelayed(runnable, INTERVAL);
-    }
-
-    private void stopPeriodicMethod(Runnable runnable) {
-        handler.removeCallbacks(runnable);
     }
 
 
@@ -358,19 +237,5 @@ public class MainActivity extends AppCompatActivity implements
             PrimaryList list = mapFragment.getSelectedPrimaryList();
             db.delete(list.getDocumentId(), list.getMapId(), Constants.OP_DELETE_LOCATION);
         }
-    }
-
-
-    @Override
-    public void displayFloatingButtons(boolean displayNavigationButtons) {
-        if (displayNavigationButtons){
-            navigateNext.setVisibility(View.VISIBLE);
-            navigatePrior.setVisibility(View.VISIBLE);
-        } else {
-            navigateNext.setVisibility(View.GONE);
-            navigatePrior.setVisibility(View.GONE);
-        }
-        zoomOut.setVisibility(View.VISIBLE);
-        zoomIn.setVisibility(View.VISIBLE);
     }
 }

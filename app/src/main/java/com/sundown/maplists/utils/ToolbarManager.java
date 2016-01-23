@@ -22,6 +22,7 @@ public class ToolbarManager {
     private Toolbar toolbarTop;
     public Toolbar getToolbarTop(){ return toolbarTop; }
     private Toolbar toolbarBottom;
+    public Toolbar getToolbarBottom(){ return toolbarBottom; }
     private LinearLayout toolbarTopLayout;
     private ToolbarListener listener;
 

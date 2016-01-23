@@ -79,7 +79,7 @@ public class NavigationDrawerFragment extends Fragment implements AdapterNavigat
 
 
     public void setUp(int fragmentId, DrawerLayout drawerLayout, final Toolbar toolbar) {
-        containerView = getActivity().findViewById(fragmentId); //here you are getting view from fragment id on activity_main..
+        containerView = getActivity().findViewById(fragmentId); //here you are getting view from fragment id on activity_map..
         drawerToggle = new ActionBarDrawerToggle(getActivity(), drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
 
 
