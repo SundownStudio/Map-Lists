@@ -1,8 +1,8 @@
 # Map-Lists
-This Android project allows you to associate schemaless data with Google Maps markers, essentially you can add your own list of data to any map marker (text, photos, ratings, etc. including lists of lists). It is intended for anybody looking to manage a data-set upon a geographical interface. A full synopsis of the project is available [here](http://matthewgusella.com/maplists/)
+This Android project allows you to associate schemaless data with Google Maps markers, essentially you can add your own list of data to any map marker (text, photos, ratings, etc. including lists of lists). It is intended for anybody looking to manage a data-set upon a geographical interface. A full synopsis of the project is available [here](http://matthewgusella.com/maplists/).
 
 ## Requirements
-To run this you will need to add your own Google Maps and Google Places API keys to strings.xml. Make sure your device has both Google Maps and Google-Play Services installed. If you're using Genymotion instructions are available [here](https://github.com/codepath/android_guides/wiki/Genymotion-2.0-Emulators-with-Google-Play-support)
+To run this you will need to add your own Google Maps and Google Places API keys to strings.xml. Make sure your device has both Google Maps and Google-Play Services installed. If you're using Genymotion instructions are available [here](https://github.com/codepath/android_guides/wiki/Genymotion-2.0-Emulators-with-Google-Play-support).
 In addition this app uses Couchbase Mobile for backend data storage (NoSQL). minimum sdk: 15
 
 
