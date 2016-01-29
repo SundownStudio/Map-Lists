@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.lists.SchemaList;
+import com.sundown.maplists.models.lists.Schema;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.ManageSchemasView;
@@ -24,11 +24,11 @@ import static com.sundown.maplists.pojo.MenuOption.GroupView.SCHEMA_ACTIONS;
 public class ManageSchemasFragment extends Fragment {
 
     private ManageSchemasView view;
-    private ArrayList<SchemaList> model;
+    private ArrayList<Schema> model;
     private ToolbarManager toolbarManager;
     public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
 
-    public static ManageSchemasFragment getInstance(ArrayList<SchemaList> model, ToolbarManager toolbarManager){
+    public static ManageSchemasFragment getInstance(ArrayList<Schema> model, ToolbarManager toolbarManager){
         ManageSchemasFragment fragment = new ManageSchemasFragment();
         fragment.model = model;
         fragment.toolbarManager = toolbarManager;

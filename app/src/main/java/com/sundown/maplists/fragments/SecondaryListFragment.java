@@ -14,7 +14,7 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
 import com.sundown.maplists.models.fields.PhotoField;
-import com.sundown.maplists.models.lists.SchemaList;
+import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.utils.SecondaryListViewManager;
 import com.sundown.maplists.utils.ViewUtils;
 import com.sundown.maplists.views.ListItemSingleView;
@@ -28,10 +28,8 @@ import java.util.List;
  */
 public class SecondaryListFragment extends Fragment {
 
-
-
     private SecondaryListView view;
-    private SchemaList model;
+    private BaseList model;
     private LinearLayout layout;
     private final static LinearLayout.LayoutParams layoutWrapWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     private final static LinearLayout.LayoutParams layoutFillWidth = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -68,7 +66,7 @@ public class SecondaryListFragment extends Fragment {
         setUserVisibleHint(false);
     }
 
-    public void setModel(SchemaList model){
+    public void setModel(BaseList model){
         this.model = model;
         initLayout();
     }
@@ -83,7 +81,7 @@ public class SecondaryListFragment extends Fragment {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         int ids = 0;
-        List<Field> fields = model.getFields();
+        List<Field> fields = model.getSchema().getFields();
         for (Field field: fields){
             field.setId(ids++);
             determineViewType(field);
@@ -99,7 +97,7 @@ public class SecondaryListFragment extends Fragment {
         switch (type) {
             case Field.SUBJECT: {
                 EntryField entryField = (EntryField) field;
-                view.setSubject(ViewUtils.getTopRoundedCornersDrawable(getActivity().getResources().getDimension(R.dimen.rounded_corners), model.getColor()), entryField.getEntry(0));
+                view.setSubject(ViewUtils.getTopRoundedCornersDrawable(getActivity().getResources().getDimension(R.dimen.rounded_corners), model.getSchema().getColor()), entryField.getEntry(0));
                 break;
             }
             case Field.NAME:

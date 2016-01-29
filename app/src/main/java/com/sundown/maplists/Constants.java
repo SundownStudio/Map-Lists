@@ -14,6 +14,13 @@ public class Constants {
     public static final int OP_DELETE_SECONDARY_LIST = 3;
     public static final int OP_DELETE_SCHEMA = 4;
 
+    //types
+    public static final int TYPE_PRIMARY_LIST = 1;
+    public static final int TYPE_SECONDARY_LIST = 2;
+    public static final int TYPE_PRIMARY_SCHEMA = 3;
+    public static final int TYPE_SECONDARY_SCHEMA = 4;
+
+
 
     public static final String MARKER_COLOR_DEFAULT = "#303F9F";
     public static final int SEEKBAR_MIN = 1;

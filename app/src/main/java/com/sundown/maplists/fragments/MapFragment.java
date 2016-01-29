@@ -29,12 +29,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.Locations;
-import com.sundown.maplists.models.lists.BaseList;
-import com.sundown.maplists.models.lists.MapListFactory;
+import com.sundown.maplists.models.lists.ListFactory;
 import com.sundown.maplists.models.lists.PrimaryList;
 import com.sundown.maplists.network.FetchAddressIntentService;
 import com.sundown.maplists.pojo.MenuOption;
@@ -224,7 +224,7 @@ public class MapFragment extends Fragment implements
 
         if (model.getPrimaryList(latLng) == null){
             savedLatLng = latLng;
-            PrimaryList list = (PrimaryList) MapListFactory.createList(getResources(), BaseList.PRIMARY, -1);
+            PrimaryList list = (PrimaryList) ListFactory.createList(getResources(), Constants.TYPE_PRIMARY_LIST, -1);
             list.setLatLng(latLng);
             db.insert(list, JsonConstants.COUNT_PRIMARY_LISTS, JsonConstants.MAP_ID);
 
@@ -280,7 +280,7 @@ public class MapFragment extends Fragment implements
             model.swap(oldLatLng, newLatLng);
             savedLatLng = newLatLng;
             PrimaryList list = model.getPrimaryList(newLatLng);
-            db.update(list);
+            db.update(list, list.getDocumentId());
 
         }
     }
@@ -487,7 +487,7 @@ public class MapFragment extends Fragment implements
                 QueryRow row = result.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId());
 
-                PrimaryList list = (PrimaryList) MapListFactory.createList(getResources(), BaseList.PRIMARY, -1).setProperties(properties);
+                PrimaryList list = (PrimaryList) ListFactory.createList(getResources(), Constants.TYPE_PRIMARY_LIST, -1).setProperties(properties);
                 model.storePrimaryList(list.getLatLng(), list);
 
             }
@@ -512,7 +512,7 @@ public class MapFragment extends Fragment implements
                         LatLng latLng = (LatLng) pair.getKey();
                         PrimaryList list = (PrimaryList) pair.getValue();
 
-                        marker = addMarker(latLng, list.getColor());
+                        marker = addMarker(latLng, list.getSchema().getColor());
                         if (savedLatLng != null && savedLatLng.equals(marker.getPosition())) {
                             //this is the marker to select and focus on..
                             if (!drag) //dragging should glide, rotations should not

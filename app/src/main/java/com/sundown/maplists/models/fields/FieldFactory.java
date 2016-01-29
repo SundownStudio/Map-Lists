@@ -10,20 +10,17 @@ import com.sundown.maplists.utils.PreferenceManager;
 public class FieldFactory {
 
     public static Field createField(String title, String entry, int type, boolean permanent){
-        Field field;
+
         switch (type){
             case Field.PHOTO:
-                field = new PhotoField(title, permanent, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance());
-                break;
+                return new PhotoField(title, permanent, PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance());
 
             case Field.DATE_TIME:
-                field = new EntryField(title, entry, type, permanent).addEntry("");
-                break;
+                return new EntryField(title, entry, type, permanent).addEntry("");
 
             default:
-                field = new EntryField(title, entry, type, permanent);
-                break;
+                return new EntryField(title, entry, type, permanent);
+
         }
-        return field;
     }
 }

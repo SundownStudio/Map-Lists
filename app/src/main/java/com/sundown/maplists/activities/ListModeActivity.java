@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 import com.sundown.maplists.fragments.ListModeFragment;
-import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.JsonConstants;
@@ -113,7 +112,7 @@ public class ListModeActivity extends AppCompatActivity implements ListModeView.
             case R.id.action_add_list: {
                 if (listModeFragment != null && listModeFragment.getUserVisibleHint()) {
                     Intent intent = new Intent(ListModeActivity.this, AddListActivity.class);
-                    intent.putExtra(JsonConstants.LIST_TYPE, BaseList.SECONDARY);
+                    intent.putExtra(JsonConstants.TYPE, Constants.TYPE_SECONDARY_LIST);
                     intent.putExtra(JsonConstants.OPERATION, Constants.OP_INSERT);
                     intent.putExtra(JsonConstants.DOCUMENT_ID, documentId);
                     intent.putExtra(JsonConstants.MAP_ID, mapId);

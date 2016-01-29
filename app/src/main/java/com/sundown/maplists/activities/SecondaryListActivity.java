@@ -16,8 +16,7 @@ import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.fragments.SecondaryListFragment;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.lists.BaseList;
-import com.sundown.maplists.models.lists.MapList;
-import com.sundown.maplists.models.lists.MapListFactory;
+import com.sundown.maplists.models.lists.ListFactory;
 import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
@@ -37,7 +36,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
     private FragmentManager fm;
     private DatabaseCommunicator db;
     private ToolbarManager toolbarManager;
-    private MapList model;
+    private BaseList model;
     private int mapId;
     private String documentId;
     private String parentDocumentId;
@@ -85,7 +84,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
 
     private void loadModel(){
         Map<String, Object> properties = db.read(documentId);
-        model =  MapListFactory.createList(getResources(), BaseList.SECONDARY, mapId).setProperties(properties);
+        model =  ListFactory.createList(getResources(), Constants.TYPE_SECONDARY_LIST, mapId).setProperties(properties);
     }
 
     private void setUpToolBars(String itemName){
@@ -125,7 +124,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
             case R.id.action_delete: {
 
                 if (secondaryListFragment != null && secondaryListFragment.getUserVisibleHint()) {
-                    EntryField entryField = (EntryField) model.getField(0);
+                    EntryField entryField = (EntryField) model.getSchema().getField(0);
                     actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.delete_location), entryField.getEntry(0) + " " + getResources().getString(R.string.delete_confirm));
                 }
                 if (actionDialogFragment != null)
@@ -137,7 +136,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
 
                 if (secondaryListFragment != null && secondaryListFragment.getUserVisibleHint()) {
                     Intent intent = new Intent(SecondaryListActivity.this, AddListActivity.class);
-                    intent.putExtra(JsonConstants.LIST_TYPE, BaseList.SECONDARY);
+                    intent.putExtra(JsonConstants.TYPE, Constants.TYPE_SECONDARY_LIST);
                     intent.putExtra(JsonConstants.OPERATION, Constants.OP_UPDATE);
                     intent.putExtra(JsonConstants.DOCUMENT_ID, model.getDocumentId());
                     intent.putExtra(JsonConstants.MAP_ID, model.getMapId());
@@ -182,7 +181,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
 
     private String getItemName(){
         try {
-            EntryField entryField = (EntryField) model.getField(0); //subject
+            EntryField entryField = (EntryField) model.getSchema().getField(0); //subject
             String entry = entryField.getEntry(0); //subject entry
             if (entry.length() > 0)
                 return entry;

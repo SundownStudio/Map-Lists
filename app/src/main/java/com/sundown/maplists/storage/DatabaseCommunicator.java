@@ -21,25 +21,22 @@ import com.couchbase.lite.android.AndroidContext;
 import com.sundown.maplists.Constants;
 import com.sundown.maplists.MapListsApp;
 import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.fields.PhotoField;
-import com.sundown.maplists.models.lists.BaseList;
+import com.sundown.maplists.models.PropertiesHandler;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.sundown.maplists.storage.JsonConstants.DOCUMENT_ID;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
-import static com.sundown.maplists.storage.JsonConstants.LIST_TYPE;
 import static com.sundown.maplists.storage.JsonConstants.MAP_ID;
 import static com.sundown.maplists.storage.JsonConstants.SCHEMA_ID;
+import static com.sundown.maplists.storage.JsonConstants.TYPE;
 
 /**
  * Created by Sundown on 7/14/2015.
@@ -49,7 +46,7 @@ public class DatabaseCommunicator {
     public static final int QUERY_MAP = 1;
     public static final int QUERY_LOCATION = 2;
     public static final int QUERY_SCHEMA = 3;
-    private static final String IMAGE_TYPE = "image/jpg";
+
 
     private static CBManager cbManager;
 
@@ -69,9 +66,9 @@ public class DatabaseCommunicator {
     }
 
 
-    public int insert(final BaseList list, String countId, String idType) {
+    public int insert(PropertiesHandler propertiesHandler, String countId, String idType) {
         try {
-            return cbManager.insert(list, countId, idType);
+            return cbManager.insert(propertiesHandler, countId, idType);
         } catch (CouchbaseLiteException e) {
             Log.e(e); //TODO: something went wrong dialog
         }
@@ -79,9 +76,9 @@ public class DatabaseCommunicator {
     }
 
 
-    public void update(final BaseList list) {
+    public void update(PropertiesHandler propertiesHandler, String documentId) {
         try {
-            cbManager.update(list);
+            cbManager.update(propertiesHandler, documentId);
         } catch (CouchbaseLiteException e) {
             Log.e(e); //TODO: something went wrong dialog
         }
@@ -153,8 +150,6 @@ public class DatabaseCommunicator {
         private static final String VIEW_VERSION = "1";
         private static final String DOC_COUNTS = "doc-counts";
 
-
-
         private Manager manager;
         private Database database;
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -190,9 +185,9 @@ public class DatabaseCommunicator {
             viewByMapId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
-                    if (properties.containsKey(LIST_TYPE)){
-                        int type = (Integer) properties.get(LIST_TYPE);
-                        if (type == BaseList.PRIMARY)
+                    if (properties.containsKey(TYPE)){
+                        int type = (Integer) properties.get(TYPE);
+                        if (type == Constants.TYPE_PRIMARY_LIST)
                             emitter.emit(properties.get(JsonConstants.MAP_ID), null);
                     }
                 }
@@ -203,9 +198,9 @@ public class DatabaseCommunicator {
             viewByItemId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
-                    if (properties.containsKey(LIST_TYPE)){
-                        int type = (Integer) properties.get(LIST_TYPE);
-                        if (type == BaseList.SECONDARY){
+                    if (properties.containsKey(TYPE)){
+                        int type = (Integer) properties.get(TYPE);
+                        if (type == Constants.TYPE_SECONDARY_LIST){
                             int[] arr = new int[]{(Integer) properties.get(MAP_ID), (Integer) properties.get(LIST_ID)};
                             emitter.emit(arr, null);
                         }
@@ -218,10 +213,10 @@ public class DatabaseCommunicator {
             viewBySchemaId.setMap(new Mapper() {
                 @Override
                 public void map(Map<String, Object> properties, Emitter emitter) {
-                    if (properties.containsKey(LIST_TYPE)) {
-                        int type = (Integer) properties.get(LIST_TYPE);
-                        if (type == BaseList.PRIMARY_SCHEMA || type == BaseList.SECONDARY_SCHEMA) {
-                            int[] arr = new int[]{type, (Integer) properties.get(SCHEMA_ID)};
+                    if (properties.containsKey(TYPE)) {
+                        int type = (Integer) properties.get(TYPE);
+                        if (type == Constants.TYPE_PRIMARY_SCHEMA || type == Constants.TYPE_SECONDARY_SCHEMA){
+                            int[] arr = new int[]{(Integer) properties.get(TYPE), (Integer) properties.get(SCHEMA_ID)};
                             emitter.emit(arr, null);
                         }
                     }
@@ -247,7 +242,7 @@ public class DatabaseCommunicator {
         }
 
 
-        public int insert(BaseList list, String countId, String idName) throws CouchbaseLiteException {
+        public int insert(PropertiesHandler propertiesHandler, String countId, String idName) throws CouchbaseLiteException {
             int count = increaseCount(countId);
 
             UUID uuid = UUID.randomUUID();
@@ -258,44 +253,28 @@ public class DatabaseCommunicator {
             String id = currentTime + "-" + uuid.toString();
 
             Document document = database.createDocument();
-            Map<String, Object> properties = list.getProperties();
-            properties.put("_id", id);
+            UnsavedRevision newRevision = document.createRevision();
+            Map<String, Object> properties = propertiesHandler.getProperties(new HashMap<String, Object>(), newRevision);
+            properties.put(DOCUMENT_ID, id);
             properties.put("created_at", currentTimeString);
             properties.put(idName, count); //mapID = count, listID = count, schemaID = count.. all increasing
-
-            saveDocument(document.createRevision(), properties, list.getPhotos());
+            saveDocument(properties, newRevision);
 
             return count;
         }
 
-        public void update(final BaseList list) throws CouchbaseLiteException {
-            Document doc = database.getDocument(list.getDocumentId());
-            saveDocument(doc.createRevision(), list.getProperties(), list.getPhotos());
+        public void update(PropertiesHandler propertiesHandler, String documentId) throws CouchbaseLiteException {
+            Document doc = database.getDocument(documentId);
+            UnsavedRevision newRevision = doc.createRevision();
+            saveDocument(propertiesHandler.getProperties(new HashMap<String, Object>(), newRevision), newRevision);
         }
 
 
-        private void saveDocument(UnsavedRevision newRevision, final Map<String, Object> properties, final ArrayList<PhotoField> photoFields) throws CouchbaseLiteException {
+        private void saveDocument(final Map<String, Object> properties, UnsavedRevision newRevision) throws CouchbaseLiteException {
             newRevision.setUserProperties(properties);
-
-            if (photoFields != null){
-                for (PhotoField photoField : photoFields){
-                    newRevision = setImageAttachment(newRevision, photoField.getImageName(), photoField.getImageBitmap());
-                    newRevision = setImageAttachment(newRevision, photoField.getThumbName(), photoField.getThumbBitmap());
-                    photoField.recycle(true);
-                }
-            }
             newRevision.save();
         }
 
-        private UnsavedRevision setImageAttachment(UnsavedRevision newRevision, String fileName, Bitmap image){
-            if (image != null) {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                image.compress(Bitmap.CompressFormat.JPEG, 50, out);
-                ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-                newRevision.setAttachment(fileName, IMAGE_TYPE, in);
-            }
-            return newRevision;
-        }
 
         public void delete(String documentId, int mapId, int operation) throws CouchbaseLiteException {
 

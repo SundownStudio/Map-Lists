@@ -1,16 +1,15 @@
 package com.sundown.maplists.models.fields;
 
-import com.sundown.maplists.models.Copyable;
+import com.couchbase.lite.UnsavedRevision;
 import com.sundown.maplists.models.PropertiesHandler;
 import com.sundown.maplists.storage.JsonConstants;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by Sundown on 6/22/2015.
  */
-public abstract class Field implements PropertiesHandler, Copyable {
+public abstract class Field implements PropertiesHandler<Field> {
 
     public interface Observer {
         void setTitle(String title);
@@ -140,8 +139,7 @@ public abstract class Field implements PropertiesHandler, Copyable {
     }
 
     @Override
-    public Map<String, Object> getProperties() {
-        Map<String, Object> properties = new HashMap();
+    public Map<String, Object> getProperties(Map<String, Object> properties, UnsavedRevision newRevision) {
         properties.put(JsonConstants.FIELD_TITLE, title);
         properties.put(JsonConstants.FIELD_TYPE, type);
         properties.put(JsonConstants.FIELD_PERMANENT, String.valueOf(permanent));
@@ -152,10 +150,12 @@ public abstract class Field implements PropertiesHandler, Copyable {
     @Override
     public Field setProperties(Map properties) {
         setTitle(String.valueOf(properties.get(JsonConstants.FIELD_TITLE)));
-        setType((Integer)properties.get(JsonConstants.FIELD_TYPE));
+        setType((Integer) properties.get(JsonConstants.FIELD_TYPE));
         setIsPermanent(Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_PERMANENT))));
         setShowTitle(Boolean.parseBoolean(String.valueOf(properties.get(JsonConstants.FIELD_TITLE_SHOW))));
         return this;
     }
+
+    public abstract Field copy();
 
 }

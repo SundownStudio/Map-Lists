@@ -4,12 +4,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 
+import com.couchbase.lite.UnsavedRevision;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.utils.FileManager;
 import com.sundown.maplists.utils.PhotoUtils;
 import com.sundown.maplists.utils.PreferenceManager;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -19,6 +22,7 @@ import java.util.Map;
  */
 public class PhotoField extends Field {
 
+    private static final String IMAGE_TYPE = "image/jpg";
     private static final String IMAGE_EXTENSION = ".jpg";
     private static final String THUMBNAIL_PREFIX = "THM_";
     private static final String IMAGE_PREFIX = "IMG_";
@@ -78,10 +82,13 @@ public class PhotoField extends Field {
     }
 
     @Override
-    public Map<String, Object> getProperties() {
-        Map<String, Object> properties = super.getProperties();
+    public Map<String, Object> getProperties(Map<String, Object> properties, UnsavedRevision newRevision) {
+        super.getProperties(properties, newRevision);
         properties.put(JsonConstants.IMAGE, imageName);
         properties.put(JsonConstants.THUMB, thumbName);
+        setImageAttachment(newRevision, imageName, getImageBitmap());
+        setImageAttachment(newRevision, thumbName, getThumbBitmap());
+        recycle(true);
         return properties;
     }
 
@@ -191,8 +198,17 @@ public class PhotoField extends Field {
     }
 
     @Override
-    public PhotoField copy() {
+    public Field copy() {
         return new PhotoField(getTitle(), isPermanent(), PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance());
+    }
+
+    private void setImageAttachment(UnsavedRevision newRevision, String fileName, Bitmap image){
+        if (image != null) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+            newRevision.setAttachment(fileName, IMAGE_TYPE, in);
+        }
     }
 }
 

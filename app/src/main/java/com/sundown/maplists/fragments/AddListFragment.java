@@ -18,7 +18,7 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
 import com.sundown.maplists.models.fields.PhotoField;
-import com.sundown.maplists.models.lists.MapList;
+import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.storage.DatabaseCommunicator;
@@ -56,9 +56,8 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     /** the view for this fragment */
     private AddListView view;
 
-    /** our model, can either be a MapList or a SecondaryList */
-    private MapList model;
-    public void setModel(MapList model){
+    private BaseList model;
+    public void setModel(BaseList model){
         this.model = model;
         drawForm();
     }
@@ -73,7 +72,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     private ActivityResult result;
 
 
-    public static AddListFragment newInstance(MapList model) {
+    public static AddListFragment newInstance(BaseList model) {
         AddListFragment fragment = new AddListFragment();
         fragment.model = model;
         return fragment;
@@ -149,7 +148,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
         form.setOrientation(LinearLayout.VERTICAL);
 
         int ids = 0;
-        List<Field> fields = model.getFields();
+        List<Field> fields = model.getSchema().getFields();
         for (Field field: fields){
             addToForm(ids++, field);
         }
@@ -167,7 +166,7 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     }
 
     public void addNewField(Field field){
-        int id = model.addField(field)-1;
+        int id = model.getSchema().addField(field)-1;
         addToForm(id, field);
         view.scrollToBottom();
     }
@@ -194,14 +193,14 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
     }
 
     /** for each field in model list, get entry */
-    public MapList refreshModel() {
+    public BaseList refreshModel() {
 
-        int numFields = model.getFields().size();
+        int numFields = model.getSchema().getFields().size();
         for (int i = 0; i < numFields; ++i){
             FieldView fieldView = (FieldView) form.findViewWithTag(i);
             try {
                 if (fieldView.getType() != Field.PHOTO) {
-                    EntryField entryField = (EntryField) model.getField(i);
+                    EntryField entryField = (EntryField) model.getSchema().getField(i);
                     int numEntries = entryField.getNumEntries();
                     entryField.clearEntries();
                     for (int j = 0; j < numEntries; ++j)
@@ -237,20 +236,20 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
     @Override
     public void editFieldTitle(int tag) {
-        Field field = model.getField(tag);
+        Field field = model.getSchema().getField(tag);
         editTitleDialogFragment = EditTitleDialogFragment.newInstance(field, isFieldValidForTitleDisplay(field));
         editTitleDialogFragment.show(fm, FRAGMENT_EDIT_FIELD_TITLE);
     }
 
     @Override
     public void deleteField(int tag) {
-        model.removeField(tag); //remove from model
+        model.getSchema().removeField(tag); //remove from model
         drawForm(); //and redraw the form
     }
 
     @Override
     public void selectColor(int tag) {
-        colorPickerDialogFragment = ColorPickerDialogFragment.newInstance(this, model.getColor());
+        colorPickerDialogFragment = ColorPickerDialogFragment.newInstance(this, model.getSchema().getColor());
         colorPickerDialogFragment.show(fm, FRAGMENT_PICK_COLOR);
     }
 
@@ -273,6 +272,6 @@ public class AddListFragment extends Fragment implements FieldView.FieldViewList
 
     @Override
     public void colorPicked(String color) {
-        model.setColor(Color.parseColor(color));
+        model.getSchema().setColor(Color.parseColor(color));
     }
 }

@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.models.lists.SchemaList;
+import com.sundown.maplists.models.lists.Schema;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,7 @@ public class ManageSchemasView extends RelativeLayout {
 
     }
 
-    public void setList(List<SchemaList> schemaLists){
+    public void setList(List<Schema> schemaLists){
         if (schemaLists.size() > 0) emptyListText.setVisibility(View.GONE);
         adapter.setList(schemaLists);
     }
@@ -49,7 +49,7 @@ public class ManageSchemasView extends RelativeLayout {
     private class AdapterManageSchemas extends RecyclerView.Adapter<AdapterManageSchemas.ViewHolder> {
 
         private LayoutInflater inflater;
-        private List<SchemaList> schemaLists = Collections.emptyList();
+        private List<Schema> schemaLists = Collections.emptyList();
         StringBuffer buffer = new StringBuffer();
 
 
@@ -64,19 +64,19 @@ public class ManageSchemasView extends RelativeLayout {
 
         @Override
         public void onBindViewHolder(AdapterManageSchemas.ViewHolder holder, int position) {
-            SchemaList schemaList = schemaLists.get(position);
+            Schema schema = schemaLists.get(position);
 
-            holder.name.setText(schemaList.getSchemaName());
+            holder.name.setText(schema.getSchemaName());
             buffer.setLength(0);
-            holder.titles.setText(schemaList.getTitlesString(buffer));
+            holder.titles.setText(schema.getTitlesString(buffer));
             buffer.setLength(0);
-            holder.types.setText(schemaList.getFieldTypesString(buffer));
+            holder.types.setText(schema.getFieldTypesString(buffer));
         }
 
         @Override
         public int getItemCount() { return schemaLists.size(); }
 
-        public void setList(List<SchemaList> schemaLists) {
+        public void setList(List<Schema> schemaLists) {
             this.schemaLists = schemaLists;
             notifyItemRangeChanged(0, schemaLists.size());
         }

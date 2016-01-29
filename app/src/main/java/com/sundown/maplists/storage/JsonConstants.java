@@ -29,8 +29,7 @@ public final class JsonConstants {
     public static final String SCHEMA_ID = "schemaId";
     public static final String SCHEMA_NAME = "schemaName";
 
-
-    public static final String LIST_TYPE = "type";
+    public static final String TYPE = "type";
     public static final String OPERATION = "operation";
     public static final String COUNTS = "counts";
     public static final String COUNT_SCHEMAS = "schema_counts";

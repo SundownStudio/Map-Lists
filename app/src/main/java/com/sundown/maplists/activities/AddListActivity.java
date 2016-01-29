@@ -27,10 +27,9 @@ import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.Field;
 import com.sundown.maplists.models.lists.BaseList;
-import com.sundown.maplists.models.lists.MapList;
-import com.sundown.maplists.models.lists.MapListFactory;
+import com.sundown.maplists.models.lists.ListFactory;
 import com.sundown.maplists.models.lists.PrimaryList;
-import com.sundown.maplists.models.lists.SchemaList;
+import com.sundown.maplists.models.lists.Schema;
 import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
 import com.sundown.maplists.pojo.MenuOption;
@@ -42,6 +41,7 @@ import com.sundown.maplists.views.AddFieldView;
 import com.sundown.maplists.views.ToolbarWithSpinner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
@@ -97,7 +97,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     private ManageSchemasFragment manageSchemasFragment;
 
     private int operation;
-    private MapList model;
+    private BaseList model;
     private int listType;
     private Field newFieldToAdd;
     private boolean saveListUpdate;
@@ -105,9 +105,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
     /**
      * our list of saved schemas
      */
-    private ArrayList<SchemaList> savedSchemaLists;
+    private ArrayList<Schema> savedSchemaLists;
     private ContentLoader schemaLoader;
-    private SchemaList origSchemaList;
+    private Schema origSchema;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,7 +116,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); //disable keyboard on some devices
 
         Bundle bundle = getIntent().getExtras();
-        listType = bundle.getInt(JsonConstants.LIST_TYPE);
+        listType = bundle.getInt(JsonConstants.TYPE);
         operation = bundle.getInt(JsonConstants.OPERATION);
         String documentId = bundle.getString(JsonConstants.DOCUMENT_ID);
         int mapId = bundle.getInt(JsonConstants.MAP_ID);
@@ -127,11 +127,11 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         setUpToolBars(getString(R.string.add_lists_activity));
 
         if (operation == Constants.OP_INSERT) { //only for secondarylists
-            model = MapListFactory.createList(getResources(), listType, mapId);
+            model = ListFactory.createList(getResources(), listType, mapId);
 
         } else if (operation == Constants.OP_UPDATE) { //can be both maplists and secondarylists
             Map<String, Object> properties = db.read(documentId);
-            model = MapListFactory.createList(getResources(), listType, mapId).setProperties(properties);
+            model = ListFactory.createList(getResources(), listType, mapId).setProperties(properties);
         }
 
         if (savedInstanceState == null) {
@@ -155,7 +155,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             }
         }
 
-        origSchemaList =  model.copySchema();
+        origSchema =  new Schema(model.getSchema());
     }
 
     @Override
@@ -165,10 +165,11 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         model = addListFragment.refreshModel();
 
         if (saveListUpdate) {
+            model.getSchema().setType(listType);
             if (operation == Constants.OP_INSERT) {
                 db.insert(model, String.valueOf(model.getMapId()), LIST_ID);
             } else if (operation == Constants.OP_UPDATE) {
-                db.update(model);
+                db.update(model, model.getDocumentId());
             }
         }
     }
@@ -199,11 +200,12 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         ArrayList<String> list = new ArrayList<>();
         int index = 0;
         int size = savedSchemaLists.size();
+        Schema mSchema = model.getSchema();
 
         for (int i = 0; i < size; ++i){
-            SchemaList schemaList = savedSchemaLists.get(i);
-            list.add(schemaList.getSchemaName());
-            if (schemaList.getSchemaId() == model.getSchemaId()){
+            Schema schema = savedSchemaLists.get(i);
+            list.add(schema.getSchemaName());
+            if (schema.getSchemaId() == mSchema.getSchemaId()){
                 index = i;
             }
         }
@@ -252,12 +254,13 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
             case R.id.action_add_list:
                 saveListUpdate = true;
-                model = addListFragment.refreshModel();
-                SchemaList newSchemaList = model.copySchema();
                 int saveSchema = SCHEMA_IGNORE;
 
-                if (didSchemaChange(newSchemaList)) { //schema has changed! does schema match an existing schema?
-                    saveSchema = doesChangedSchemaMatchExisting(newSchemaList);
+                model = addListFragment.refreshModel();
+                Schema currentSchema = model.getSchema();
+
+                if (didSchemaChange(currentSchema)) { //schema has changed! does schema match an existing schema?
+                    saveSchema = isSchemaUnique(currentSchema);
                 }
 
                 if (saveSchema == SCHEMA_IGNORE){ //schema is currently selected so end
@@ -268,8 +271,8 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
                         addSchemaFragment = AddSchemaDialogFragment.getInstance(Constants.OP_INSERT, getString(R.string.enter_name_for_schema), getString(R.string.schema) + "0" + (savedSchemaLists.size()), saveSchema);
 
                     } else { //same schema already exists! so let's ask user if they wish to consolidate under this existing schema.. saveSchema is now the index to update..
-                        SchemaList list = savedSchemaLists.get(saveSchema);
-                        addSchemaFragment = AddSchemaDialogFragment.getInstance(Constants.OP_UPDATE, getString(R.string.a_schema_already_exists), list.getSchemaName(), saveSchema);
+                        Schema schema = savedSchemaLists.get(saveSchema);
+                        addSchemaFragment = AddSchemaDialogFragment.getInstance(Constants.OP_UPDATE, getString(R.string.a_schema_already_exists), schema.getSchemaName(), saveSchema);
                     }
                     addSchemaFragment.show(fm, FRAGMENT_ADD_SCHEMA);
                 }
@@ -295,15 +298,15 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
     }
 
-    private boolean didSchemaChange(SchemaList list){
-        if (list.getSchemaId() != origSchemaList.getSchemaId()) return true;
-        return !origSchemaList.hasSameAttributes(list);
+    private boolean didSchemaChange(Schema schema){
+        if (schema.getSchemaId() != origSchema.getSchemaId()) return true;
+        return !origSchema.hasSameAttributes(schema);
     }
 
-    private int doesChangedSchemaMatchExisting(SchemaList list){
+    private int isSchemaUnique(Schema schema){
         int num = savedSchemaLists.size();
         for (int i = 0; i < num; ++i){
-            if (savedSchemaLists.get(i).hasSameAttributes(list)) {
+            if (savedSchemaLists.get(i).hasSameAttributes(schema)) {
                 if (i == ((ToolbarWithSpinner) toolbarManager.getToolbarTop()).getSelectedIndex()) {
                     return SCHEMA_IGNORE; //were already on the selected schema so end this
                 } else {
@@ -408,17 +411,21 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         if (schemaLoader != null) schemaLoader.stop();
         if (schemaName != null) {
             if (operation == Constants.OP_INSERT) {
-                SchemaList schemaList = model.copySchema();
-                schemaList.setSchemaName(schemaName);
-                int schemaId = db.insert(schemaList, JsonConstants.COUNT_SCHEMAS, JsonConstants.SCHEMA_ID);
+                Schema schema = new Schema(model.getSchema());
+                schema.setSchemaName(schemaName);
+                schema.setType(Constants.TYPE_PRIMARY_SCHEMA);
+                if (listType == Constants.TYPE_SECONDARY_LIST){
+                    schema.setType(Constants.TYPE_SECONDARY_SCHEMA);
+                }
+                int schemaId = db.insert(schema, JsonConstants.COUNT_SCHEMAS, JsonConstants.SCHEMA_ID);
                 if (schemaId != -1) {
-                    model.setSchemaId(schemaId);
-                    model.setSchemaName(schemaName);
+                    model.getSchema().setSchemaId(schemaId);
+                    model.getSchema().setSchemaName(schema.getSchemaName());
                 }
             } else {
-                SchemaList schemaList = savedSchemaLists.get(indexToUpdate);
-                model.setSchemaId(schemaList.getSchemaId());
-                model.setSchemaName(schemaList.getSchemaName());
+                Schema schema = savedSchemaLists.get(indexToUpdate);
+                model.getSchema().setSchemaId(schema.getSchemaId());
+                model.getSchema().setSchemaName(schema.getSchemaName());
             }
             saveListUpdate = true;
         }
@@ -429,44 +436,41 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
     @Override
     public void onSchemaSelected(int position) {
-        MapList list = MapListFactory.createList(getResources(), listType, model.getMapId());
+        BaseList list = ListFactory.createList(getResources(), listType, model.getMapId());
 
-        if (listType == BaseList.PRIMARY) {
+        if (listType == Constants.TYPE_PRIMARY_LIST) {
             ((PrimaryList) list).setLatLng(((PrimaryList) model).getLatLng());
 
-        } else if (listType == BaseList.SECONDARY) {
+        } else if (listType == Constants.TYPE_SECONDARY_LIST) {
             ((SecondaryList) list).setListId(((SecondaryList) model).getListId());
         }
-        Map<String, Object> properties = savedSchemaLists.get(position).getProperties();
+        Map<String, Object> properties = savedSchemaLists.get(position).getProperties(new HashMap<String, Object>(), null);
         properties.put(DOCUMENT_ID, model.getDocumentId()); //make sure we are using model docID, not the schema docID
-        model = list.setSchemaProperties(properties, listType);
-
+        model.setSchema(new Schema().setProperties(properties));
         addListFragment.setModel(model);
     }
 
     private class Loader extends ContentLoader {
 
-        private int determineListTypeForLoader(int listType){
-            if (listType == BaseList.PRIMARY)
-                return BaseList.PRIMARY_SCHEMA;
-            return BaseList.SECONDARY_SCHEMA;
-        }
 
         @Override
         public LiveQuery getLiveQuery() {
-            return db.getLiveQuery(db.QUERY_SCHEMA, determineListTypeForLoader(listType));
+            int type = Constants.TYPE_PRIMARY_SCHEMA;
+            if (listType == Constants.TYPE_SECONDARY_LIST)
+                type = Constants.TYPE_SECONDARY_SCHEMA;
+            return db.getLiveQuery(db.QUERY_SCHEMA, type);
         }
 
         @Override
         public void updateModel(QueryEnumerator result) {
             savedSchemaLists.clear();
-            SchemaList defaultSchema = MapListFactory.createList(getResources(), listType, model.getMapId()).copySchema();
+            Schema defaultSchema = ListFactory.createList(getResources(), listType, -1).getSchema();
             savedSchemaLists.add(defaultSchema);
 
             while(result.hasNext()){
                 QueryRow row = result.next();
                 Map<String, Object> properties = db.read(row.getSourceDocumentId());
-                savedSchemaLists.add(defaultSchema.copy().setProperties(properties));
+                savedSchemaLists.add(new Schema().setProperties(properties));
             }
 
             if (savedSchemaLists.size() > 0)

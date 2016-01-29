@@ -1,5 +1,8 @@
 package com.sundown.maplists.models.lists;
 
+import com.couchbase.lite.UnsavedRevision;
+import com.sundown.maplists.Constants;
+
 import java.util.Map;
 
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
@@ -7,7 +10,7 @@ import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 /**
  * In addition to primary lists, each location can also have a set of secondary lists, these are created in list-mode
  */
-public class SecondaryList extends MapList {
+public class SecondaryList extends BaseList {
 
 
     private int listId;
@@ -18,20 +21,14 @@ public class SecondaryList extends MapList {
     protected SecondaryList(int mapId, int listId) {
         super(mapId);
         setListId(listId);
-        setListType(SECONDARY);
+        getSchema().setType(Constants.TYPE_SECONDARY_LIST);
     }
 
     @Override
-    public SchemaList copySchema() {
-        SchemaList schemaList = super.copy();
-        schemaList.setListType(SECONDARY_SCHEMA);
-        return schemaList;
-    }
-
-    @Override
-    public Map<String, Object> getProperties() {
-        Map<String, Object> properties = super.getProperties();
-        properties.put(LIST_ID, listId);
+    public Map<String, Object> getProperties(Map<String, Object> properties, UnsavedRevision newRevision) {
+        super.getProperties(properties, newRevision);
+        if (getSchema().getType() == Constants.TYPE_SECONDARY_LIST)
+            properties.put(LIST_ID, listId);
         return properties;
     }
 
@@ -39,7 +36,8 @@ public class SecondaryList extends MapList {
     @Override
     public SecondaryList setProperties(Map properties) {
         super.setProperties(properties);
-        setListId((Integer) properties.get(LIST_ID));
+        if (getSchema().getType() == Constants.TYPE_SECONDARY_LIST)
+            setListId((Integer) properties.get(LIST_ID));
         return this;
     }
 }

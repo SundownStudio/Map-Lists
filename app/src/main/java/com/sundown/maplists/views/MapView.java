@@ -29,6 +29,7 @@ import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.fields.PhotoField;
 import com.sundown.maplists.models.lists.PrimaryList;
+import com.sundown.maplists.models.lists.Schema;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.utils.ColorUtils;
 
@@ -310,9 +311,10 @@ public class MapView extends RelativeLayout {
             LatLng latLng = marker.getPosition();
 
             PrimaryList list = model.getPrimaryList(latLng);
-            EntryField titleEntry = (EntryField) list.getField(0);
-            EntryField snippetEntry = (EntryField) list.getField(1);
-            PhotoField photoField = (PhotoField) list.getField(2);
+            Schema schema = list.getSchema();
+            EntryField titleEntry = (EntryField) schema.getField(0);
+            EntryField snippetEntry = (EntryField) schema.getField(1);
+            PhotoField photoField = (PhotoField) schema.getField(2);
 
             infoTitle.setText(titleEntry.getEntry(0));
             infoSnippet.setText(snippetEntry.getEntry(0));

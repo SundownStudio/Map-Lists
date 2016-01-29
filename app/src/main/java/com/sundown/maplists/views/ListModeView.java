@@ -86,7 +86,7 @@ public class ListModeView extends RelativeLayout {
             holder.reset();
 
             SecondaryList locationItem = listItems.get(position);
-            List<Field> fields = locationItem.getFields();
+            List<Field> fields = locationItem.getSchema().getFields();
 
             for (Field field: fields) {
                 int type = field.getType();
@@ -94,7 +94,7 @@ public class ListModeView extends RelativeLayout {
                     case Field.SUBJECT: { //reserved field only one per item
                         EntryField entryField = (EntryField) field;
                         holder.subjectText.setText(entryField.getEntry(0));
-                        holder.subjectText.setBackgroundDrawable(ViewUtils.getTopRoundedCornersDrawable(getResources().getDimension(R.dimen.rounded_corners), locationItem.getColor()));
+                        holder.subjectText.setBackgroundDrawable(ViewUtils.getTopRoundedCornersDrawable(getResources().getDimension(R.dimen.rounded_corners), locationItem.getSchema().getColor()));
                         break;
                     }
                     case Field.NAME:

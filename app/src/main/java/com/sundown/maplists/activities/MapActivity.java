@@ -17,7 +17,6 @@ import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
 import com.sundown.maplists.fragments.MapFragment;
 import com.sundown.maplists.logging.Log;
 import com.sundown.maplists.models.fields.EntryField;
-import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.models.lists.PrimaryList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
@@ -181,7 +180,7 @@ public class MapActivity extends AppCompatActivity implements
                 intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
                 intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
                 try {
-                    EntryField entryField = (EntryField) list.getFields().get(0); //this will always work because it's a protected field
+                    EntryField entryField = (EntryField) list.getSchema().getFields().get(0); //this will always work because it's a protected field
                     intent.putExtra(JsonConstants.FIELD_ENTRY, entryField.getEntry(0)); //location entry (for titling SecondaryListActivity)
                 } catch (Exception e){}
                 startActivity(intent);
@@ -196,7 +195,7 @@ public class MapActivity extends AppCompatActivity implements
                 break;
             }
             case R.id.action_delete: {
-                EntryField entry = (EntryField) mapFragment.getSelectedPrimaryList().getField(0);
+                EntryField entry = (EntryField) mapFragment.getSelectedPrimaryList().getSchema().getField(0);
                 String location = entry.getEntry(0);
                 if (location.length() == 0)
                     location = getString(R.string.this_location);
@@ -214,7 +213,7 @@ public class MapActivity extends AppCompatActivity implements
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
                     PrimaryList list = mapFragment.getSelectedPrimaryList();
                     Intent intent = new Intent(MapActivity.this, AddListActivity.class);
-                    intent.putExtra(JsonConstants.LIST_TYPE, BaseList.PRIMARY);
+                    intent.putExtra(JsonConstants.TYPE, Constants.TYPE_PRIMARY_LIST);
                     intent.putExtra(JsonConstants.OPERATION, Constants.OP_UPDATE);
                     intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
                     intent.putExtra(JsonConstants.MAP_ID, list.getMapId());

@@ -1,5 +1,6 @@
 package com.sundown.maplists.models.fields;
 
+import com.couchbase.lite.UnsavedRevision;
 import com.sundown.maplists.storage.JsonConstants;
 
 import java.util.ArrayList;
@@ -33,13 +34,7 @@ public class EntryField extends Field {
         return entries.size();
     }
 
-    public String getEntry(int element){
-        return entries.get(element);
-    }
-
-    public void setEntry(int element, String text){
-        entries.set(element, text);
-    }
+    public String getEntry(int element){ return entries.get(element); }
 
     public List<String> getEntries(){ return entries; }
 
@@ -66,8 +61,8 @@ public class EntryField extends Field {
     }
 
     @Override
-    public Map<String, Object> getProperties() {
-        Map<String, Object> properties = super.getProperties();
+    public Map<String, Object> getProperties(Map<String, Object> properties, UnsavedRevision newRevision) {
+        super.getProperties(properties, newRevision);
         List list = new ArrayList();
 
         for (String entry: entries){
@@ -97,7 +92,7 @@ public class EntryField extends Field {
     }
 
     @Override
-    public EntryField copy() {
+    public Field copy() {
         return new EntryField(getTitle(), getEntries(), getType(), isPermanent());
     }
 }
