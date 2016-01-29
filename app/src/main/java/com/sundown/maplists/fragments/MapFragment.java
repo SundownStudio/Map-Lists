@@ -492,6 +492,7 @@ public class MapFragment extends Fragment implements
 
             }
 
+
             drawModel();
         }
 
