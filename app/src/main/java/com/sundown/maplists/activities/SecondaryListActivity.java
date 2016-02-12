@@ -14,10 +14,8 @@ import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.fragments.SecondaryListFragment;
-import com.sundown.maplists.models.fields.EntryField;
 import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.models.lists.ListFactory;
-import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.utils.ToolbarManager;
@@ -51,28 +49,29 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one_fragment);
+        init(savedInstanceState != null ? true : false);
 
         Bundle bundle = getIntent().getExtras();
         mapId = bundle.getInt(JsonConstants.MAP_ID);
         documentId = bundle.getString(JsonConstants.DOCUMENT_ID);
         parentDocumentId = bundle.getString(JsonConstants.PARENT_DOC_ID);
+    }
+
+    private void init(boolean recreate){
 
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
-        setUpToolBars(getItemName());
 
-        if (savedInstanceState == null){
+        if (recreate){ //hookup frags
+            secondaryListFragment = (SecondaryListFragment) fm.findFragmentByTag(FRAGMENT_SECONDARY_LIST);
+            actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
+
+        } else { //instantiate new frags
             secondaryListFragment = SecondaryListFragment.newInstance();
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, secondaryListFragment, FRAGMENT_SECONDARY_LIST);
             transaction.commit();
-
-        } else {
-
-            secondaryListFragment = (SecondaryListFragment) fm.findFragmentByTag(FRAGMENT_SECONDARY_LIST);
-            actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
         }
-
     }
 
     @Override
@@ -80,6 +79,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
         super.onResume();
         loadModel();
         secondaryListFragment.setModel(model);
+        setUpToolBars(getItemName());
     }
 
     private void loadModel(){
@@ -95,8 +95,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
         toolbarTop.setTitle(itemName);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
-
+        toolbarManager = ToolbarManager.getInstance(toolbarTop, toolbarBottom, toolbarTopLayout, this);
     }
 
     @Override
@@ -106,11 +105,8 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
         topMenu.clear();
         bottomMenu.clear();
 
-        getMenuInflater().inflate(R.menu.menu_top, topMenu);
-        getMenuInflater().inflate(R.menu.menu_bottom_map, bottomMenu);
-
-        toolbarManager.drawMenu(new MenuOption(MenuOption.GroupView.EDIT_DELETE, true),
-                new MenuOption(MenuOption.GroupView.DEFAULT_TOP, false));
+        getMenuInflater().inflate(R.menu.menu_top_empty, topMenu);
+        getMenuInflater().inflate(R.menu.menu_bottom_edit, bottomMenu);
 
         return true;
     }
@@ -124,8 +120,7 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
             case R.id.action_delete: {
 
                 if (secondaryListFragment != null && secondaryListFragment.getUserVisibleHint()) {
-                    EntryField entryField = (EntryField) model.getSchema().getField(0);
-                    actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.delete_location), entryField.getEntry(0) + " " + getResources().getString(R.string.delete_confirm));
+                    actionDialogFragment = ActionDialogFragment.newInstance(getString(R.string.delete_location), model.getListTitle() + " " + getResources().getString(R.string.delete_confirm));
                 }
                 if (actionDialogFragment != null)
                     actionDialogFragment.show(fm, FRAGMENT_ACTION);
@@ -180,12 +175,8 @@ public class SecondaryListActivity extends AppCompatActivity implements ActionDi
     }
 
     private String getItemName(){
-        try {
-            EntryField entryField = (EntryField) model.getSchema().getField(0); //subject
-            String entry = entryField.getEntry(0); //subject entry
-            if (entry.length() > 0)
-                return entry;
-        } catch (Exception e){}
+        String title = model.getListTitle();
+        if (title != null && title.length() > 0) return title;
         return getString(R.string.secondary_list_activity); //else return default
     }
 }

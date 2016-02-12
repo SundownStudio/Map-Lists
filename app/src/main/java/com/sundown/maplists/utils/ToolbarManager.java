@@ -6,8 +6,6 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.sundown.maplists.R;
-import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.pojo.MenuOption;
 
 /**
  * Created by Sundown on 7/21/2015.
@@ -19,24 +17,38 @@ public class ToolbarManager {
         void bottomToolbarPressed(MenuItem item);
     }
 
+    public static final int DEFAULT_TOP = 1;
+    public static final int SCHEMA_ACTIONS = 2;
+    public static final int DEFAULT_ADDLIST = 3;
+
+    private static ToolbarManager instance;
     private Toolbar toolbarTop;
     public Toolbar getToolbarTop(){ return toolbarTop; }
     private Toolbar toolbarBottom;
-    public Toolbar getToolbarBottom(){ return toolbarBottom; }
     private LinearLayout toolbarTopLayout;
-    private ToolbarListener listener;
 
 
-    public ToolbarManager(Toolbar toolbarTop, Toolbar toolbarBottom, LinearLayout toolbarTopLayout, ToolbarListener listener){
-        this.toolbarTop = toolbarTop;
-        this.toolbarBottom = toolbarBottom;
-        this.toolbarTopLayout = toolbarTopLayout;
-        this.listener = listener;
-        setup();
+    public static ToolbarManager getInstance(final Toolbar toolbarTop, final Toolbar toolbarBottom, final LinearLayout toolbarTopLayout, final ToolbarListener listener){
+        if (instance == null) instance = new ToolbarManager();
+        else instance.clear();
+        instance.setup(toolbarTop, toolbarBottom, toolbarTopLayout, listener);
+        return instance;
     }
 
 
-    private void setup(){
+    private ToolbarManager(){}
+
+    private void clear(){
+        toolbarTop.setOnMenuItemClickListener(null);
+        toolbarBottom.setOnMenuItemClickListener(null);
+    }
+
+    private void setup(final Toolbar toolbarTop, final Toolbar toolbarBottom, final LinearLayout toolbarTopLayout, final ToolbarListener listener){
+        this.toolbarTop = toolbarTop;
+        this.toolbarBottom = toolbarBottom;
+        this.toolbarTopLayout = toolbarTopLayout;
+
+
         toolbarTop.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -54,39 +66,22 @@ public class ToolbarManager {
         });
     }
 
-    public void drawMenu(MenuOption... options){
-        if (toolbarBottom == null || toolbarTop == null)
-            return;
+    public void drawMenu(int menuId, boolean show){
+        if (toolbarBottom == null || toolbarTop == null) return;
 
-        for (MenuOption option: options){
-            Log.m("toolbar", "drawing toolbar " + option);
-            switch(option.groupView){
+        switch (menuId){
 
-                case EDIT_DELETE:
-                    toolbarBottom.getMenu().setGroupVisible(R.id.group_edit_delete, option.show);
-                    break;
+            case DEFAULT_TOP:
+                toolbarTop.getMenu().setGroupVisible(R.id.group_default_top, show);
+                break;
 
-                case MARKER_COMPONENTS:
-                    toolbarBottom.getMenu().setGroupVisible(R.id.group_marker_components, option.show);
-                    break;
+            case SCHEMA_ACTIONS:
+                toolbarBottom.getMenu().setGroupVisible(R.id.group_schema_actions, show);
+                break;
 
-                case MARKER_MOVE:
-                    toolbarBottom.getMenu().setGroupVisible(R.id.group_marker_move, option.show);
-                    break;
-
-                case DEFAULT_TOP:
-                    toolbarTop.getMenu().setGroupVisible(R.id.group_default_top, option.show);
-                    break;
-
-                case SCHEMA_ACTIONS:
-                    toolbarBottom.getMenu().setGroupVisible(R.id.group_schema_actions, option.show);
-                    break;
-
-                case DEFAULT_ADDLIST:
-                    toolbarBottom.getMenu().setGroupVisible(R.id.group_addlist_default, option.show);
-                    break;
-
-            }
+            case DEFAULT_ADDLIST:
+                toolbarBottom.getMenu().setGroupVisible(R.id.group_addlist_default, show);
+                break;
         }
 
         toolbarTopLayout.bringToFront();

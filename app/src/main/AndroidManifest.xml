@@ -62,14 +62,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.ListModeActivity" />
         </activity>
-        <activity android:name="com.sundown.maplists.activities.ManageSchemasActivity"
-            android:label="@string/manage_schemas_activity"
-            android:parentActivityName=".activities.MapActivity">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MapActivity" />
-        </activity>
+
         <service
             android:name="com.sundown.maplists.network.FetchAddressIntentService"
             android:exported="false"/>

@@ -35,6 +35,10 @@ public abstract class BaseList implements PropertiesHandler<BaseList> {
 
     public void setSchema(Schema schema){ this.schema = schema;}
 
+    public String getListTitle(){
+        return schema.getField(0).getEntry(0);
+    }
+
     protected BaseList(int mapId) {
         setMapId(mapId);
     }

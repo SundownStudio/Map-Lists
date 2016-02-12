@@ -15,15 +15,13 @@ import com.sundown.maplists.R;
 import com.sundown.maplists.dialogs.ActionDialogFragment;
 import com.sundown.maplists.dialogs.EnterAddressDialogFragment;
 import com.sundown.maplists.fragments.MapFragment;
-import com.sundown.maplists.logging.Log;
-import com.sundown.maplists.models.fields.EntryField;
-import com.sundown.maplists.models.lists.PrimaryList;
+import com.sundown.maplists.models.lists.BaseList;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.utils.ToolbarManager;
 
 public class MapActivity extends AppCompatActivity implements
-        ActionDialogFragment.ConfirmActionListener, ToolbarManager.ToolbarListener {
+        ActionDialogFragment.ConfirmActionListener, ToolbarManager.ToolbarListener, MapFragment.MapFragmentListener {
 
 
     //NOTE: This app follows a MVC pattern:
@@ -36,12 +34,6 @@ public class MapActivity extends AppCompatActivity implements
     private static final String FRAGMENT_ACTION= "ACTION";
     private static final String FRAGMENT_ENTER_ADDRESS= "ENTER_ADDRESS";
 
-
-    private FragmentManager fm;
-    private DatabaseCommunicator db;
-    private ToolbarManager toolbarManager;
-
-    //FRAGMENTS
     /**
      * shows the map and handles map marker operations.
      * Each map marker has a list of fields associated with it (a MapList), some of these fields will display
@@ -55,52 +47,48 @@ public class MapActivity extends AppCompatActivity implements
     /** Enter an address to place a map marker */
     private EnterAddressDialogFragment enterAddressDialogFragment;
 
-    /** Navigation drawer */
-    //private NavigationDrawerFragment drawerFragment;
+    private FragmentManager fm;
+    private DatabaseCommunicator db;
+    private ToolbarManager toolbarManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        init(savedInstanceState != null ? true : false);
+    }
+
+    private void init(boolean recreate){
 
         fm = getSupportFragmentManager();
         db = DatabaseCommunicator.getInstance();
-        setUpToolBars();
 
-        if (savedInstanceState == null){ //activity first created, show map fragment as default..
+        if (recreate){ //hookup frags
+            actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
+
+            mapFragment = (MapFragment) fm.findFragmentByTag(FRAGMENT_MAP);
+            if (mapFragment == null) mapFragment = MapFragment.newInstance();
+
+            enterAddressDialogFragment = (EnterAddressDialogFragment) fm.findFragmentByTag(FRAGMENT_ENTER_ADDRESS);
+            if (enterAddressDialogFragment != null) enterAddressDialogFragment.setListener(mapFragment);
+
+        } else { //instantiate new frags
             mapFragment = MapFragment.newInstance();
-            mapFragment.setToolbarManager(toolbarManager);
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, mapFragment, FRAGMENT_MAP);
             transaction.commit();
-
-        } else { //activity recreated, grab existing retained fragments and reset their listeners
-            mapFragment = (MapFragment) fm.findFragmentByTag(FRAGMENT_MAP);
-            if (mapFragment == null)
-                mapFragment = MapFragment.newInstance();
-            mapFragment.setToolbarManager(toolbarManager);
-
-            enterAddressDialogFragment = (EnterAddressDialogFragment) fm.findFragmentByTag(FRAGMENT_ENTER_ADDRESS);
-            if (enterAddressDialogFragment != null){
-                enterAddressDialogFragment.setListener(mapFragment);
-            }
-
-            actionDialogFragment = (ActionDialogFragment) fm.findFragmentByTag(FRAGMENT_ACTION);
         }
-        Log.m("toolbar", "main onCreate");
     }
-
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onResume() {
+        super.onResume();
+        setUpToolBars();
     }
-
 
     /**
      * Grab top and bottom toolbar views and add to toolbarManager
-     * also setup Navigation Drawer (third toolbar)
      */
     private void setUpToolBars(){
         LinearLayout toolbarTopLayout = (LinearLayout) findViewById(R.id.toolbar_top_layout);
@@ -110,7 +98,7 @@ public class MapActivity extends AppCompatActivity implements
         toolbarTop.setTitle(getString(R.string.app_name));
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayShowHomeEnabled(true); //we want the logo so we can click on it and trigger the navigation drawer
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
+        toolbarManager = ToolbarManager.getInstance(toolbarTop, toolbarBottom, toolbarTopLayout, this);
     }
 
     /**
@@ -120,17 +108,14 @@ public class MapActivity extends AppCompatActivity implements
      */
     @Override
     public boolean onCreateOptionsMenu(Menu topMenu) {
-        Menu bottomMenu = toolbarManager.getBottomMenu();
-
         topMenu.clear();
-        bottomMenu.clear();
+        getMenuInflater().inflate(R.menu.menu_top_map, topMenu);
+        inflateBottomToolbar(R.menu.menu_bottom_empty);
 
-        getMenuInflater().inflate(R.menu.menu_top, topMenu);
-        getMenuInflater().inflate(R.menu.menu_bottom_map, bottomMenu);
-
-        mapFragment.initMap(); //hacky.. find a better way.. must call this after toolbar instantiated, unfortunately onCreateOptionsMenu called at
+        mapFragment.initMap(); //todo hacky.. find a better way.. must call this after toolbar instantiated, unfortunately onCreateOptionsMenu called at
         //all different times on different os versions and because of nested google map fragment we cannot put in map fragment
         //there really should be a lifecycle method for this.. google has open ticket to fix for years
+        //problem is nested support fragments reset toolbars in activity after load
         return true;
     }
 
@@ -175,14 +160,11 @@ public class MapActivity extends AppCompatActivity implements
     public void bottomToolbarPressed(MenuItem item){
         switch (item.getItemId()) {
             case R.id.action_secondary_lists: {
-                PrimaryList list = mapFragment.getSelectedPrimaryList();
+                BaseList list = mapFragment.getSelectedPrimaryList();
                 Intent intent = new Intent(MapActivity.this, ListModeActivity.class);
                 intent.putExtra(JsonConstants.DOCUMENT_ID, list.getDocumentId());
                 intent.putExtra(JsonConstants.MAP_ID, list.getMapId());
-                try {
-                    EntryField entryField = (EntryField) list.getSchema().getFields().get(0); //this will always work because it's a protected field
-                    intent.putExtra(JsonConstants.FIELD_ENTRY, entryField.getEntry(0)); //location entry (for titling SecondaryListActivity)
-                } catch (Exception e){}
+                intent.putExtra(JsonConstants.FIELD_TITLE, list.getListTitle()); //location entry (for titling ListModeActivity)
                 startActivity(intent);
                 break;
             }
@@ -195,9 +177,9 @@ public class MapActivity extends AppCompatActivity implements
                 break;
             }
             case R.id.action_delete: {
-                EntryField entry = (EntryField) mapFragment.getSelectedPrimaryList().getSchema().getField(0);
-                String location = entry.getEntry(0);
-                if (location.length() == 0)
+                String location = mapFragment.getSelectedPrimaryList().getListTitle();
+
+                if (location != null && location.length() == 0)
                     location = getString(R.string.this_location);
                 String confirmText = location + " " + getResources().getString(R.string.delete_confirm);
 
@@ -211,7 +193,7 @@ public class MapActivity extends AppCompatActivity implements
             }
             case R.id.action_edit: {
                 if (mapFragment != null && mapFragment.getUserVisibleHint()) {
-                    PrimaryList list = mapFragment.getSelectedPrimaryList();
+                    BaseList list = mapFragment.getSelectedPrimaryList();
                     Intent intent = new Intent(MapActivity.this, AddListActivity.class);
                     intent.putExtra(JsonConstants.TYPE, Constants.TYPE_PRIMARY_LIST);
                     intent.putExtra(JsonConstants.OPERATION, Constants.OP_UPDATE);
@@ -224,7 +206,6 @@ public class MapActivity extends AppCompatActivity implements
         }
     }
 
-
     /**
      * User has confirmed they wish to delete a list, so delete it
      *
@@ -233,8 +214,29 @@ public class MapActivity extends AppCompatActivity implements
     @Override
     public void confirmAction (boolean confirmed){
         if (confirmed) {
-            PrimaryList list = mapFragment.getSelectedPrimaryList();
+            BaseList list = mapFragment.getSelectedPrimaryList();
             db.delete(list.getDocumentId(), list.getMapId(), Constants.OP_DELETE_LOCATION);
         }
+    }
+
+    @Override
+    public void markerSelected(){
+        inflateBottomToolbar(R.menu.menu_bottom_map);
+    }
+
+    @Override
+    public void markerReleased(){
+        inflateBottomToolbar(R.menu.menu_bottom_empty);
+    }
+
+    @Override
+    public void mapReset(){
+        toolbarManager.drawMenu(toolbarManager.DEFAULT_TOP, true);
+    }
+
+    private void inflateBottomToolbar(int resId){
+        Menu bottomMenu = toolbarManager.getBottomMenu();
+        bottomMenu.clear();
+        getMenuInflater().inflate(resId, bottomMenu);
     }
 }

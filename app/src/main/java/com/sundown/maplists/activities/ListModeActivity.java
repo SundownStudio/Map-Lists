@@ -14,12 +14,9 @@ import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 import com.sundown.maplists.fragments.ListModeFragment;
 import com.sundown.maplists.models.lists.SecondaryList;
-import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.ListModeView;
-
-import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 
 /**
  * Created by Sundown on 8/19/2015.
@@ -49,27 +46,36 @@ public class ListModeActivity extends AppCompatActivity implements ListModeView.
             documentId = bundle.getString(JsonConstants.DOCUMENT_ID);
         }
 
-        fm = getSupportFragmentManager();
-        setUpToolBars(getLocationName(getIntent().getExtras()));
+        init(savedInstanceState != null ? true : false);
+    }
 
-        if (savedInstanceState == null){
-            listModeFragment = ListModeFragment.newInstance(mapId, this, toolbarManager);
+    private void init(boolean recreate){
+
+        fm = getSupportFragmentManager();
+
+        if (recreate){ //hookup frags
+            listModeFragment = (ListModeFragment) fm.findFragmentByTag(FRAGMENT_LISTMODE);
+            if (listModeFragment != null)
+                listModeFragment.setListener(this);
+
+        } else { //instantiate new frags
+            listModeFragment = ListModeFragment.newInstance(mapId, this);
             FragmentTransaction transaction = fm.beginTransaction();
             transaction.replace(R.id.fragment_container, listModeFragment, FRAGMENT_LISTMODE);
             transaction.commit();
-
-
-        } else {
-            listModeFragment = (ListModeFragment) fm.findFragmentByTag(FRAGMENT_LISTMODE);
-            if (listModeFragment != null){
-                listModeFragment.setToolbarManager(toolbarManager);
-                listModeFragment.setListener(this);
-            }
         }
     }
 
-    private String getLocationName(Bundle bundle){
-        String locationName = bundle.getString(JsonConstants.FIELD_ENTRY);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpToolBars(getLocationName());
+    }
+
+
+    private String getLocationName(){
+        Bundle bundle = getIntent().getExtras();
+        String locationName = bundle.getString(JsonConstants.FIELD_TITLE);
         if (locationName != null && locationName.length() > 0)
             return locationName;
         return getString(R.string.list_mode_activity);
@@ -83,8 +89,7 @@ public class ListModeActivity extends AppCompatActivity implements ListModeView.
         toolbarTop.setTitle(locationName);
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
-
+        toolbarManager = ToolbarManager.getInstance(toolbarTop, toolbarBottom, toolbarTopLayout, this);
     }
 
 
@@ -95,11 +100,9 @@ public class ListModeActivity extends AppCompatActivity implements ListModeView.
         topMenu.clear();
         bottomMenu.clear();
 
-        getMenuInflater().inflate(R.menu.menu_top, topMenu);
+        getMenuInflater().inflate(R.menu.menu_top_empty, topMenu);
         getMenuInflater().inflate(R.menu.menu_bottom_secondarylists, bottomMenu);
 
-        toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, false));
-        listModeFragment.startLoader();
         return true;
     }
 
@@ -136,11 +139,9 @@ public class ListModeActivity extends AppCompatActivity implements ListModeView.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                mapId = data.getIntExtra(JsonConstants.MAP_ID, 0);
-                documentId = data.getStringExtra(JsonConstants.DOCUMENT_ID);
-            }
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            mapId = data.getIntExtra(JsonConstants.MAP_ID, 0);
+            documentId = data.getStringExtra(JsonConstants.DOCUMENT_ID);
         }
     }
 }

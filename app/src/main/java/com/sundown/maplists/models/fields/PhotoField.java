@@ -202,6 +202,11 @@ public class PhotoField extends Field {
         return new PhotoField(getTitle(), isPermanent(), PhotoUtils.getInstance(), FileManager.getInstance(), PreferenceManager.getInstance());
     }
 
+    @Override
+    public String getEntry(int element) {
+        return null;
+    }
+
     private void setImageAttachment(UnsavedRevision newRevision, String fileName, Bitmap image){
         if (image != null) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();

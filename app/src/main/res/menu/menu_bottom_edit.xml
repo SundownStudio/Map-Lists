@@ -4,30 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.MapActivity">
 
-
-    <item
-        android:id="@+id/action_secondary_lists"
-        android:icon="@drawable/ic_clipboard"
-        android:orderInCategory="200"
-        android:title="@string/secondary_lists"
-        app:showAsAction="always" />
-
-
-    <item
-        android:id="@+id/action_goto_location"
-        android:icon="@drawable/ic_binoculars"
-        android:orderInCategory="200"
-        android:title="@string/goto_location"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_drag_location"
-        android:icon="@drawable/ic_open_with_black_24dp"
-        android:orderInCategory="200"
-        android:title="@string/drag_location"
-        app:showAsAction="always" />
-
-
     <item
         android:id="@+id/action_edit"
         android:icon="@drawable/ic_edit_black_24dp"
@@ -42,5 +18,6 @@
         android:orderInCategory="200"
         android:title="@string/delete_location"
         app:showAsAction="always" />
+
 
 </menu>

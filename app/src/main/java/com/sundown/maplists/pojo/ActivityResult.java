@@ -16,5 +16,4 @@ public class ActivityResult {
         this.resultCode = resultCode;
         this.data = data;
     }
-
 }

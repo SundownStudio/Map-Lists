@@ -157,5 +157,6 @@ public abstract class Field implements PropertiesHandler<Field> {
     }
 
     public abstract Field copy();
+    public abstract String getEntry(int element);
 
 }

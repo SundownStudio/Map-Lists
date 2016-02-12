@@ -14,15 +14,11 @@ import com.sundown.maplists.Constants;
 import com.sundown.maplists.R;
 import com.sundown.maplists.models.lists.ListFactory;
 import com.sundown.maplists.models.lists.SecondaryList;
-import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.ContentLoader;
-import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.ListModeView;
 
 import java.util.ArrayList;
 import java.util.Map;
-
-import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
 
 
 /**
@@ -36,15 +32,11 @@ public class ListModeFragment extends Fragment {
     private ContentLoader loader;
     private ListModeView.AllListsListener listener;
     public void setListener(ListModeView.AllListsListener listener){ this.listener = listener;}
-    private ToolbarManager toolbarManager;
-    public void setToolbarManager(ToolbarManager toolbarManager){ this.toolbarManager = toolbarManager;}
 
-
-    public static ListModeFragment newInstance(int mapId, ListModeView.AllListsListener listener, ToolbarManager toolbarManager){
+    public static ListModeFragment newInstance(int mapId, ListModeView.AllListsListener listener){
         ListModeFragment fragment = new ListModeFragment();
         fragment.mapId = mapId;
         fragment.listener = listener;
-        fragment.toolbarManager = toolbarManager;
         return fragment;
     }
 
@@ -67,6 +59,7 @@ public class ListModeFragment extends Fragment {
         super.onResume();
         setUserVisibleHint(true);
         getActivity().invalidateOptionsMenu();
+        loader = new Loader().start();
     }
 
     @Override
@@ -74,10 +67,6 @@ public class ListModeFragment extends Fragment {
         super.onPause();
         setUserVisibleHint(false);
         loader.stop();
-    }
-
-    public void startLoader(){
-        loader = new Loader().start();
     }
 
     private class Loader extends ContentLoader {
@@ -105,7 +94,6 @@ public class ListModeFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, false));
                     view.init(model, listener);
                 }
             });

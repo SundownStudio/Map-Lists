@@ -37,12 +37,10 @@ import com.sundown.maplists.models.Locations;
 import com.sundown.maplists.models.lists.ListFactory;
 import com.sundown.maplists.models.lists.PrimaryList;
 import com.sundown.maplists.network.FetchAddressIntentService;
-import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.ContentLoader;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
 import com.sundown.maplists.utils.PreferenceManager;
-import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.MapView;
 
 import java.util.Iterator;
@@ -60,10 +58,6 @@ import static com.sundown.maplists.network.GeocodeConstants.MAP_LONGITUDE;
 import static com.sundown.maplists.network.GeocodeConstants.RECEIVER;
 import static com.sundown.maplists.network.GeocodeConstants.RESULT_DATA_KEY;
 import static com.sundown.maplists.network.GeocodeConstants.SUCCESS_RESULT;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_COMPONENTS;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.MARKER_MOVE;
 
     /* NOTE: oldLatLng & savedLatLng = why not just use one since neither can coexist?
     Answer: Better readability.. but how much extra space?
@@ -85,6 +79,11 @@ public class MapFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
+    public interface MapFragmentListener {
+        void markerSelected();
+        void markerReleased();
+        void mapReset();
+    }
 
 
     /** Constants */
@@ -95,10 +94,7 @@ public class MapFragment extends Fragment implements
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     public static final float DEFAULT_ZOOM = 2.0f;
 
-    private ToolbarManager toolbarManager;
-    public void setToolbarManager(ToolbarManager toolbarManager){
-        this.toolbarManager = toolbarManager;
-    }
+    private MapFragmentListener listener;
     private DatabaseCommunicator db;
     private SupportMapFragment supportMapFragment;
     private GoogleApiClient mGoogleApiClient;
@@ -124,7 +120,7 @@ public class MapFragment extends Fragment implements
         model = Locations.getInstance();
         mResultReceiver = new AddressResultReceiver(new Handler());
         db = DatabaseCommunicator.getInstance();
-        Log.m("toolbar", "mapfragment onCreate");
+        listener = (MapFragmentListener)getActivity();
     }
 
     @Override
@@ -307,18 +303,12 @@ public class MapFragment extends Fragment implements
         startIntentService(latLng);
         view.animateToLocation(latLng);
         marker.showInfoWindow();
-
-        toolbarManager.drawMenu(new MenuOption(EDIT_DELETE, true),
-                new MenuOption(MARKER_MOVE, true),
-                new MenuOption(MARKER_COMPONENTS, true));
-
+        listener.markerSelected();
     }
 
     private void releaseMarker() {
         selectedMarker = null;
-        toolbarManager.drawMenu(new MenuOption(EDIT_DELETE, false),
-                new MenuOption(MARKER_MOVE, false),
-                new MenuOption(MARKER_COMPONENTS, false));
+        listener.markerReleased();
     }
 
 
@@ -528,7 +518,7 @@ public class MapFragment extends Fragment implements
                     }
 
 
-                    toolbarManager.drawMenu(new MenuOption(DEFAULT_TOP, true));
+                    listener.mapReset();
                     view.displayFloatingButtons((model.numLocations() > 1));
 
                 }

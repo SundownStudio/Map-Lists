@@ -4,12 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.sundown.maplists.activities.ListModeActivity">
 
-
-    <group
-        android:id="@+id/group_secondarylists_default"
-        android:visible="true">
-
-
         <item
             android:id="@+id/action_add_list"
             android:icon="@drawable/ic_events_add"
@@ -23,6 +17,4 @@
             android:orderInCategory="200"
             android:title="@string/remove_list"
             app:showAsAction="always" />
-    </group>
-
 </menu>

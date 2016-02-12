@@ -32,7 +32,6 @@ import com.sundown.maplists.models.lists.PrimaryList;
 import com.sundown.maplists.models.lists.Schema;
 import com.sundown.maplists.models.lists.SecondaryList;
 import com.sundown.maplists.pojo.ActivityResult;
-import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.storage.ContentLoader;
 import com.sundown.maplists.storage.DatabaseCommunicator;
 import com.sundown.maplists.storage.JsonConstants;
@@ -44,9 +43,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_TOP;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.EDIT_DELETE;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.SCHEMA_ACTIONS;
 import static com.sundown.maplists.storage.JsonConstants.DOCUMENT_ID;
 import static com.sundown.maplists.storage.JsonConstants.LIST_ID;
 
@@ -183,7 +179,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
+        toolbarManager = ToolbarManager.getInstance(toolbarTop, toolbarBottom, toolbarTopLayout, this);
         toolbarManager.setTopVisibility(View.VISIBLE);
     }
 
@@ -195,7 +191,7 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
 
         setSupportActionBar(toolbarTop);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toolbarManager = new ToolbarManager(toolbarTop, toolbarBottom, toolbarTopLayout, this);
+        toolbarManager = ToolbarManager.getInstance(toolbarTop, toolbarBottom, toolbarTopLayout, this);
 
         ArrayList<String> list = new ArrayList<>();
         int index = 0;
@@ -222,17 +218,15 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
         topMenu.clear();
         bottomMenu.clear();
 
-        getMenuInflater().inflate(R.menu.menu_top, topMenu);
+        getMenuInflater().inflate(R.menu.menu_top_map, topMenu);
         getMenuInflater().inflate(R.menu.menu_bottom_addlist, bottomMenu);
 
         boolean showSchemaActions = false;
         if (savedSchemaLists.size() > 0)
             showSchemaActions = true;
 
-        toolbarManager.drawMenu(
-                new MenuOption(EDIT_DELETE, false),
-                new MenuOption(DEFAULT_TOP, false),
-                new MenuOption(SCHEMA_ACTIONS, showSchemaActions));
+        toolbarManager.drawMenu(toolbarManager.DEFAULT_TOP, false);
+        toolbarManager.drawMenu(toolbarManager.SCHEMA_ACTIONS, showSchemaActions);
 
         if (schemaLoader == null) schemaLoader = new Loader().start();
 
@@ -482,7 +476,9 @@ public class AddListActivity extends AppCompatActivity implements AddFieldView.F
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    setUpToolbarSpinner();
+                    try {
+                        setUpToolbarSpinner();
+                    } catch (Exception e){}
                 }
             });
         }

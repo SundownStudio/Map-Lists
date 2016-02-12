@@ -9,14 +9,10 @@ import android.view.ViewGroup;
 
 import com.sundown.maplists.R;
 import com.sundown.maplists.models.lists.Schema;
-import com.sundown.maplists.pojo.MenuOption;
 import com.sundown.maplists.utils.ToolbarManager;
 import com.sundown.maplists.views.ManageSchemasView;
 
 import java.util.ArrayList;
-
-import static com.sundown.maplists.pojo.MenuOption.GroupView.DEFAULT_ADDLIST;
-import static com.sundown.maplists.pojo.MenuOption.GroupView.SCHEMA_ACTIONS;
 
 /**
  * Created by Sundown on 8/26/2015.
@@ -50,9 +46,8 @@ public class ManageSchemasFragment extends Fragment {
         super.onResume();
         setUserVisibleHint(true);
 
-        toolbarManager.drawMenu(
-                new MenuOption(DEFAULT_ADDLIST, false),
-                new MenuOption(SCHEMA_ACTIONS, false));
+        toolbarManager.drawMenu(toolbarManager.DEFAULT_ADDLIST, false);
+        toolbarManager.drawMenu(toolbarManager.SCHEMA_ACTIONS, false);
     }
 
 
